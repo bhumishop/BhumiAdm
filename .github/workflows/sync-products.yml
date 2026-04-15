@@ -292,7 +292,7 @@ jobs:
     steps:
       - name: Verify Supabase products
         run: |
-          python3 -c "
+          python3 << 'PYTHON_SCRIPT'
           import requests, os, sys
 
           url = os.environ['SUPABASE_URL']
@@ -311,7 +311,8 @@ jobs:
               r = requests.get(f'{base}/{query}', headers=hdrs, timeout=15)
               count = len(r.json()) if r.ok else -1
               status = 'PASS' if count > 0 else 'FAIL'
-              if count <= 0: all_ok = False
+              if count <= 0:
+                  all_ok = False
               print(f'  [{status}] {name}: {count} active products')
 
           # Check variants
