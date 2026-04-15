@@ -965,9 +965,7 @@ class GitHubCdnUploader:
             if not img_bytes:
                 continue
 
-            # Skip grey/empty images for t-shirts
-            if is_tshirt:
-                content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
+            content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"products/{pid}/{idx:03d}_image{ext}"
 

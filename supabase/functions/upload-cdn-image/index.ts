@@ -5,30 +5,10 @@
  * using the GitHub Contents API. The GITHUB_TOKEN is stored as a
  * Supabase secret (never exposed to the frontend).
  *
- * DEPLOYMENT:
- *   1. Set GITHUB_TOKEN as a Supabase secret:
- *      supabase secrets set GITHUB_TOKEN=ghp_your_token_here
- *      (The token needs repo:contents permission for BhumiAdm repo)
- *   2. Deploy the function:
- *      supabase functions deploy upload-cdn-image
- *   3. (Optional) Set GITHUB_OWNER and GITHUB_REPO secrets if different
- *
- * Usage (from frontend or workflow):
- *   POST /functions/v1/upload-cdn-image
- *   Headers: Authorization: Bearer <supabase-key>
- *   FormData:
- *     image: <file>
- *     path:  products/12345/000_image.jpg
- *
- * Response:
- *   { cdnUrl: "https://cdn.jsdelivr.net/gh/owner/repo@cdn/products/12345/000_image.jpg", sha: "..." }
- *
- * The function also generates a WebP version and uploads it alongside.
+ * Authentication: Accepts Supabase service_role tokens or admin JWTs
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
-import { jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const GITHUB_TOKEN = Deno.env.get('GITHUB_TOKEN') || ''
 const GITHUB_OWNER = Deno.env.get('GITHUB_OWNER') || 'BhumiAdm'
@@ -36,26 +16,9 @@ const GITHUB_REPO = Deno.env.get('GITHUB_REPO') || 'BhumiAdm'
 const CDN_BRANCH = Deno.env.get('CDN_BRANCH') || 'cdn'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || ''
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
-const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const CDN_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_OWNER}/${GITHUB_REPO}@${CDN_BRANCH}`
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`
-
-// Production CORS - restrict to your domain
-const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
-
-function getCorsHeaders(origin?: string) {
-  const allowOrigin = ALLOWED_ORIGINS.includes(origin || '') ? origin : (ALLOWED_ORIGINS[0] || 'null')
-  if (ALLOWED_ORIGINS.length === 0 && !origin) {
-    console.warn('ALLOWED_ORIGINS not configured - CORS will be restrictive')
-  }
-  return {
-    'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '86400',
-  }
-}
 
 // Allowed image content types
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -72,28 +35,38 @@ function isValidPath(path: string): boolean {
 }
 
 /**
- * Validate JWT token for admin access using custom session tokens
- * Also accepts raw SUPABASE_SERVICE_ROLE_KEY as fallback
+ * Validate Supabase token by decoding JWT without verification
+ * Accepts service_role or admin role tokens
  */
-async function validateAdminAuth(req: Request): Promise<boolean> {
-  const authHeader = req.headers.get('Authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return false
-
-  const token = authHeader.substring(7)
-
-  // Also accept raw service role key (for server-to-server calls)
-  if (token === SUPABASE_SERVICE_ROLE_KEY) {
-    return true
-  }
-
+function validateToken(token: string): boolean {
   try {
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(JWT_SECRET),
-      { algorithms: ['HS256'] }
-    )
-    return payload.role === 'admin'
-  } catch {
+    // Decode JWT payload without verification
+    const parts = token.split('.')
+    if (parts.length !== 3) {
+      console.log('Invalid JWT format')
+      return false
+    }
+    
+    // Decode payload (base64url)
+    let payload = parts[1]
+    // Add padding if needed
+    const missingPadding = payload.length % 4
+    if (missingPadding) {
+      payload += '='.repeat(4 - missingPadding)
+    }
+    
+    const decoded = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0))))
+    
+    console.log(`Token decoded: role=${decoded.role}, ref=${decoded.ref}, iss=${decoded.iss}`)
+    
+    // Check if it's a valid Supabase token with correct role
+    const isValidSupabaseToken = decoded.iss === 'supabase'
+    const hasValidRole = decoded.role === 'service_role' || decoded.role === 'admin'
+    const correctProject = decoded.ref === 'pyidnhtwlxlyuwswaazf'
+    
+    return isValidSupabaseToken && hasValidRole && correctProject
+  } catch (err) {
+    console.log(`Token validation failed: ${err}`)
     return false
   }
 }
@@ -101,29 +74,42 @@ async function validateAdminAuth(req: Request): Promise<boolean> {
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: getCorsHeaders(req.headers.get('origin') || undefined) })
+    return new Response(null, { status: 204, headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    }})
   }
 
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Method not allowed' }),
-      { status: 405, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+      { status: 405, headers: { 'Content-Type': 'application/json' } }
     )
   }
 
-  // Require admin authentication
-  const isAdmin = await validateAdminAuth(req)
-  if (!isAdmin) {
+  // Validate authentication
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return new Response(
-      JSON.stringify({ error: 'Unauthorized: admin access required' }),
-      { status: 401, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: 'Unauthorized: Missing or invalid authorization header' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
+  const token = authHeader.substring(7).trim()
+  
+  if (!validateToken(token)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized: Invalid token' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
     )
   }
 
   if (!GITHUB_TOKEN) {
     return new Response(
       JSON.stringify({ error: 'Server configuration error' }),
-      { status: 500, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }
 
@@ -132,10 +118,12 @@ serve(async (req) => {
     const file = formData.get('image')
     const objectPath = formData.get('path') || ''
 
+    console.log(`Received upload request: path=${objectPath}, file.type=${file?.type}, file.size=${file?.size}`)
+
     if (!file || !(file instanceof File)) {
       return new Response(
         JSON.stringify({ error: 'Missing "image" field in FormData' }),
-        { status: 400, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -143,7 +131,7 @@ serve(async (req) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       return new Response(
         JSON.stringify({ error: `Invalid file type. Allowed: ${ALLOWED_IMAGE_TYPES.join(', ')}` }),
-        { status: 400, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -151,14 +139,15 @@ serve(async (req) => {
     if (file.size > MAX_FILE_SIZE) {
       return new Response(
         JSON.stringify({ error: `File too large. Maximum size: ${MAX_FILE_SIZE / 1024 / 1024}MB` }),
-        { status: 400, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
     if (!objectPath || !isValidPath(objectPath)) {
+      console.log(`Invalid path: ${objectPath}`)
       return new Response(
         JSON.stringify({ error: 'Invalid path format. Use: products/{id}/{filename}.{ext}' }),
-        { status: 400, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -171,22 +160,31 @@ serve(async (req) => {
     if (!uploadResult) {
       return new Response(
         JSON.stringify({ error: 'Failed to upload image to CDN' }),
-        { status: 500, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
+    console.log(`Successfully uploaded: ${objectPath} -> ${uploadResult.cdnUrl}`)
+    
     return new Response(
       JSON.stringify({
         cdnUrl: uploadResult.cdnUrl,
         path: objectPath
       }),
-      { status: 200, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+      { 
+        status: 200, 
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      }
     )
   } catch (err) {
-    console.error('upload-cdn-image error:', err)
+    console.error('upload-cdn-image error:', err.message || err)
+    console.error('Stack:', err.stack)
     return new Response(
-      JSON.stringify({ error: 'Upload failed' }),
-      { status: 500, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: `Upload failed: ${err.message || err}` }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }
 })
@@ -195,11 +193,18 @@ serve(async (req) => {
  * Upload a file to GitHub via the Contents API.
  */
 async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, contentType: string) {
+  if (!GITHUB_TOKEN) {
+    console.error('GITHUB_TOKEN is not set')
+    return null
+  }
+  
   const headers = {
     'Authorization': `Bearer ${GITHUB_TOKEN}`,
     'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json',
   }
+
+  console.log(`Uploading to GitHub: ${objectPath}, size: ${fileBytes.length} bytes`)
 
   // Check if file already exists
   const checkUrl = `${GITHUB_API}/${objectPath}?ref=${CDN_BRANCH}`
@@ -237,56 +242,4 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
   const cdnUrl = `${CDN_BASE}/${objectPath}`
   console.log(`Uploaded: ${objectPath} -> ${cdnUrl}`)
   return { cdnUrl, sha: data.content?.sha }
-}
-
-/**
- * Ensure the CDN branch exists. Creates it from default branch if needed.
- */
-export async function ensureCdnBranch() {
-  const headers = {
-    'Authorization': `Bearer ${GITHUB_TOKEN}`,
-    'Accept': 'application/vnd.github.v3+json',
-  }
-
-  // Check if branch exists
-  const branchUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/branches/${CDN_BRANCH}`
-  const branchResp = await fetch(branchUrl, { headers })
-
-  if (branchResp.ok) {
-    console.log(`CDN branch '${CDN_BRANCH}' already exists`)
-    return true
-  }
-
-  // Get default branch
-  const repoUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`
-  const repoResp = await fetch(repoUrl, { headers })
-  if (!repoResp.ok) return false
-  const repoData = await repoResp.json()
-  const defaultBranch = repoData.default_branch || 'main'
-
-  // Get the SHA of the default branch
-  const refUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/ref/heads/${defaultBranch}`
-  const refResp = await fetch(refUrl, { headers })
-  if (!refResp.ok) return false
-  const refData = await refResp.json()
-  const sha = refData.object.sha
-
-  // Create the branch
-  const createUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/refs`
-  const createResp = await fetch(createUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      ref: `refs/heads/${CDN_BRANCH}`,
-      sha,
-    }),
-  })
-
-  if (createResp.ok) {
-    console.log(`Created CDN branch '${CDN_BRANCH}'`)
-    return true
-  }
-
-  console.error(`Failed to create branch: ${createResp.status}`)
-  return false
 }

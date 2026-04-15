@@ -70,24 +70,24 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 1c. Insert third-party sync log (validates payload structure)
 CREATE OR REPLACE FUNCTION insert_third_party_sync_log(
-  p_third_party_name TEXT,
+  p_source TEXT,
   p_sync_type TEXT,
   p_status TEXT DEFAULT 'running',
-  p_items_synced INTEGER DEFAULT 0,
+  p_items_processed INTEGER DEFAULT 0,
   p_items_failed INTEGER DEFAULT 0,
-  p_error_message TEXT DEFAULT NULL,
-  p_request_payload JSONB DEFAULT NULL,
-  p_response_payload JSONB DEFAULT NULL
-) RETURNS UUID AS $$
+  p_errors JSONB DEFAULT NULL,
+  p_triggered_by TEXT DEFAULT NULL,
+  p_metadata JSONB DEFAULT '{}'
+) RETURNS BIGINT AS $$
 DECLARE
-  v_log_id UUID;
+  v_log_id BIGINT;
 BEGIN
   INSERT INTO third_party_sync_log (
-    third_party_name, sync_type, status, items_synced, items_failed,
-    error_message, request_payload, response_payload
+    source, sync_type, status, items_processed, items_failed,
+    errors, triggered_by, metadata
   ) VALUES (
-    p_third_party_name, p_sync_type, p_status, p_items_synced, p_items_failed,
-    p_error_message, p_request_payload, p_response_payload
+    p_source, p_sync_type, p_status, p_items_processed, p_items_failed,
+    p_errors, p_triggered_by, p_metadata
   ) RETURNING id INTO v_log_id;
 
   RETURN v_log_id;
@@ -96,17 +96,18 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 1d. Insert webhook event (validates payload structure)
 CREATE OR REPLACE FUNCTION insert_webhook_event(
-  p_webhook_type TEXT,
+  p_source TEXT,
   p_event_type TEXT,
-  p_payload JSONB DEFAULT NULL,
-  p_signature TEXT DEFAULT NULL,
-  p_status TEXT DEFAULT 'received'
-) RETURNS UUID AS $$
+  p_payload JSONB,
+  p_headers JSONB DEFAULT NULL,
+  p_status TEXT DEFAULT 'received',
+  p_idempotency_key TEXT DEFAULT NULL
+) RETURNS BIGINT AS $$
 DECLARE
-  v_event_id UUID;
+  v_event_id BIGINT;
 BEGIN
-  INSERT INTO webhook_events (webhook_type, event_type, payload, signature, status)
-  VALUES (p_webhook_type, p_event_type, p_payload, p_signature, p_status)
+  INSERT INTO webhook_events (source, event_type, payload, headers, status, idempotency_key)
+  VALUES (p_source, p_event_type, p_payload, p_headers, p_status, p_idempotency_key)
   RETURNING id INTO v_event_id;
 
   RETURN v_event_id;
@@ -116,15 +117,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 1e. Insert rate limit (validates key format)
 CREATE OR REPLACE FUNCTION insert_rate_limit_entry(
   p_key TEXT,
-  p_action TEXT DEFAULT NULL,
-  p_identifier TEXT DEFAULT NULL,
-  p_request_count INTEGER DEFAULT 1,
+  p_count INTEGER DEFAULT 1,
   p_window_start TIMESTAMPTZ DEFAULT NOW(),
-  p_window_end TIMESTAMPTZ DEFAULT NOW(),
+  p_window_duration_seconds INTEGER DEFAULT 60,
+  p_max_count INTEGER DEFAULT 100,
   p_is_blocked BOOLEAN DEFAULT false,
-  p_blocked_until TIMESTAMPTZ DEFAULT NULL,
-  p_block_reason TEXT DEFAULT NULL,
-  p_metadata JSONB DEFAULT '{}'
+  p_updated_at TIMESTAMPTZ DEFAULT NOW()
 ) RETURNS BIGINT AS $$
 DECLARE
   v_id BIGINT;
@@ -135,20 +133,16 @@ BEGIN
   END IF;
 
   INSERT INTO rate_limits (
-    identifier, action, request_count, window_start, window_end,
-    is_blocked, blocked_until, block_reason, metadata
+    key, count, window_start, window_duration_seconds, max_count,
+    is_blocked, updated_at
   ) VALUES (
-    COALESCE(p_identifier, p_key), p_action, p_request_count,
-    p_window_start, p_window_end, p_is_blocked, p_blocked_until,
-    p_block_reason, p_metadata
-  ) ON CONFLICT (identifier, action) DO UPDATE
+    p_key, p_count, p_window_start, p_window_duration_seconds, p_max_count,
+    p_is_blocked, p_updated_at
+  )
+  ON CONFLICT (key) DO UPDATE
   SET
-    request_count = rate_limits.request_count + p_request_count,
-    window_end = p_window_end,
-    is_blocked = p_is_blocked,
-    blocked_until = p_blocked_until,
-    block_reason = p_block_reason,
-    metadata = p_metadata
+    count = rate_limits.count + p_count,
+    updated_at = p_updated_at
   RETURNING id INTO v_id;
 
   RETURN v_id;
