@@ -967,18 +967,7 @@ class GitHubCdnUploader:
 
             # Skip grey/empty images for t-shirts
             if is_tshirt:
-                if idx == 0 and is_likely_tshirt_placeholder(img_bytes):
-                    logger.info(
-                        f"Skipping t-shirt placeholder image (index 0) for product {pid}: {url}"
-                    )
-                    continue
-                elif is_grey_or_empty_image(img_bytes):
-                    logger.info(
-                        f"Skipping grey/empty image for t-shirt product {pid} (index {idx}): {url}"
-                    )
-                    continue
-
-            content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
+                content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"products/{pid}/{idx:03d}_image{ext}"
 

@@ -316,16 +316,19 @@ DROP POLICY IF EXISTS "Product mappings are viewable by everyone" ON third_party
 -- - cep_state_mapping: anon_read (USING true is acceptable - public shipping data)
 -- - third_party_product_mapping: anon_read (USING true is acceptable - public mapping data)
 -- Re-create with explicit TO anon for clarity
+DROP POLICY IF EXISTS "option_values_anon_read" ON product_option_values;
 CREATE POLICY "option_values_anon_read"
   ON product_option_values FOR SELECT
   TO anon
   USING (true);
 
+DROP POLICY IF EXISTS "cep_mapping_anon_read" ON cep_state_mapping;
 CREATE POLICY "cep_mapping_anon_read"
   ON cep_state_mapping FOR SELECT
   TO anon
   USING (true);
 
+DROP POLICY IF EXISTS "product_mapping_anon_read" ON third_party_product_mapping;
 CREATE POLICY "product_mapping_anon_read"
   ON third_party_product_mapping FOR SELECT
   TO anon
