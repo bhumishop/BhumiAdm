@@ -214,88 +214,6 @@ def strip_imgix_transforms(url: str) -> str:
     return urlunparse(parsed._replace(query=""))
 
 
-def is_grey_or_empty_image(img_bytes: bytes, threshold_grey: float = 0.98) -> bool:
-    """Check if an image is essentially grey/empty/placeholder."""
-    if not HAS_PIL:
-        return False
-    try:
-        img = Image.open(io.BytesIO(img_bytes))
-        img = img.convert("RGB")
-        width, height = img.size
-        total_pixels = width * height
-        if total_pixels == 0:
-            return True
-        if width < 100 or height < 100:
-            return True
-        pixels = list(img.getdata())
-        r_vals = [p[0] for p in pixels]
-        g_vals = [p[1] for p in pixels]
-        b_vals = [p[2] for p in pixels]
-        avg_r = sum(r_vals) / total_pixels
-        avg_g = sum(g_vals) / total_pixels
-        avg_b = sum(b_vals) / total_pixels
-        channel_diff = abs(avg_r - avg_g) + abs(avg_g - avg_b) + abs(avg_r - avg_b)
-        if channel_diff < 25:
-            var_r = sum((x - avg_r) ** 2 for x in r_vals) / total_pixels
-            var_g = sum((x - avg_g) ** 2 for x in g_vals) / total_pixels
-            var_b = sum((x - avg_b) ** 2 for x in b_vals) / total_pixels
-            avg_variance = (var_r + var_g + var_b) / 3
-            if avg_variance < 300:
-                return True
-        hsv_img = img.convert("HSV")
-        hsv_pixels = list(hsv_img.getdata())
-        s_vals = [p[1] for p in hsv_pixels]
-        avg_saturation = sum(s_vals) / total_pixels
-        if avg_saturation < 15:
-            return True
-        if total_pixels > 1000:
-            step = max(1, total_pixels // 1000)
-            sampled = pixels[::step][:1000]
-        else:
-            sampled = pixels
-        unique_colors = set()
-        for p in sampled:
-            quantized = (p[0] // 8, p[1] // 8, p[2] // 8)
-            unique_colors.add(quantized)
-        if len(unique_colors) < 5:
-            return True
-        return False
-    except Exception as e:
-        logger.warning(f"Error checking if image is grey: {e}")
-        return False
-
-
-def is_likely_tshirt_placeholder(img_bytes: bytes) -> bool:
-    """Stricter check specifically for t-shirt 000 placeholder images."""
-    if not HAS_PIL:
-        return False
-    try:
-        img = Image.open(io.BytesIO(img_bytes))
-        img = img.convert("RGB")
-        width, height = img.size
-        total_pixels = width * height
-        if total_pixels == 0:
-            return True
-        pixels = list(img.getdata())
-        avg_r = sum(p[0] for p in pixels) / total_pixels
-        avg_g = sum(p[1] for p in pixels) / total_pixels
-        avg_b = sum(p[2] for p in pixels) / total_pixels
-        is_grey_range = (
-            180 <= avg_r <= 220 and 180 <= avg_g <= 220 and 180 <= avg_b <= 220
-        )
-        channel_diff = abs(avg_r - avg_g) + abs(avg_g - avg_b) + abs(avg_r - avg_b)
-        var_r = sum((p[0] - avg_r) ** 2 for p in pixels) / total_pixels
-        var_g = sum((p[1] - avg_g) ** 2 for p in pixels) / total_pixels
-        var_b = sum((p[2] - avg_b) ** 2 for p in pixels) / total_pixels
-        avg_variance = (var_r + var_g + var_b) / 3
-        if is_grey_range and channel_diff < 20 and avg_variance < 500:
-            return True
-        return is_grey_or_empty_image(img_bytes)
-    except Exception as e:
-        logger.warning(f"Error checking t-shirt placeholder: {e}")
-        return False
-
-
 def make_slug(name: str, existing: set) -> str:
     """Generate a URL-safe slug, appending a counter to avoid collisions."""
     base = re.sub(r"[^a-z0-9\s-]", "", name.lower())
@@ -1034,7 +952,6 @@ class GitHubCdnUploader:
     def upload_product_images(self, product, client) -> dict:
         """Download and upload all images for one product."""
         pid = product.third_party_product_id or product.slug or "unknown"
-        is_tshirt = product.category in ("camiseta", "camisetas")
 
         cdn_urls: list[str] = []
         webp_urls: list[str] = []
@@ -1043,18 +960,6 @@ class GitHubCdnUploader:
             img_bytes = client.download_bytes(url)
             if not img_bytes:
                 logger.debug(f"[{pid}] Could not download image #{idx}: {url}")
-                continue
-
-            # placeholder / grey-image filter
-            if is_tshirt and is_likely_tshirt_placeholder(img_bytes):
-                logger.info(
-                    f"[{pid}] Skipping grey t-shirt placeholder image #{idx}"
-                )
-                continue
-            elif not is_tshirt and is_grey_or_empty_image(img_bytes):
-                logger.info(
-                    f"[{pid}] Skipping grey/empty image #{idx}"
-                )
                 continue
 
             content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
