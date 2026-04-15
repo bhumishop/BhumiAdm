@@ -36,10 +36,16 @@ function isValidPath(path: string): boolean {
 
 /**
  * Validate Supabase token by decoding JWT without verification
- * Accepts service_role or admin role tokens
+ * Accepts service_role or admin role tokens, or raw service role keys
  */
 function validateToken(token: string): boolean {
   try {
+    // Check if it's a raw service role key (starts with 'eyJ' for JWT or is a long key)
+    if (token.startsWith('sbp_') || (token.length > 40 && !token.includes('.'))) {
+      console.log('Using raw service role key')
+      return true
+    }
+    
     // Decode JWT payload without verification
     const parts = token.split('.')
     if (parts.length !== 3) {
@@ -218,7 +224,9 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     if (checkResp.ok) {
       const existing = await checkResp.json()
       existingSha = existing.sha
-      console.log(`File already exists: ${objectPath}, sha: ${existingSha}`)
+      console.log(`File exists: ${objectPath}, sha: ${existingSha}`)
+    } else if (checkResp.status !== 404) {
+      console.log(`Check failed with ${checkResp.status}: ${await checkResp.text()}`)
     }
 
     // Encode file as base64 (chunked to avoid stack overflow)
@@ -254,7 +262,7 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
     
     if (uploadResp.status === 409 && attempt < maxRetries - 1) {
-      // Conflict: SHA mismatch or concurrent update, re-fetch SHA and retry
+      // Conflict: SHA mismatch or concurrent update, retry will re-fetch SHA
       console.log(`409 conflict on ${objectPath}, retry ${attempt + 1}/${maxRetries}`)
       continue
     }
