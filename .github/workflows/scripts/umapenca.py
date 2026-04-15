@@ -849,8 +849,15 @@ class GitHubCdnUploader:
 
         logger.info(f"Committing and pushing {self._uploaded} images to CDN branch...")
 
-        # Configure git credentials
-        repo_url = f"https://{self.token}@github.com/{self.owner}/{self.repo}.git"
+        # Configure git user identity (required for commits in CI)
+        subprocess.run(
+            ["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"],
+            capture_output=True, text=True, timeout=10
+        )
+        subprocess.run(
+            ["git", "config", "user.name", "github-actions[bot]"],
+            capture_output=True, text=True, timeout=10
+        )
 
         # Add all new files
         result = subprocess.run(
@@ -1076,7 +1083,6 @@ class SupabaseSync:
             "third_party_source": product.third_party_source,
             "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
             "third_party_raw_data": product.third_party_raw_data,
-            "product_url": product.third_party_product_url,
             "metadata": {
                 **(product.metadata or {}),
                 "image_index": image_index,
