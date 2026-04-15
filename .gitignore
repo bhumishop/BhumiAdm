@@ -1,6 +1,7 @@
 *lock*
 .env*
-node_modules
+node_modules/
 *.log
-dist
+dist/
+*env*
 
