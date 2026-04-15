@@ -1257,7 +1257,7 @@ class SupabaseSync:
             "subcollection_id":   subcollection_id,
             "price":              book.price,
             "compare_at_price":   book.compare_at_price,
-            "stock_type":         "dropshipping",
+            "stock_type":         "third_party",
             "fulfillment_type":   "uiclap",
             "artist":             book.artist,
             "brand":              book.brand,

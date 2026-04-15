@@ -1059,7 +1059,7 @@ class SupabaseSync:
             "subcollection_id":   subcollection_id,
             "price":              product.price,
             "compare_at_price":   product.compare_at_price,
-            "stock_type":         "dropshipping",
+            "stock_type":         "third_party",
             "fulfillment_type":   "uma_penca",
             "artist":             product.artist,
             "brand":              product.brand,
