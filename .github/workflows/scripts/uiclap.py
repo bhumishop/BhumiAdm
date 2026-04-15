@@ -318,6 +318,7 @@ class Client:
                 resp = self.session.get(
                     url, timeout=30, allow_redirects=True, verify=verify
                 )
+                resp.encoding = "utf-8"
                 if resp.status_code == 429:
                     wait = int(
                         resp.headers.get("Retry-After", RETRY_DELAY * (attempt + 1))
