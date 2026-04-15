@@ -1065,28 +1065,46 @@ class GitHubCdnUploader:
         return self._upload_via_edge_function(file_bytes, object_path, content_type)
 
     def _upload_direct(
-        self, file_bytes: bytes, object_path: str, content_type: str
+        self, file_bytes: bytes, object_path: str, content_type: str, max_retries: int = 3
     ) -> Optional[str]:
         """Upload directly via GitHub Contents API."""
         content_b64 = base64.b64encode(file_bytes).decode("utf-8")
-        resp = requests.put(
-            f"{self.base_url}/{object_path}",
-            headers=self.headers,
-            json={
-                "message": f"chore: add product image {object_path}",
+        
+        for attempt in range(max_retries):
+            # Get existing SHA if file already exists
+            existing_sha = self._get_file_sha(object_path)
+            
+            payload = {
+                "message": f"chore: {'update' if existing_sha else 'add'} product image {object_path}",
                 "content": content_b64,
                 "branch": self.branch,
-            },
-            timeout=60,
-        )
-        if resp.ok:
-            self.uploaded += 1
-            return self._make_cdn_url(object_path)
-        else:
+            }
+            if existing_sha:
+                payload["sha"] = existing_sha
+            
+            resp = requests.put(
+                f"{self.base_url}/{object_path}",
+                headers=self.headers,
+                json=payload,
+                timeout=60,
+            )
+            if resp.ok:
+                self.uploaded += 1
+                return self._make_cdn_url(object_path)
+            
+            # Handle 409 conflict with retry
+            if resp.status_code == 409 and attempt < max_retries - 1:
+                logger.warning(f"409 conflict on {object_path}, retry {attempt + 1}/{max_retries}")
+                time.sleep(1)
+                continue
+            
             logger.warning(
                 f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}"
             )
             return None
+        
+        logger.error(f"Exhausted retries for {object_path}")
+        return None
 
     def _upload_via_edge_function(
         self, file_bytes: bytes, object_path: str, content_type: str
