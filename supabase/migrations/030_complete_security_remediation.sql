@@ -240,42 +240,49 @@ DROP POLICY IF EXISTS "Anyone can log product analytics" ON product_analytics;
 
 -- Recreate admin-managed policies for direct inserts (edge functions via service_role bypass RLS)
 -- These are for authenticated admins who need to manage data directly
+DROP POLICY IF EXISTS "order_items_admin_manage" ON order_items;
 CREATE POLICY "order_items_admin_manage"
   ON order_items FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "order_status_history_admin_manage" ON order_status_history;
 CREATE POLICY "order_status_history_admin_manage"
   ON order_status_history FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "third_party_sync_log_admin_manage" ON third_party_sync_log;
 CREATE POLICY "third_party_sync_log_admin_manage"
   ON third_party_sync_log FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "webhook_events_admin_manage" ON webhook_events;
 CREATE POLICY "webhook_events_admin_manage"
   ON webhook_events FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "rate_limits_admin_manage" ON rate_limits;
 CREATE POLICY "rate_limits_admin_manage"
   ON rate_limits FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "security_audit_log_admin_manage" ON security_audit_log;
 CREATE POLICY "security_audit_log_admin_manage"
   ON security_audit_log FOR ALL
   TO authenticated
   USING (is_admin())
   WITH CHECK (is_admin());
 
+DROP POLICY IF EXISTS "product_analytics_admin_manage" ON product_analytics;
 CREATE POLICY "product_analytics_admin_manage"
   ON product_analytics FOR ALL
   TO authenticated

@@ -26,10 +26,8 @@ on:
         required: false
         type: boolean
         default: true
-  # push:
-  #   branches: [master, main]
-  #   # Run on EVERY push to master/main (no paths filter)
-  #   # This ensures products are re-scraped and synced on every merge/deploy
+  push:
+    branches: [master, main]
 
 # Permissions needed: read repo contents, write to cdn branch
 permissions:
