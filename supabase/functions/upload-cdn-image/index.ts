@@ -207,14 +207,24 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
   console.log(`Uploading to GitHub: ${objectPath}, size: ${fileBytes.length} bytes`)
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
+    // URL-encode the path for GitHub API
+    const encodedPath = objectPath.split('/').map(encodeURIComponent).join('/')
+    
     // Check if file already exists
-    const checkUrl = `${GITHUB_API}/${objectPath}?ref=${CDN_BRANCH}`
+    const checkUrl = `${GITHUB_API}/${encodedPath}?ref=${CDN_BRANCH}`
     const checkResp = await fetch(checkUrl, { headers })
+    
     if (checkResp.ok) {
       const existing = await checkResp.json()
       const sha = existing.sha
       console.log(`File already exists: ${objectPath}, sha: ${sha}`)
       return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha }
+    }
+    
+    // If check failed with something other than 404, log it
+    if (!checkResp.ok && checkResp.status !== 404) {
+      const checkErrorText = await checkResp.text()
+      console.log(`Check failed with ${checkResp.status}: ${checkErrorText}`)
     }
 
     // Encode file as base64 (chunked to avoid stack overflow)
@@ -227,7 +237,7 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     contentB64 = btoa(contentB64)
 
     // Upload via Contents API
-    const uploadUrl = `${GITHUB_API}/${objectPath}`
+    const uploadUrl = `${GITHUB_API}/${encodedPath}`
     const uploadResp = await fetch(uploadUrl, {
       method: 'PUT',
       headers,
@@ -246,13 +256,15 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     }
 
     const errorText = await uploadResp.text()
+    console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
+    
     if (uploadResp.status === 409 && attempt < maxRetries - 1) {
       // Conflict: another process updated the branch, retry
       console.log(`409 conflict on ${objectPath}, retry ${attempt + 1}/${maxRetries}`)
       continue
     }
-
-    console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
+    
+    // For non-retryable errors, return null immediately
     return null
   }
 
