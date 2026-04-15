@@ -12,7 +12,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 serve(async (req) => {
   const url = new URL(req.url)
   const method = req.method
-  const path = url.pathname.split('/').filter(Boolean)
+  const pathParts = url.pathname.split('/').filter(Boolean)
+  // Strip function name from path
+  const path = pathParts.length >= 1 ? pathParts.slice(1) : []
 
   try {
     // ============================================

@@ -83,12 +83,14 @@ import requests
 
 try:
     from PIL import Image
+
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
 
 try:
     from tqdm import tqdm
+
     HAS_TQDM = True
 except ImportError:
     HAS_TQDM = False
@@ -107,20 +109,20 @@ logger = logging.getLogger(__name__)
 # Configuration
 # ─────────────────────────────────────────────
 
-UICLAP_BIO_BASE   = "https://uiclap.bio"
+UICLAP_BIO_BASE = "https://uiclap.bio"
 UICLAP_STORE_BASE = "https://loja.uiclap.com"
-UICLAP_IMG_BASE   = "https://images.uiclap.com"
+UICLAP_IMG_BASE = "https://images.uiclap.com"
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 GITHUB_OWNER = os.environ.get("GITHUB_OWNER", "")
-GITHUB_REPO  = os.environ.get("GITHUB_REPO", "BhumiAdm")
-CDN_BRANCH   = os.environ.get("CDN_BRANCH", "cdn")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "BhumiAdm")
+CDN_BRANCH = os.environ.get("CDN_BRANCH", "cdn")
 
 REQUEST_DELAY = 0.8
-MAX_RETRIES   = 3
-RETRY_DELAY   = 4
+MAX_RETRIES = 3
+RETRY_DELAY = 4
 
 HEADERS = {
     "User-Agent": (
@@ -135,90 +137,95 @@ HEADERS = {
 # Data models
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class BookVariant:
     """Physical / digital / combo edition of the same title."""
-    format:           Optional[str]  = None      # "físico", "digital", "combo"
-    sku:              Optional[str]  = None
-    price:            float          = 0.0
+
+    format: Optional[str] = None  # "físico", "digital", "combo"
+    sku: Optional[str] = None
+    price: float = 0.0
     compare_at_price: Optional[float] = None
-    stock_quantity:   int            = 0
-    is_active:        bool           = True
-    url:              Optional[str]  = None
-    image_url:        Optional[str]  = None
-    pages:            Optional[int]  = None
-    weight_kg:        Optional[float] = None
-    isbn:             Optional[str]  = None
-    dimensions:       Optional[str]  = None
+    stock_quantity: int = 0
+    is_active: bool = True
+    url: Optional[str] = None
+    image_url: Optional[str] = None
+    pages: Optional[int] = None
+    weight_kg: Optional[float] = None
+    isbn: Optional[str] = None
+    dimensions: Optional[str] = None
+
 
 @dataclass
 class ScrapedBook:
     # Identity
-    name:                    str            = ""
-    slug:                    Optional[str]  = None
-    description:             Optional[str]  = None
-    short_description:       Optional[str]  = None
-    category:                Optional[str]  = "livros"
-    brand:                   str            = "UICLAP"
-    artist:                  Optional[str]  = None   # author name
-    author_slug:             Optional[str]  = None
-    info:                    Optional[str]  = None
+    name: str = ""
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    short_description: Optional[str] = None
+    category: Optional[str] = "livros"
+    brand: str = "UICLAP"
+    artist: Optional[str] = None  # author name
+    author_slug: Optional[str] = None
+    info: Optional[str] = None
 
     # Pricing — lowest variant price
-    price:                   float          = 0.0
-    compare_at_price:        Optional[float] = None
+    price: float = 0.0
+    compare_at_price: Optional[float] = None
 
     # Media
-    image:                   Optional[str]  = None
-    images:                  list           = field(default_factory=list)
-    author_image:            Optional[str]  = None
+    image: Optional[str] = None
+    images: list = field(default_factory=list)
+    author_image: Optional[str] = None
 
     # Variants (physical / digital / combo — each has its own SKU and price)
-    variants:                list           = field(default_factory=list)  # list[BookVariant]
+    variants: list = field(default_factory=list)  # list[BookVariant]
 
     # Flat metadata
-    sizes:                   list           = field(default_factory=list)
-    colors:                  list           = field(default_factory=list)
-    materials:               list           = field(default_factory=list)
-    tags:                    list           = field(default_factory=list)
-    pages:                   Optional[int]  = None
-    isbn:                    Optional[str]  = None
-    dimensions:              Optional[str]  = None
+    sizes: list = field(default_factory=list)
+    colors: list = field(default_factory=list)
+    materials: list = field(default_factory=list)
+    tags: list = field(default_factory=list)
+    pages: Optional[int] = None
+    isbn: Optional[str] = None
+    dimensions: Optional[str] = None
 
     # Physical
-    weight:                  float          = 0.300
+    weight: float = 0.300
 
     # Status
-    is_active:               bool           = True
+    is_active: bool = True
 
     # Third-party tracking
-    third_party_product_id:  Optional[str]  = None   # primary SKU
-    third_party_source:      str            = "uiclap"
-    third_party_product_url: Optional[str]  = None
-    third_party_raw_data:    Optional[dict] = None
+    third_party_product_id: Optional[str] = None  # primary SKU
+    third_party_source: str = "uiclap"
+    third_party_product_url: Optional[str] = None
+    third_party_raw_data: Optional[dict] = None
 
     # CDN storage
-    cdn_image_urls:          list           = field(default_factory=list)
-    cdn_webp_urls:           list           = field(default_factory=list)
-    local_image_paths:       list           = field(default_factory=list)
+    cdn_image_urls: list = field(default_factory=list)
+    cdn_webp_urls: list = field(default_factory=list)
+    local_image_paths: list = field(default_factory=list)
 
-    metadata:                dict           = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict)
+
 
 @dataclass
 class SyncResult:
-    processed:         int   = 0
-    inserted:          int   = 0
-    updated:           int   = 0
-    failed:            int   = 0
-    images_uploaded:   int   = 0
-    webp_generated:    int   = 0
-    errors:            list  = field(default_factory=list)
-    duration_seconds:  float = 0.0
+    processed: int = 0
+    inserted: int = 0
+    updated: int = 0
+    failed: int = 0
+    images_uploaded: int = 0
+    webp_generated: int = 0
+    errors: list = field(default_factory=list)
+    duration_seconds: float = 0.0
 
 
 # ─────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────
+
 
 def normalize_sku(sku) -> str:
     """Normalize SKU: strip 'ua' prefix, return numeric string."""
@@ -265,12 +272,12 @@ def convert_to_webp(img_bytes: bytes, quality: int = 80) -> Optional[bytes]:
         return None
     try:
         img = Image.open(io.BytesIO(img_bytes))
-        if img.mode in ('RGBA', 'LA', 'P'):
-            img = img.convert('RGBA')
+        if img.mode in ("RGBA", "LA", "P"):
+            img = img.convert("RGBA")
         else:
-            img = img.convert('RGB')
+            img = img.convert("RGB")
         output = io.BytesIO()
-        img.save(output, format='WEBP', quality=quality)
+        img.save(output, format="WEBP", quality=quality)
         return output.getvalue()
     except Exception as e:
         logger.warning(f"Failed to convert to WebP: {e}")
@@ -281,14 +288,18 @@ def convert_to_webp(img_bytes: bytes, quality: int = 80) -> Optional[bytes]:
 # HTTP client
 # ─────────────────────────────────────────────
 
+
 class Client:
     def __init__(self, delay: float = REQUEST_DELAY):
         self.delay = delay
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         # images.uiclap.com has a cert mismatch — disable verify for that host
-        self.session.mount("https://images.uiclap.com", requests.adapters.HTTPAdapter(max_retries=3))
+        self.session.mount(
+            "https://images.uiclap.com", requests.adapters.HTTPAdapter(max_retries=3)
+        )
         import urllib3
+
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self._last = 0.0
 
@@ -304,9 +315,13 @@ class Client:
                 self._wait()
                 # Disable verify for images.uiclap.com
                 verify = "images.uiclap.com" not in url
-                resp = self.session.get(url, timeout=30, allow_redirects=True, verify=verify)
+                resp = self.session.get(
+                    url, timeout=30, allow_redirects=True, verify=verify
+                )
                 if resp.status_code == 429:
-                    wait = int(resp.headers.get("Retry-After", RETRY_DELAY * (attempt + 1)))
+                    wait = int(
+                        resp.headers.get("Retry-After", RETRY_DELAY * (attempt + 1))
+                    )
                     logger.warning(f"Rate-limited, waiting {wait}s…")
                     time.sleep(wait)
                     continue
@@ -316,7 +331,9 @@ class Client:
                 resp.raise_for_status()
                 return resp
             except requests.RequestException as exc:
-                logger.warning(f"Request failed (attempt {attempt+1}/{MAX_RETRIES}): {exc}")
+                logger.warning(
+                    f"Request failed (attempt {attempt + 1}/{MAX_RETRIES}): {exc}"
+                )
                 if attempt < MAX_RETRIES - 1:
                     time.sleep(RETRY_DELAY * (attempt + 1))
         logger.error(f"Gave up after {MAX_RETRIES} retries: {url}")
@@ -326,7 +343,9 @@ class Client:
         try:
             self._wait()
             verify = "images.uiclap.com" not in url
-            resp = self.session.get(url, timeout=60, stream=True, allow_redirects=True, verify=verify)
+            resp = self.session.get(
+                url, timeout=60, stream=True, allow_redirects=True, verify=verify
+            )
             resp.raise_for_status()
             return resp.content
         except Exception as exc:
@@ -337,6 +356,7 @@ class Client:
 # ─────────────────────────────────────────────
 # JSON-LD extractor
 # ─────────────────────────────────────────────
+
 
 class JsonLdExtractor:
     """
@@ -353,13 +373,13 @@ class JsonLdExtractor:
     """
 
     # Matches <script type="application/ld+json">...</script>
-    JSONLD_RE  = re.compile(
+    JSONLD_RE = re.compile(
         r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
         re.DOTALL | re.IGNORECASE,
     )
     # Matches window.__NEXT_DATA__ = {...}
     NEXT_DATA_RE = re.compile(
-        r'window\.__NEXT_DATA__\s*=\s*(\{.*?\})\s*(?:;|</script>)',
+        r"window\.__NEXT_DATA__\s*=\s*(\{.*?\})\s*(?:;|</script>)",
         re.DOTALL,
     )
 
@@ -382,7 +402,7 @@ class JsonLdExtractor:
 
         author_slug = bio_url.rstrip("/").split("/")[-1]
         all_products = []
-        author_info  = {}
+        author_info = {}
 
         for block in self._iter_jsonld(resp.text):
             graph = block.get("@graph", [])
@@ -396,39 +416,39 @@ class JsonLdExtractor:
                 t = node.get("@type", "")
                 if t == "Person":
                     author_info = {
-                        "name":     node.get("name", ""),
-                        "image":    node.get("image", ""),
+                        "name": node.get("name", ""),
+                        "image": node.get("image", ""),
                         "jobTitle": node.get("jobTitle", ""),
-                        "url":      node.get("url", bio_url),
-                        "sameAs":   node.get("sameAs", []),
+                        "url": node.get("url", bio_url),
+                        "sameAs": node.get("sameAs", []),
                     }
                 elif t == "Product":
                     offers = node.get("offers", {}) or {}
                     sku_raw = node.get("sku", "")
-                    sku     = normalize_sku(sku_raw) if sku_raw else None
+                    sku = normalize_sku(sku_raw) if sku_raw else None
 
                     desc = node.get("description", "")
                     if desc in ("null", "None", None):
                         desc = None
 
                     p = {
-                        "sku":         sku,
-                        "name":        node.get("name", "").strip(),
+                        "sku": sku,
+                        "name": node.get("name", "").strip(),
                         "description": desc,
-                        "image":       cover_url(sku) if sku else node.get("image", ""),
-                        "price":       float(offers.get("price", 0) or 0),
-                        "currency":    offers.get("priceCurrency", "BRL"),
-                        "url":         offers.get("url") or (store_url(sku) if sku else ""),
-                        "brand":       node.get("brand", "UICLAP"),
-                        "raw_ld":      node,
+                        "image": cover_url(sku) if sku else node.get("image", ""),
+                        "price": float(offers.get("price", 0) or 0),
+                        "currency": offers.get("priceCurrency", "BRL"),
+                        "url": offers.get("url") or (store_url(sku) if sku else ""),
+                        "brand": node.get("brand", "UICLAP"),
+                        "raw_ld": node,
                     }
                     all_products.append(p)
 
         return {
-            "author":       author_info,
-            "author_slug":  author_slug,
-            "products":     all_products,
-            "source_url":   bio_url,
+            "author": author_info,
+            "author_slug": author_slug,
+            "products": all_products,
+            "source_url": bio_url,
         }
 
     # ── Detail page ───────────────────────────────────────────
@@ -439,22 +459,22 @@ class JsonLdExtractor:
           pages, weight, isbn, dimensions, synopsis, formats (variants),
           category, full description, all image URLs.
         """
-        url  = store_url(sku)
+        url = store_url(sku)
         resp = self.client.get(url)
         if not resp:
             return {}
 
         detail = {
-            "sku":        sku,
-            "url":        url,
-            "variants":   [],  # list of {sku, format, price, url}
-            "pages":      None,
-            "weight_kg":  None,
-            "isbn":       None,
+            "sku": sku,
+            "url": url,
+            "variants": [],  # list of {sku, format, price, url}
+            "pages": None,
+            "weight_kg": None,
+            "isbn": None,
             "dimensions": None,
-            "synopsis":   None,
-            "category":   None,
-            "images":     [cover_url(sku)],  # always include canonical cover
+            "synopsis": None,
+            "category": None,
+            "images": [cover_url(sku)],  # always include canonical cover
         }
 
         # ── JSON-LD blocks ────────────────────────────────────
@@ -496,7 +516,8 @@ class JsonLdExtractor:
             # Also try <script id="__NEXT_DATA__">
             tag_m = re.search(
                 r'<script[^>]+id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>',
-                html, re.DOTALL | re.IGNORECASE
+                html,
+                re.DOTALL | re.IGNORECASE,
             )
             if tag_m:
                 try:
@@ -525,23 +546,25 @@ class JsonLdExtractor:
 
         for offer in offer_list:
             sku_raw = offer.get("sku") or node.get("sku")
-            sku     = normalize_sku(sku_raw) if sku_raw else detail["sku"]
-            price   = float(offer.get("price", 0) or 0)
-            o_url   = offer.get("url", store_url(sku))
-            fmt     = detect_format(o_url, sku)
-            avail   = offer.get("availability", "")
-            active  = "OutOfStock" not in avail
+            sku = normalize_sku(sku_raw) if sku_raw else detail["sku"]
+            price = float(offer.get("price", 0) or 0)
+            o_url = offer.get("url", store_url(sku))
+            fmt = detect_format(o_url, sku)
+            avail = offer.get("availability", "")
+            active = "OutOfStock" not in avail
 
             # Avoid duplicates
             existing_skus = {v["sku"] for v in detail["variants"]}
             if sku not in existing_skus:
-                detail["variants"].append({
-                    "sku":       sku,
-                    "format":    fmt,
-                    "price":     price,
-                    "url":       o_url,
-                    "is_active": active,
-                })
+                detail["variants"].append(
+                    {
+                        "sku": sku,
+                        "format": fmt,
+                        "price": price,
+                        "url": o_url,
+                        "is_active": active,
+                    }
+                )
 
         # Synopsis / description
         desc = node.get("description", "")
@@ -599,7 +622,9 @@ class JsonLdExtractor:
 
         if not book:
             # Flatten search: look for any dict with 'paginas' or 'numero_paginas'
-            book = self._find_nested(next_data, ("paginas", "numero_paginas", "sinopse", "peso"))
+            book = self._find_nested(
+                next_data, ("paginas", "numero_paginas", "sinopse", "peso")
+            )
 
         if not book:
             return
@@ -616,7 +641,7 @@ class JsonLdExtractor:
         weight = book.get("peso") or book.get("weight") or book.get("peso_kg")
         if weight and not detail["weight_kg"]:
             try:
-                detail["weight_kg"] = float(str(weight).replace("kg","").strip())
+                detail["weight_kg"] = float(str(weight).replace("kg", "").strip())
             except (ValueError, TypeError):
                 pass
 
@@ -631,7 +656,9 @@ class JsonLdExtractor:
             detail["dimensions"] = str(dims)
 
         # Synopsis
-        sinopse = book.get("sinopse") or book.get("descricao") or book.get("description")
+        sinopse = (
+            book.get("sinopse") or book.get("descricao") or book.get("description")
+        )
         if sinopse and not detail.get("synopsis"):
             detail["synopsis"] = sinopse
 
@@ -654,19 +681,21 @@ class JsonLdExtractor:
             sku_raw = ed.get("sku") or ed.get("codigo") or ed.get("id")
             if not sku_raw:
                 continue
-            sku   = normalize_sku(sku_raw)
+            sku = normalize_sku(sku_raw)
             price = float(ed.get("preco") or ed.get("price") or 0)
-            fmt   = ed.get("formato") or ed.get("tipo") or detect_format("", sku)
+            fmt = ed.get("formato") or ed.get("tipo") or detect_format("", sku)
             o_url = ed.get("url") or store_url(sku)
             existing_skus = {v["sku"] for v in detail["variants"]}
             if sku not in existing_skus:
-                detail["variants"].append({
-                    "sku":       sku,
-                    "format":    fmt,
-                    "price":     price,
-                    "url":       o_url,
-                    "is_active": True,
-                })
+                detail["variants"].append(
+                    {
+                        "sku": sku,
+                        "format": fmt,
+                        "price": price,
+                        "url": o_url,
+                        "is_active": True,
+                    }
+                )
 
     def _enrich_from_html(self, detail: dict, html: str):
         """
@@ -675,7 +704,7 @@ class JsonLdExtractor:
         """
         # Pages: <span>NNN páginas</span> or Páginas: NNN
         if not detail["pages"]:
-            m = re.search(r'(\d+)\s*p[áa]ginas?', html, re.IGNORECASE)
+            m = re.search(r"(\d+)\s*p[áa]ginas?", html, re.IGNORECASE)
             if m:
                 try:
                     detail["pages"] = int(m.group(1))
@@ -684,13 +713,13 @@ class JsonLdExtractor:
 
         # ISBN
         if not detail["isbn"]:
-            m = re.search(r'ISBN[:\s]*([0-9\-]{10,17})', html, re.IGNORECASE)
+            m = re.search(r"ISBN[:\s]*([0-9\-]{10,17})", html, re.IGNORECASE)
             if m:
                 detail["isbn"] = m.group(1).strip()
 
         # Weight (common in table rows)
         if not detail["weight_kg"]:
-            m = re.search(r'[Pp]eso[:\s]*([\d,.]+)\s*kg?', html, re.IGNORECASE)
+            m = re.search(r"[Pp]eso[:\s]*([\d,.]+)\s*kg?", html, re.IGNORECASE)
             if m:
                 try:
                     detail["weight_kg"] = float(m.group(1).replace(",", "."))
@@ -699,14 +728,17 @@ class JsonLdExtractor:
 
         # Synopsis from <meta name="description">
         if not detail.get("synopsis"):
-            m = re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']',
-                          html, re.IGNORECASE | re.DOTALL)
+            m = re.search(
+                r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']',
+                html,
+                re.IGNORECASE | re.DOTALL,
+            )
             if m:
                 detail["synopsis"] = m.group(1).strip()
 
         # Dimensions
         if not detail["dimensions"]:
-            m = re.search(r'(\d+)\s*[xXxX×]\s*(\d+)\s*(?:[xXxX×]\s*(\d+))?\s*cm', html)
+            m = re.search(r"(\d+)\s*[xXxX×]\s*(\d+)\s*(?:[xXxX×]\s*(\d+))?\s*cm", html)
             if m:
                 parts = [g for g in m.groups() if g]
                 detail["dimensions"] = " × ".join(parts) + " cm"
@@ -734,10 +766,11 @@ class JsonLdExtractor:
 # Raw data → ScrapedBook converter
 # ─────────────────────────────────────────────
 
+
 class BookConverter:
     def __init__(self, existing_slugs: set, author_slug: str = ""):
         self.existing_slugs = existing_slugs
-        self.author_slug    = author_slug
+        self.author_slug = author_slug
 
     def from_bio_product(
         self,
@@ -748,22 +781,21 @@ class BookConverter:
         b = ScrapedBook()
 
         # ── Identity ──────────────────────────────────────────
-        b.name        = product.get("name", "").strip()
-        b.artist      = author_info.get("name", "")
+        b.name = product.get("name", "").strip()
+        b.artist = author_info.get("name", "")
         b.author_slug = self.author_slug
-        b.brand       = "UICLAP"
-        b.category    = "livros"
+        b.brand = "UICLAP"
+        b.category = "livros"
 
         primary_sku = product.get("sku") or ""
-        b.third_party_product_id  = primary_sku
-        b.third_party_source      = "uiclap"
-        b.third_party_product_url = product.get("url") or (store_url(primary_sku) if primary_sku else None)
+        b.third_party_product_id = primary_sku
+        b.third_party_source = "uiclap"
+        b.third_party_product_url = product.get("url") or (
+            store_url(primary_sku) if primary_sku else None
+        )
 
         # ── Description ───────────────────────────────────────
-        synopsis = (
-            (detail or {}).get("synopsis")
-            or product.get("description")
-        )
+        synopsis = (detail or {}).get("synopsis") or product.get("description")
         if synopsis and synopsis not in ("null", "None"):
             b.description = synopsis
         else:
@@ -775,15 +807,17 @@ class BookConverter:
         b.price = float(base_price) if base_price else 0.0
 
         # ── Images ────────────────────────────────────────────
-        cover = product.get("image") or (cover_url(primary_sku) if primary_sku else None)
+        cover = product.get("image") or (
+            cover_url(primary_sku) if primary_sku else None
+        )
         if cover:
             b.image = cover.replace("http://", "https://")
 
         # All images from detail page
         detail_images = (detail or {}).get("images", [])
         all_images = []
-        seen_imgs  = set()
-        for img in ([cover] + detail_images):
+        seen_imgs = set()
+        for img in [cover] + detail_images:
             if img:
                 img = img.replace("http://", "https://")
                 if img not in seen_imgs:
@@ -792,19 +826,23 @@ class BookConverter:
         b.images = all_images
 
         # Author image
-        b.author_image = (author_info.get("image", "") or "").replace("http://", "https://")
+        b.author_image = (author_info.get("image", "") or "").replace(
+            "http://", "https://"
+        )
 
         # ── Variants ──────────────────────────────────────────
         raw_variants = (detail or {}).get("variants", [])
         if not raw_variants:
             # Fallback: single variant from bio data
-            raw_variants = [{
-                "sku":    primary_sku,
-                "format": "físico",
-                "price":  base_price,
-                "url":    b.third_party_product_url,
-                "is_active": True,
-            }]
+            raw_variants = [
+                {
+                    "sku": primary_sku,
+                    "format": "físico",
+                    "price": base_price,
+                    "url": b.third_party_product_url,
+                    "is_active": True,
+                }
+            ]
 
         # Update base price to lowest variant price
         prices = [v["price"] for v in raw_variants if v.get("price", 0) > 0]
@@ -828,10 +866,10 @@ class BookConverter:
 
         # ── Physical metadata from detail ─────────────────────
         if detail:
-            b.pages      = detail.get("pages")
-            b.isbn       = detail.get("isbn")
+            b.pages = detail.get("pages")
+            b.isbn = detail.get("isbn")
             b.dimensions = detail.get("dimensions")
-            b.weight     = detail.get("weight_kg") or 0.300
+            b.weight = detail.get("weight_kg") or 0.300
             cat = detail.get("category")
             if cat:
                 b.category = cat.lower()
@@ -847,31 +885,26 @@ class BookConverter:
             b.tags.append(b.artist.lower().replace(" ", "-"))
 
         # ── Slug ─────────────────────────────────────────────
-        clean_name = (
-            b.name
-            .replace(" - UICLAP", "")
-            .replace("—", " ")
-            .strip()
-        )
+        clean_name = b.name.replace(" - UICLAP", "").replace("—", " ").strip()
         b.slug = make_slug(clean_name, self.existing_slugs)
 
         # ── Metadata ─────────────────────────────────────────
         b.metadata = {
             "fulfillment_type": "uiclap",
-            "author_slug":      self.author_slug,
-            "primary_sku":      primary_sku,
-            "pages":            b.pages,
-            "isbn":             b.isbn,
-            "dimensions":       b.dimensions,
+            "author_slug": self.author_slug,
+            "primary_sku": primary_sku,
+            "pages": b.pages,
+            "isbn": b.isbn,
+            "dimensions": b.dimensions,
         }
 
         # ── Raw data ─────────────────────────────────────────
         b.third_party_raw_data = {
-            "scraped_at":  datetime.now(timezone.utc).isoformat(),
-            "source":      "uiclap",
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
+            "source": "uiclap",
             "author_info": author_info,
-            "product_ld":  product.get("raw_ld"),
-            "detail":      detail,
+            "product_ld": product.get("raw_ld"),
+            "detail": detail,
         }
 
         return b
@@ -880,15 +913,17 @@ class BookConverter:
         """Build a ScrapedBook from a detail-only fetch (no bio page)."""
         variants = detail.get("variants", [])
         name = detail.get("name") or f"Livro UA{sku}"
-        lowest_price = min((v["price"] for v in variants if v.get("price", 0) > 0), default=0.0)
+        lowest_price = min(
+            (v["price"] for v in variants if v.get("price", 0) > 0), default=0.0
+        )
 
         product = {
-            "sku":         sku,
-            "name":        name,
+            "sku": sku,
+            "name": name,
             "description": detail.get("synopsis"),
-            "image":       cover_url(sku),
-            "price":       lowest_price,
-            "url":         store_url(sku),
+            "image": cover_url(sku),
+            "price": lowest_price,
+            "url": store_url(sku),
         }
         return self.from_bio_product(product, {}, detail)
 
@@ -897,13 +932,21 @@ class BookConverter:
 # GitHub CDN Uploader
 # ─────────────────────────────────────────────
 
+
 class GitHubCdnUploader:
     """Uploads images to GitHub CDN branch via GitHub Contents API.
     Falls back to Supabase Edge Function if direct GitHub API fails.
     """
 
-    def __init__(self, token: str, owner: str, repo: str, branch: str = "cdn",
-                 supabase_url: str = "", supabase_key: str = ""):
+    def __init__(
+        self,
+        token: str,
+        owner: str,
+        repo: str,
+        branch: str = "cdn",
+        supabase_url: str = "",
+        supabase_key: str = "",
+    ):
         self.token = token
         self.owner = owner
         self.repo = repo
@@ -944,7 +987,9 @@ class GitHubCdnUploader:
                 timeout=15,
             )
             if not ref_resp.ok:
-                logger.error(f"Failed to get default branch ref: {ref_resp.status_code}")
+                logger.error(
+                    f"Failed to get default branch ref: {ref_resp.status_code}"
+                )
                 return False
 
             sha = ref_resp.json()["object"]["sha"]
@@ -960,7 +1005,9 @@ class GitHubCdnUploader:
                 logger.info(f"Created CDN branch '{self.branch}'")
                 return True
             else:
-                logger.error(f"Failed to create branch: {create_resp.status_code} {create_resp.text}")
+                logger.error(
+                    f"Failed to create branch: {create_resp.status_code} {create_resp.text}"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error ensuring CDN branch: {e}")
@@ -989,7 +1036,9 @@ class GitHubCdnUploader:
             return resp.json().get("sha")
         return None
 
-    def upload_file(self, file_bytes: bytes, object_path: str, content_type: str = "image/jpeg") -> Optional[str]:
+    def upload_file(
+        self, file_bytes: bytes, object_path: str, content_type: str = "image/jpeg"
+    ) -> Optional[str]:
         """Upload a file to the CDN branch. Returns CDN URL or None.
         Falls back to Supabase Edge Function if direct GitHub API fails.
         """
@@ -1006,15 +1055,19 @@ class GitHubCdnUploader:
             if result:
                 return result
             # Direct failed, try edge function fallback
-            logger.info(f"Direct GitHub API failed, falling back to Supabase edge function")
+            logger.info(
+                f"Direct GitHub API failed, falling back to Supabase edge function"
+            )
             self.use_edge_function = True
 
         # Upload via Supabase Edge Function
         return self._upload_via_edge_function(file_bytes, object_path, content_type)
 
-    def _upload_direct(self, file_bytes: bytes, object_path: str, content_type: str) -> Optional[str]:
+    def _upload_direct(
+        self, file_bytes: bytes, object_path: str, content_type: str
+    ) -> Optional[str]:
         """Upload directly via GitHub Contents API."""
-        content_b64 = base64.b64encode(file_bytes).decode('utf-8')
+        content_b64 = base64.b64encode(file_bytes).decode("utf-8")
         resp = requests.put(
             f"{self.base_url}/{object_path}",
             headers=self.headers,
@@ -1029,38 +1082,47 @@ class GitHubCdnUploader:
             self.uploaded += 1
             return self._make_cdn_url(object_path)
         else:
-            logger.warning(f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}")
+            logger.warning(
+                f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}"
+            )
             return None
 
-    def _upload_via_edge_function(self, file_bytes: bytes, object_path: str, content_type: str) -> Optional[str]:
+    def _upload_via_edge_function(
+        self, file_bytes: bytes, object_path: str, content_type: str
+    ) -> Optional[str]:
         """Upload via Supabase Edge Function fallback."""
         if not self.supabase_url or not self.supabase_key:
             logger.warning("Edge function not configured (no supabase_url/key)")
             return None
         try:
             import io as _io
+
             form_data = {
-                'image': (object_path.split('/')[-1], file_bytes, content_type),
-                'path': (None, object_path),
+                "image": (object_path.split("/")[-1], file_bytes, content_type),
+                "path": (None, object_path),
             }
             resp = requests.post(
                 f"{self.supabase_url}/functions/v1/upload-cdn-image",
-                headers={'Authorization': f'Bearer {self.supabase_key}'},
+                headers={"Authorization": f"Bearer {self.supabase_key}"},
                 files=form_data,
                 timeout=120,
             )
             if resp.ok:
                 data = resp.json()
                 self.uploaded += 1
-                return data.get('cdnUrl') or data.get('original')
+                return data.get("cdnUrl") or data.get("original")
             else:
-                logger.warning(f"Edge function upload failed: {resp.status_code} {resp.text[:200]}")
+                logger.warning(
+                    f"Edge function upload failed: {resp.status_code} {resp.text[:200]}"
+                )
                 return None
         except Exception as e:
             logger.warning(f"Edge function upload error: {e}")
             return None
 
-    def upload_file_with_webp(self, img_bytes: bytes, object_path: str, content_type: str = "image/jpeg") -> dict:
+    def upload_file_with_webp(
+        self, img_bytes: bytes, object_path: str, content_type: str = "image/jpeg"
+    ) -> dict:
         """Upload original + WebP version. Returns dict with both URLs."""
         result = {"original": None, "webp": None}
 
@@ -1071,7 +1133,11 @@ class GitHubCdnUploader:
         if HAS_PIL:
             webp_bytes = convert_to_webp(img_bytes)
             if webp_bytes:
-                webp_path = object_path.rsplit('.', 1)[0] + '.webp' if '.' in object_path else object_path + '.webp'
+                webp_path = (
+                    object_path.rsplit(".", 1)[0] + ".webp"
+                    if "." in object_path
+                    else object_path + ".webp"
+                )
                 result["webp"] = self.upload_file(webp_bytes, webp_path, "image/webp")
                 if result["webp"]:
                     self.webp_generated += 1
@@ -1097,7 +1163,9 @@ class GitHubCdnUploader:
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"uiclap/{pid}/{idx:03d}_cover{ext}"
 
-            upload_result = self.upload_file_with_webp(img_bytes, object_path, content_type)
+            upload_result = self.upload_file_with_webp(
+                img_bytes, object_path, content_type
+            )
             if upload_result["original"]:
                 cdn_urls.append(upload_result["original"])
             if upload_result["webp"]:
@@ -1107,7 +1175,9 @@ class GitHubCdnUploader:
         book.cdn_webp_urls = webp_urls
         return {"cdn_urls": cdn_urls, "webp_urls": webp_urls}
 
-    def upload_all(self, books: list[ScrapedBook], client: Client, workers: int = 2) -> dict:
+    def upload_all(
+        self, books: list[ScrapedBook], client: Client, workers: int = 2
+    ) -> dict:
         """Parallel upload of all book images to GitHub CDN."""
         # Ensure branch exists first
         if not self.ensure_cdn_branch():
@@ -1122,11 +1192,14 @@ class GitHubCdnUploader:
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
             future_map = {
                 pool.submit(_upload_book, b): (b.third_party_product_id or b.slug)
-                for b in books if b.images
+                for b in books
+                if b.images
             }
             iterator = concurrent.futures.as_completed(future_map)
             if HAS_TQDM:
-                iterator = tqdm(iterator, total=len(future_map), desc="Uploading to GitHub CDN")
+                iterator = tqdm(
+                    iterator, total=len(future_map), desc="Uploading to GitHub CDN"
+                )
             for fut in iterator:
                 pid = future_map[fut]
                 results[pid] = fut.result()
@@ -1137,14 +1210,15 @@ class GitHubCdnUploader:
 # Supabase Database sync
 # ─────────────────────────────────────────────
 
+
 class SupabaseSync:
     def __init__(self, url: str, key: str, subcollection_slug: str = "uiclap"):
-        self.base  = f"{url.rstrip('/')}/rest/v1"
-        self.hdrs  = {
-            "apikey":        key,
+        self.base = f"{url.rstrip('/')}/rest/v1"
+        self.hdrs = {
+            "apikey": key,
             "Authorization": f"Bearer {key}",
-            "Content-Type":  "application/json",
-            "Prefer":        "return=representation",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
         }
         self.subcollection_slug = subcollection_slug
 
@@ -1153,10 +1227,14 @@ class SupabaseSync:
         return r.json() if r.ok else []
 
     def _post(self, path: str, payload) -> requests.Response:
-        return requests.post(f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30)
+        return requests.post(
+            f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30
+        )
 
     def _patch(self, path: str, payload: dict) -> requests.Response:
-        return requests.patch(f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30)
+        return requests.patch(
+            f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30
+        )
 
     def get_collection_id(self, slug: str) -> Optional[str]:
         rows = self._get(f"collections?slug=eq.{slug}")
@@ -1164,7 +1242,7 @@ class SupabaseSync:
 
     def get_subcollection_id(self, slug: str = None) -> Optional[str]:
         target = slug or self.subcollection_slug
-        rows   = self._get(f"subcollections?slug=eq.{target}")
+        rows = self._get(f"subcollections?slug=eq.{target}")
         return rows[0]["id"] if rows else None
 
     def existing_product(self, third_party_id: str) -> Optional[dict]:
@@ -1199,7 +1277,9 @@ class SupabaseSync:
         if synced_at:
             try:
                 sync_time = datetime.fromisoformat(synced_at.replace("Z", "+00:00"))
-                age_hours = (datetime.now(timezone.utc) - sync_time).total_seconds() / 3600
+                age_hours = (
+                    datetime.now(timezone.utc) - sync_time
+                ).total_seconds() / 3600
                 if age_hours > 24:
                     return True
             except Exception:
@@ -1220,10 +1300,12 @@ class SupabaseSync:
                 result[tp_id] = row
         return result
 
-    def upsert_product(self, book: ScrapedBook, collection_id, subcollection_id) -> dict:
+    def upsert_product(
+        self, book: ScrapedBook, collection_id, subcollection_id
+    ) -> dict:
         # Use CDN URLs if available, otherwise fall back to original URLs
-        image  = book.cdn_image_urls[0] if book.cdn_image_urls else book.image
-        images = book.cdn_image_urls    if book.cdn_image_urls else book.images
+        image = book.cdn_image_urls[0] if book.cdn_image_urls else book.image
+        images = book.cdn_image_urls if book.cdn_image_urls else book.images
 
         # Calculate hash of raw data for change detection
         raw_data = (book.third_party_raw_data or {}).get("product_ld", {})
@@ -1236,45 +1318,46 @@ class SupabaseSync:
             book.third_party_raw_data["data_hash"] = data_hash
 
         # Build image index metadata
-        image_index = {
-            "total_images": len(images),
-            "images": []
-        }
+        image_index = {"total_images": len(images), "images": []}
         for idx, img_url in enumerate(images):
-            image_index["images"].append({
-                "index": idx,
-                "url": img_url,
-                "webp_url": book.cdn_webp_urls[idx] if idx < len(book.cdn_webp_urls) else None,
-            })
+            image_index["images"].append(
+                {
+                    "index": idx,
+                    "url": img_url,
+                    "webp_url": book.cdn_webp_urls[idx]
+                    if idx < len(book.cdn_webp_urls)
+                    else None,
+                }
+            )
 
         payload = {
-            "name":               book.name,
-            "slug":               book.slug,
-            "description":        book.description,
-            "short_description":  book.short_description,
-            "category":           book.category,
-            "collection_id":      collection_id,
-            "subcollection_id":   subcollection_id,
-            "price":              book.price,
-            "compare_at_price":   book.compare_at_price,
-            "stock_type":         "third_party",
-            "fulfillment_type":   "uiclap",
-            "artist":             book.artist,
-            "brand":              book.brand,
-            "info":               book.info,
-            "materials":          book.materials,
-            "tags":               book.tags,
-            "weight":             book.weight,
-            "image":              image,
-            "images":             images,
-            "shipping_zones":     ["BR"],
-            "is_active":          book.is_active,
-            "is_featured":        False,
-            "is_archived":        False,
-            "third_party_product_id":  book.third_party_product_id,
-            "third_party_source":      "uiclap",
-            "third_party_synced_at":   datetime.now(timezone.utc).isoformat(),
-            "third_party_raw_data":    book.third_party_raw_data,
+            "name": book.name,
+            "slug": book.slug,
+            "description": book.description,
+            "short_description": book.short_description,
+            "category": book.category,
+            "collection_id": collection_id,
+            "subcollection_id": subcollection_id,
+            "price": book.price,
+            "compare_at_price": book.compare_at_price,
+            "stock_type": "print-on-demand",
+            "fulfillment_type": "uiclap",
+            "artist": book.artist,
+            "brand": book.brand,
+            "info": book.info,
+            "materials": book.materials,
+            "tags": book.tags,
+            "weight": book.weight,
+            "image": image,
+            "images": images,
+            "shipping_zones": ["BR"],
+            "is_active": book.is_active,
+            "is_featured": False,
+            "is_archived": False,
+            "third_party_product_id": book.third_party_product_id,
+            "third_party_source": "uiclap",
+            "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
+            "third_party_raw_data": book.third_party_raw_data,
             "metadata": {
                 **(book.metadata or {}),
                 "image_index": image_index,
@@ -1285,10 +1368,10 @@ class SupabaseSync:
 
         existing = self.existing_product(book.third_party_product_id or "")
         if existing:
-            resp   = self._patch(f"products?id=eq.{existing['id']}", payload)
+            resp = self._patch(f"products?id=eq.{existing['id']}", payload)
             action = "updated"
         else:
-            resp   = self._post("products", payload)
+            resp = self._post("products", payload)
             action = "inserted"
 
         if resp.ok:
@@ -1298,53 +1381,62 @@ class SupabaseSync:
     def upsert_variants(self, product_id: int, variants: list) -> None:
         requests.delete(
             f"{self.base}/product_variants?product_id=eq.{product_id}",
-            headers=self.hdrs, timeout=15,
+            headers=self.hdrs,
+            timeout=15,
         )
         for v in variants:
             payload = {
-                "product_id":          product_id,
-                "size":                None,
-                "color":               None,
-                "variant_type":        v.get("format"),
-                "price_override":      v.get("price") if v.get("price") else None,
-                "sku":                 v.get("sku"),
-                "stock_quantity":      v.get("stock_quantity", 0),
-                "is_active":           v.get("is_active", True),
-                "image_url":           v.get("image_url"),
-                "pages":               v.get("pages"),
-                "isbn":                v.get("isbn"),
-                "dimensions":          v.get("dimensions"),
+                "product_id": product_id,
+                "size": None,
+                "color": None,
+                "variant_type": v.get("format"),
+                "price_override": v.get("price") if v.get("price") else None,
+                "sku": v.get("sku"),
+                "stock_quantity": v.get("stock_quantity", 0),
+                "is_active": v.get("is_active", True),
+                "image_url": v.get("image_url"),
+                "pages": v.get("pages"),
+                "isbn": v.get("isbn"),
+                "dimensions": v.get("dimensions"),
             }
             payload = {k: val for k, val in payload.items() if val is not None}
             self._post("product_variants", payload)
 
     def log_sync(self, sync_type: str, result: SyncResult):
-        self._post("third_party_sync_log", {
-            "source":           "uiclap",
-            "sync_type":        sync_type,
-            "status":           "failed" if result.failed and not result.inserted else "success",
-            "items_processed":  result.processed,
-            "items_inserted":   result.inserted,
-            "items_updated":    result.updated,
-            "items_failed":     result.failed,
-            "errors":           result.errors[:20],
-            "completed_at":     datetime.now(timezone.utc).isoformat(),
-            "duration_seconds": result.duration_seconds,
-            "triggered_by":     "python-scraper-uiclap-v4",
-        })
+        self._post(
+            "third_party_sync_log",
+            {
+                "source": "uiclap",
+                "sync_type": sync_type,
+                "status": "failed"
+                if result.failed and not result.inserted
+                else "success",
+                "items_processed": result.processed,
+                "items_inserted": result.inserted,
+                "items_updated": result.updated,
+                "items_failed": result.failed,
+                "errors": result.errors[:20],
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": result.duration_seconds,
+                "triggered_by": "python-scraper-uiclap-v4",
+            },
+        )
 
 
 # ─────────────────────────────────────────────
 # JSON output
 # ─────────────────────────────────────────────
 
-def generate_products_json(books: list[ScrapedBook], output_path: str, bio_url: str = "", cdn_map: dict = None) -> str:
+
+def generate_products_json(
+    books: list[ScrapedBook], output_path: str, bio_url: str = "", cdn_map: dict = None
+) -> str:
     output = {
-        "generated_at":   datetime.now(timezone.utc).isoformat(),
-        "source":         "uiclap",
-        "bio_url":        bio_url,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source": "uiclap",
+        "bio_url": bio_url,
         "total_products": len(books),
-        "products":       [asdict(b) for b in books],
+        "products": [asdict(b) for b in books],
     }
     if cdn_map:
         output["cdn_upload_results"] = cdn_map
@@ -1358,40 +1450,43 @@ def generate_products_json(books: list[ScrapedBook], output_path: str, bio_url: 
 # Orchestrator
 # ─────────────────────────────────────────────
 
+
 def run(args) -> SyncResult:
-    start  = time.time()
+    start = time.time()
     result = SyncResult()
     client = Client(delay=REQUEST_DELAY)
 
     extractor = JsonLdExtractor(client)
     books: list[ScrapedBook] = []
-    bio_url    = ""
+    bio_url = ""
     author_info = {}
 
     # ── 1. Collect raw product data ───────────────────────────
 
     if args.sku:
         # Single product by SKU
-        sku    = normalize_sku(args.sku)
+        sku = normalize_sku(args.sku)
         logger.info(f"Fetching single product SKU: {sku}")
         detail = extractor.fetch_detail(sku) if args.fetch_details or True else {}
-        slugs  = set()
-        conv   = BookConverter(slugs, author_slug="")
-        b      = conv.from_sku(sku, detail)
+        slugs = set()
+        conv = BookConverter(slugs, author_slug="")
+        b = conv.from_sku(sku, detail)
         books.append(b)
 
     elif args.bio_url:
         bio_url = args.bio_url.rstrip("/")
         logger.info(f"Fetching author bio: {bio_url}")
-        bio_data    = extractor.fetch_bio(bio_url)
+        bio_data = extractor.fetch_bio(bio_url)
         author_info = bio_data.get("author", {})
         raw_products = bio_data.get("products", [])
-        author_slug  = bio_data.get("author_slug", "")
+        author_slug = bio_data.get("author_slug", "")
 
-        logger.info(f"Author: {author_info.get('name', '?')} — {len(raw_products)} product(s) found")
+        logger.info(
+            f"Author: {author_info.get('name', '?')} — {len(raw_products)} product(s) found"
+        )
 
         slugs = set()
-        conv  = BookConverter(slugs, author_slug=author_slug)
+        conv = BookConverter(slugs, author_slug=author_slug)
 
         for raw in raw_products:
             sku = raw.get("sku") or ""
@@ -1421,9 +1516,19 @@ def run(args) -> SyncResult:
     books_to_sync = books
     skipped_unchanged = 0
 
-    if not args.full and not args.dry_run and SUPABASE_URL and SUPABASE_KEY and args.sync_to_db:
+    if (
+        not args.full
+        and not args.dry_run
+        and SUPABASE_URL
+        and SUPABASE_KEY
+        and args.sync_to_db
+    ):
         logger.info("Incremental sync mode: checking for changed books...")
-        supabase_check = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, getattr(args, "subcollection", "uiclap") or "uiclap")
+        supabase_check = SupabaseSync(
+            SUPABASE_URL,
+            SUPABASE_KEY,
+            getattr(args, "subcollection", "uiclap") or "uiclap",
+        )
         synced_books = supabase_check.get_all_synced_products()
 
         changed_books = []
@@ -1442,20 +1547,30 @@ def run(args) -> SyncResult:
                 logger.debug(f"  Unchanged (skipped): {b.name} (SKU: {tp_id})")
 
         books_to_sync = changed_books
-        logger.info(f"Incremental sync: {len(books_to_sync)} changed/new, {skipped_unchanged} unchanged")
+        logger.info(
+            f"Incremental sync: {len(books_to_sync)} changed/new, {skipped_unchanged} unchanged"
+        )
 
     # ── 2. Upload images to GitHub CDN ────────────────────────
 
     cdn_map = {}
     if args.upload_images and GITHUB_TOKEN and GITHUB_OWNER:
-        branch = getattr(args, 'cdn_branch', 'cdn') or 'cdn'
+        branch = getattr(args, "cdn_branch", "cdn") or "cdn"
         uploader = GitHubCdnUploader(
-            GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, branch,
-            supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY
+            GITHUB_TOKEN,
+            GITHUB_OWNER,
+            GITHUB_REPO,
+            branch,
+            supabase_url=SUPABASE_URL,
+            supabase_key=SUPABASE_KEY,
         )
-        logger.info(f"Uploading images to GitHub CDN: {GITHUB_OWNER}/{GITHUB_REPO}@{branch}")
+        logger.info(
+            f"Uploading images to GitHub CDN: {GITHUB_OWNER}/{GITHUB_REPO}@{branch}"
+        )
         if SUPABASE_URL:
-            logger.info(f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image")
+            logger.info(
+                f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image"
+            )
         cdn_map = uploader.upload_all(books_to_sync, client, workers=2)
         result.images_uploaded = uploader.uploaded
         result.webp_generated = uploader.webp_generated
@@ -1467,11 +1582,13 @@ def run(args) -> SyncResult:
                 b.images = b.cdn_image_urls
 
     elif args.upload_images and not (GITHUB_TOKEN and GITHUB_OWNER):
-        logger.warning("--upload-images specified but GITHUB_TOKEN/GITHUB_OWNER not set, skipping image upload")
+        logger.warning(
+            "--upload-images specified but GITHUB_TOKEN/GITHUB_OWNER not set, skipping image upload"
+        )
 
     # ── 3. Save JSON ──────────────────────────────────────────
 
-    ts          = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = args.output or f"scraped_uiclap_{ts}.json"
     generate_products_json(books, output_file, bio_url, cdn_map)
 
@@ -1481,12 +1598,14 @@ def run(args) -> SyncResult:
 
     if should_sync:
         subcollection_slug = getattr(args, "subcollection", "uiclap") or "uiclap"
-        collection_slug    = getattr(args, "collection", "bhumi-livros") or "bhumi-livros"
-        supabase           = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, subcollection_slug)
+        collection_slug = getattr(args, "collection", "bhumi-livros") or "bhumi-livros"
+        supabase = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, subcollection_slug)
 
-        collection_id    = supabase.get_collection_id(collection_slug)
+        collection_id = supabase.get_collection_id(collection_slug)
         subcollection_id = supabase.get_subcollection_id()
-        logger.info(f"DB sync: collection='{collection_slug}' subcollection='{subcollection_slug}'")
+        logger.info(
+            f"DB sync: collection='{collection_slug}' subcollection='{subcollection_slug}'"
+        )
 
         for b in books_to_sync:
             result.processed += 1
@@ -1545,7 +1664,7 @@ def run(args) -> SyncResult:
         print("\n  Books:")
         for b in books:
             variants_str = ", ".join(
-                f"{v.get('format','?')} R${v.get('price',0):.2f} (SKU {v.get('sku','')})"
+                f"{v.get('format', '?')} R${v.get('price', 0):.2f} (SKU {v.get('sku', '')})"
                 for v in b.variants
             )
             print(f"    [{b.third_party_product_id}] {b.name}")
@@ -1566,6 +1685,7 @@ def run(args) -> SyncResult:
 # CLI
 # ─────────────────────────────────────────────
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="UICLAP Scraper v4 — JSON-LD Schema.org + GitHub CDN"
@@ -1573,33 +1693,47 @@ def main():
 
     # Source
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--bio-url",  help="Author bio URL (https://uiclap.bio/{slug})")
-    group.add_argument("--sku",      help="Single product SKU (numeric or with ua prefix)")
+    group.add_argument("--bio-url", help="Author bio URL (https://uiclap.bio/{slug})")
+    group.add_argument("--sku", help="Single product SKU (numeric or with ua prefix)")
 
     # Behaviour
-    parser.add_argument("--fetch-details", action="store_true",
-                        help="Fetch individual detail pages for extended metadata (slower)")
-    parser.add_argument("--dry-run",       action="store_true",
-                        help="Parse and print but skip DB/CDN writes")
-    parser.add_argument("--full",          action="store_true",
-                        help="Full sync (all products)")
-    parser.add_argument("--sync-to-db",    action="store_true",
-                        help="Sync scraped products to Supabase database")
-    parser.add_argument("--upload-images", action="store_true",
-                        help="Upload cover images to GitHub CDN")
+    parser.add_argument(
+        "--fetch-details",
+        action="store_true",
+        help="Fetch individual detail pages for extended metadata (slower)",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Parse and print but skip DB/CDN writes"
+    )
+    parser.add_argument("--full", action="store_true", help="Full sync (all products)")
+    parser.add_argument(
+        "--sync-to-db",
+        action="store_true",
+        help="Sync scraped products to Supabase database",
+    )
+    parser.add_argument(
+        "--upload-images", action="store_true", help="Upload cover images to GitHub CDN"
+    )
 
     # CDN
-    parser.add_argument("--cdn-branch",    default="cdn",
-                        help="CDN branch name (default: cdn)")
+    parser.add_argument(
+        "--cdn-branch", default="cdn", help="CDN branch name (default: cdn)"
+    )
 
     # Output
-    parser.add_argument("--output",         help="Output JSON file path")
+    parser.add_argument("--output", help="Output JSON file path")
 
     # DB slugs
-    parser.add_argument("--subcollection", default="uiclap",
-                        help="Subcollection slug for DB (default: uiclap)")
-    parser.add_argument("--collection",    default="bhumi-livros",
-                        help="Collection slug for DB (default: bhumi-livros)")
+    parser.add_argument(
+        "--subcollection",
+        default="uiclap",
+        help="Subcollection slug for DB (default: uiclap)",
+    )
+    parser.add_argument(
+        "--collection",
+        default="bhumi-livros",
+        help="Collection slug for DB (default: bhumi-livros)",
+    )
 
     args = parser.parse_args()
 

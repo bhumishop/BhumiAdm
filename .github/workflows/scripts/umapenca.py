@@ -50,12 +50,14 @@ import requests
 
 try:
     from PIL import Image
+
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
 
 try:
     from tqdm import tqdm
+
     HAS_TQDM = True
 except ImportError:
     HAS_TQDM = False
@@ -74,6 +76,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 # ─────────────────────────────────────────────
 
+
 def _parse_cli_overrides():
     """Parse --url and --store-id early so module-level defaults can be overridden."""
     url = None
@@ -91,16 +94,20 @@ def _parse_cli_overrides():
             i += 1
     return url, store_id
 
+
 _cli_url, _cli_store_id = _parse_cli_overrides()
 
-STORE_URL    = (_cli_url or os.environ.get("UMAPENCA_STORE_URL", "https://prataprint.bhumisparshaschool.org")).rstrip("/")
-STORE_ID     = (_cli_store_id or os.environ.get("UMAPENCA_STORE_ID", "11210"))
+STORE_URL = (
+    _cli_url
+    or os.environ.get("UMAPENCA_STORE_URL", "https://prataprint.bhumisparshaschool.org")
+).rstrip("/")
+STORE_ID = _cli_store_id or os.environ.get("UMAPENCA_STORE_ID", "11210")
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 GITHUB_OWNER = os.environ.get("GITHUB_OWNER", "")
-GITHUB_REPO  = os.environ.get("GITHUB_REPO", "BhumiAdm")
-CDN_BRANCH   = os.environ.get("CDN_BRANCH", "cdn")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "BhumiAdm")
+CDN_BRANCH = os.environ.get("CDN_BRANCH", "cdn")
 
 STANDARD_CARE_TEXT = """Detalhes do produto
 Camiseta feita com 100% de fibra natural de algodão sustentável.
@@ -113,9 +120,9 @@ Use um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque 
 Evitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco."""
 
 REQUEST_DELAY = 0.5
-MAX_RETRIES   = 3
-RETRY_DELAY   = 4
-MAX_WORKERS   = 6
+MAX_RETRIES = 3
+RETRY_DELAY = 4
+MAX_WORKERS = 6
 
 HEADERS = {
     "User-Agent": (
@@ -130,66 +137,71 @@ HEADERS = {
 # Data models
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class PriceVariant:
     """Size/color variant with its own price and stock"""
-    size:           Optional[str]  = None
-    color:          Optional[str]  = None
-    variant_type:   Optional[str]  = None
-    model_id:       Optional[int]  = None
-    fabric_id:      Optional[int]  = None
-    sku:            Optional[str]  = None
-    price:          float          = 0.0
+
+    size: Optional[str] = None
+    color: Optional[str] = None
+    variant_type: Optional[str] = None
+    model_id: Optional[int] = None
+    fabric_id: Optional[int] = None
+    sku: Optional[str] = None
+    price: float = 0.0
     compare_at_price: Optional[float] = None
-    stock_quantity: int            = 0
-    is_active:      bool           = True
-    image_url:      Optional[str]  = None
+    stock_quantity: int = 0
+    is_active: bool = True
+    image_url: Optional[str] = None
+
 
 @dataclass
 class ScrapedProduct:
-    name:                   str            = ""
-    slug:                   Optional[str]  = None
-    description:            Optional[str]  = None
-    short_description:      Optional[str]  = None
-    category:               Optional[str]  = None
-    brand:                  Optional[str]  = None
-    artist:                 Optional[str]  = None
-    info:                   Optional[str]  = None
-    price:                  float          = 0.0
-    compare_at_price:       Optional[float] = None
-    image:                  Optional[str]  = None
-    images:                 list           = field(default_factory=list)
-    variants:               list           = field(default_factory=list)
-    sizes:                  list           = field(default_factory=list)
-    colors:                 list           = field(default_factory=list)
-    materials:              list           = field(default_factory=list)
-    tags:                   list           = field(default_factory=list)
-    weight:                 float          = 0.300
-    is_active:              bool           = True
-    third_party_product_id: Optional[str]  = None
-    third_party_source:     str            = "uma-penca"
+    name: str = ""
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    short_description: Optional[str] = None
+    category: Optional[str] = None
+    brand: Optional[str] = None
+    artist: Optional[str] = None
+    info: Optional[str] = None
+    price: float = 0.0
+    compare_at_price: Optional[float] = None
+    image: Optional[str] = None
+    images: list = field(default_factory=list)
+    variants: list = field(default_factory=list)
+    sizes: list = field(default_factory=list)
+    colors: list = field(default_factory=list)
+    materials: list = field(default_factory=list)
+    tags: list = field(default_factory=list)
+    weight: float = 0.300
+    is_active: bool = True
+    third_party_product_id: Optional[str] = None
+    third_party_source: str = "uma-penca"
     third_party_product_url: Optional[str] = None
-    third_party_raw_data:   Optional[dict] = None
-    local_image_paths:      list           = field(default_factory=list)
-    cdn_image_urls:         list           = field(default_factory=list)
-    cdn_webp_urls:          list           = field(default_factory=list)
-    metadata:               dict           = field(default_factory=dict)
+    third_party_raw_data: Optional[dict] = None
+    local_image_paths: list = field(default_factory=list)
+    cdn_image_urls: list = field(default_factory=list)
+    cdn_webp_urls: list = field(default_factory=list)
+    metadata: dict = field(default_factory=dict)
+
 
 @dataclass
 class SyncResult:
-    processed:         int   = 0
-    inserted:          int   = 0
-    updated:           int   = 0
-    failed:            int   = 0
-    images_uploaded:   int   = 0
-    webp_generated:    int   = 0
-    errors:            list  = field(default_factory=list)
-    duration_seconds:  float = 0.0
+    processed: int = 0
+    inserted: int = 0
+    updated: int = 0
+    failed: int = 0
+    images_uploaded: int = 0
+    webp_generated: int = 0
+    errors: list = field(default_factory=list)
+    duration_seconds: float = 0.0
 
 
 # ─────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────
+
 
 def strip_imgix_transforms(url: str) -> str:
     """Remove imgix query-string transforms for full-resolution originals."""
@@ -207,7 +219,7 @@ def is_grey_or_empty_image(img_bytes: bytes, threshold_grey: float = 0.98) -> bo
         return False
     try:
         img = Image.open(io.BytesIO(img_bytes))
-        img = img.convert('RGB')
+        img = img.convert("RGB")
         width, height = img.size
         total_pixels = width * height
         if total_pixels == 0:
@@ -229,7 +241,7 @@ def is_grey_or_empty_image(img_bytes: bytes, threshold_grey: float = 0.98) -> bo
             avg_variance = (var_r + var_g + var_b) / 3
             if avg_variance < 300:
                 return True
-        hsv_img = img.convert('HSV')
+        hsv_img = img.convert("HSV")
         hsv_pixels = list(hsv_img.getdata())
         s_vals = [p[1] for p in hsv_pixels]
         avg_saturation = sum(s_vals) / total_pixels
@@ -258,7 +270,7 @@ def is_likely_tshirt_placeholder(img_bytes: bytes) -> bool:
         return False
     try:
         img = Image.open(io.BytesIO(img_bytes))
-        img = img.convert('RGB')
+        img = img.convert("RGB")
         width, height = img.size
         total_pixels = width * height
         if total_pixels == 0:
@@ -267,7 +279,9 @@ def is_likely_tshirt_placeholder(img_bytes: bytes) -> bool:
         avg_r = sum(p[0] for p in pixels) / total_pixels
         avg_g = sum(p[1] for p in pixels) / total_pixels
         avg_b = sum(p[2] for p in pixels) / total_pixels
-        is_grey_range = 180 <= avg_r <= 220 and 180 <= avg_g <= 220 and 180 <= avg_b <= 220
+        is_grey_range = (
+            180 <= avg_r <= 220 and 180 <= avg_g <= 220 and 180 <= avg_b <= 220
+        )
         channel_diff = abs(avg_r - avg_g) + abs(avg_g - avg_b) + abs(avg_r - avg_b)
         var_r = sum((p[0] - avg_r) ** 2 for p in pixels) / total_pixels
         var_g = sum((p[1] - avg_g) ** 2 for p in pixels) / total_pixels
@@ -297,12 +311,18 @@ def make_slug(name: str, existing: set) -> str:
 
 def category_weight(category: str) -> float:
     return {
-        "camisetas": 0.200, "camiseta": 0.200,
-        "canecas": 0.350, "caneca": 0.350,
-        "posters": 0.100, "poster": 0.100,
-        "livros": 0.400, "livro": 0.400,
-        "bolsas": 0.250, "bolsa": 0.250,
-        "ecobag": 0.150, "bottons": 0.050,
+        "camisetas": 0.200,
+        "camiseta": 0.200,
+        "canecas": 0.350,
+        "caneca": 0.350,
+        "posters": 0.100,
+        "poster": 0.100,
+        "livros": 0.400,
+        "livro": 0.400,
+        "bolsas": 0.250,
+        "bolsa": 0.250,
+        "ecobag": 0.150,
+        "bottons": 0.050,
     }.get(category or "", 0.300)
 
 
@@ -326,12 +346,12 @@ def convert_to_webp(img_bytes: bytes, quality: int = 80) -> Optional[bytes]:
         return None
     try:
         img = Image.open(io.BytesIO(img_bytes))
-        if img.mode in ('RGBA', 'LA', 'P'):
-            img = img.convert('RGBA')
+        if img.mode in ("RGBA", "LA", "P"):
+            img = img.convert("RGBA")
         else:
-            img = img.convert('RGB')
+            img = img.convert("RGB")
         output = io.BytesIO()
-        img.save(output, format='WEBP', quality=quality)
+        img.save(output, format="WEBP", quality=quality)
         return output.getvalue()
     except Exception as e:
         logger.warning(f"Failed to convert to WebP: {e}")
@@ -341,6 +361,7 @@ def convert_to_webp(img_bytes: bytes, quality: int = 80) -> Optional[bytes]:
 # ─────────────────────────────────────────────
 # HTTP client
 # ─────────────────────────────────────────────
+
 
 class Client:
     """Polite HTTP client with rate limiting and retries."""
@@ -357,16 +378,22 @@ class Client:
             time.sleep(self.delay - elapsed)
         self._last = time.time()
 
-    def get(self, url: str, as_json: bool = False, extra_headers: dict = None) -> Optional[requests.Response]:
+    def get(
+        self, url: str, as_json: bool = False, extra_headers: dict = None
+    ) -> Optional[requests.Response]:
         hdrs = {}
         if extra_headers:
             hdrs.update(extra_headers)
         for attempt in range(MAX_RETRIES):
             try:
                 self._wait()
-                resp = self.session.get(url, timeout=30, headers=hdrs, allow_redirects=True)
+                resp = self.session.get(
+                    url, timeout=30, headers=hdrs, allow_redirects=True
+                )
                 if resp.status_code == 429:
-                    wait = int(resp.headers.get("Retry-After", RETRY_DELAY * (attempt + 1)))
+                    wait = int(
+                        resp.headers.get("Retry-After", RETRY_DELAY * (attempt + 1))
+                    )
                     logger.warning(f"Rate-limited, waiting {wait}s…")
                     time.sleep(wait)
                     continue
@@ -375,7 +402,9 @@ class Client:
                 resp.raise_for_status()
                 return resp
             except requests.RequestException as exc:
-                logger.warning(f"Request failed (attempt {attempt + 1}/{MAX_RETRIES}): {exc}")
+                logger.warning(
+                    f"Request failed (attempt {attempt + 1}/{MAX_RETRIES}): {exc}"
+                )
                 if attempt < MAX_RETRIES - 1:
                     time.sleep(RETRY_DELAY * (attempt + 1))
         logger.error(f"Gave up after {MAX_RETRIES} retries: {url}")
@@ -397,15 +426,18 @@ class Client:
 # HTML extractor
 # ─────────────────────────────────────────────
 
+
 class HtmlExtractor:
     """Extracts product data from the embedded JSON in the store HTML."""
 
-    VUE_DATA_RE = re.compile(r'window\.vueInitialData\s*=\s*(\{.*?\})\s*;', re.DOTALL)
+    VUE_DATA_RE = re.compile(r"window\.vueInitialData\s*=\s*(\{.*?\})\s*;", re.DOTALL)
 
     def __init__(self, client: Client):
         self.client = client
         parsed = urlparse(STORE_URL)
-        self.path_prefix = parsed.path.rstrip("/") if parsed.path and parsed.path != "/" else ""
+        self.path_prefix = (
+            parsed.path.rstrip("/") if parsed.path and parsed.path != "/" else ""
+        )
 
     def fetch_product_list(self) -> list[dict]:
         """Fetch the store page and extract all product hits."""
@@ -471,7 +503,7 @@ class HtmlExtractor:
         start = html.find('"products"')
         if start == -1:
             return None
-        obj_start = html.rfind('{', 0, start)
+        obj_start = html.rfind("{", 0, start)
         if obj_start == -1:
             return None
         depth = 0
@@ -482,7 +514,7 @@ class HtmlExtractor:
             if escape_next:
                 escape_next = False
                 continue
-            if ch == '\\':
+            if ch == "\\":
                 escape_next = True
                 continue
             if ch == '"' and not escape_next:
@@ -490,12 +522,12 @@ class HtmlExtractor:
                 continue
             if in_string:
                 continue
-            if ch == '{':
+            if ch == "{":
                 depth += 1
-            elif ch == '}':
+            elif ch == "}":
                 depth -= 1
                 if depth == 0:
-                    candidate = html[obj_start:i+1]
+                    candidate = html[obj_start : i + 1]
                     try:
                         return json.loads(candidate)
                     except json.JSONDecodeError:
@@ -507,6 +539,7 @@ class HtmlExtractor:
 # ─────────────────────────────────────────────
 # Raw data → ScrapedProduct converter
 # ─────────────────────────────────────────────
+
 
 class ProductConverter:
     """Converts raw Chicorei/PrataPrint API dicts to ScrapedProduct."""
@@ -538,7 +571,9 @@ class ProductConverter:
         price = raw.get("price", 0) or 0
         price_old = raw.get("price_old", 0) or 0
         p.price = float(price) if price else 0.0
-        p.compare_at_price = float(price_old) if price_old and price_old > price else None
+        p.compare_at_price = (
+            float(price_old) if price_old and price_old > price else None
+        )
 
         models = raw.get("models", []) or []
         size_map = {}
@@ -572,7 +607,13 @@ class ProductConverter:
                     seen_img_urls.add(clean_url)
                     all_image_urls.append(clean_url)
 
-        for img_key in ("img_cover", "img_male", "img_female", "img_thumb_png", "img_thumb"):
+        for img_key in (
+            "img_cover",
+            "img_male",
+            "img_female",
+            "img_thumb_png",
+            "img_thumb",
+        ):
             img = raw.get(img_key)
             if img and isinstance(img, str):
                 clean_url = strip_imgix_transforms(img)
@@ -596,7 +637,9 @@ class ProductConverter:
             model_info = size_map.get(model_id, {}) if model_id else {}
             fabric_info = fabric_map.get(fabric_id, {}) if fabric_id else {}
             size_name = model_info.get("name")
-            color_name = fabric_info.get("product_color_name", fabric_info.get("name", ""))
+            color_name = fabric_info.get(
+                "product_color_name", fabric_info.get("name", "")
+            )
             variant_type = type_name if type_name else None
             sku_parts = [str(pid) if pid else ""]
             if model_info.get("url"):
@@ -623,7 +666,9 @@ class ProductConverter:
         if not p.variants:
             v = PriceVariant(
                 size=None,
-                color=raw.get("product_color", {}).get("name") if raw.get("product_color") else None,
+                color=raw.get("product_color", {}).get("name")
+                if raw.get("product_color")
+                else None,
                 variant_type=type_name if type_name else None,
                 price=p.price,
                 compare_at_price=p.compare_at_price,
@@ -654,8 +699,7 @@ class ProductConverter:
         p.weight = category_weight(type_url)
 
         clean_name = (
-            p.name
-            .replace(" - Prata Print", "")
+            p.name.replace(" - Prata Print", "")
             .replace(" - Uma Penca", "")
             .replace("-", " ")
             .strip()
@@ -693,13 +737,21 @@ class ProductConverter:
 # GitHub CDN Uploader
 # ─────────────────────────────────────────────
 
+
 class GitHubCdnUploader:
     """Uploads images to GitHub CDN branch via GitHub Contents API.
     Falls back to Supabase Edge Function if direct GitHub API fails.
     """
 
-    def __init__(self, token: str, owner: str, repo: str, branch: str = "cdn",
-                 supabase_url: str = "", supabase_key: str = ""):
+    def __init__(
+        self,
+        token: str,
+        owner: str,
+        repo: str,
+        branch: str = "cdn",
+        supabase_url: str = "",
+        supabase_key: str = "",
+    ):
         self.token = token
         self.owner = owner
         self.repo = repo
@@ -740,7 +792,9 @@ class GitHubCdnUploader:
                 timeout=15,
             )
             if not ref_resp.ok:
-                logger.error(f"Failed to get default branch ref: {ref_resp.status_code}")
+                logger.error(
+                    f"Failed to get default branch ref: {ref_resp.status_code}"
+                )
                 return False
 
             sha = ref_resp.json()["object"]["sha"]
@@ -756,7 +810,9 @@ class GitHubCdnUploader:
                 logger.info(f"Created CDN branch '{self.branch}'")
                 return True
             else:
-                logger.error(f"Failed to create branch: {create_resp.status_code} {create_resp.text}")
+                logger.error(
+                    f"Failed to create branch: {create_resp.status_code} {create_resp.text}"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error ensuring CDN branch: {e}")
@@ -785,7 +841,9 @@ class GitHubCdnUploader:
             return resp.json().get("sha")
         return None
 
-    def upload_file(self, file_bytes: bytes, object_path: str, content_type: str = "image/jpeg") -> Optional[str]:
+    def upload_file(
+        self, file_bytes: bytes, object_path: str, content_type: str = "image/jpeg"
+    ) -> Optional[str]:
         """Upload a file to the CDN branch. Returns CDN URL or None.
         Falls back to Supabase Edge Function if direct GitHub API fails.
         """
@@ -802,15 +860,19 @@ class GitHubCdnUploader:
             if result:
                 return result
             # Direct failed, try edge function fallback
-            logger.info(f"Direct GitHub API failed, falling back to Supabase edge function")
+            logger.info(
+                f"Direct GitHub API failed, falling back to Supabase edge function"
+            )
             self.use_edge_function = True
 
         # Upload via Supabase Edge Function
         return self._upload_via_edge_function(file_bytes, object_path, content_type)
 
-    def _upload_direct(self, file_bytes: bytes, object_path: str, content_type: str) -> Optional[str]:
+    def _upload_direct(
+        self, file_bytes: bytes, object_path: str, content_type: str
+    ) -> Optional[str]:
         """Upload directly via GitHub Contents API."""
-        content_b64 = base64.b64encode(file_bytes).decode('utf-8')
+        content_b64 = base64.b64encode(file_bytes).decode("utf-8")
         resp = requests.put(
             f"{self.base_url}/{object_path}",
             headers=self.headers,
@@ -825,10 +887,14 @@ class GitHubCdnUploader:
             self.uploaded += 1
             return self._make_cdn_url(object_path)
         else:
-            logger.warning(f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}")
+            logger.warning(
+                f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}"
+            )
             return None
 
-    def _upload_via_edge_function(self, file_bytes: bytes, object_path: str, content_type: str) -> Optional[str]:
+    def _upload_via_edge_function(
+        self, file_bytes: bytes, object_path: str, content_type: str
+    ) -> Optional[str]:
         """Upload via Supabase Edge Function fallback."""
         if not self.supabase_url or not self.supabase_key:
             logger.warning("Edge function not configured (no supabase_url/key)")
@@ -836,27 +902,31 @@ class GitHubCdnUploader:
 
         try:
             form_data = {
-                'image': (object_path.split('/')[-1], file_bytes, content_type),
-                'path': (None, object_path),
+                "image": (object_path.split("/")[-1], file_bytes, content_type),
+                "path": (None, object_path),
             }
             resp = requests.post(
                 f"{self.supabase_url}/functions/v1/upload-cdn-image",
-                headers={'Authorization': f'Bearer {self.supabase_key}'},
+                headers={"Authorization": f"Bearer {self.supabase_key}"},
                 files=form_data,
                 timeout=120,
             )
             if resp.ok:
                 data = resp.json()
                 self.uploaded += 1
-                return data.get('cdnUrl') or data.get('original')
+                return data.get("cdnUrl") or data.get("original")
             else:
-                logger.warning(f"Edge function upload failed: {resp.status_code} {resp.text[:200]}")
+                logger.warning(
+                    f"Edge function upload failed: {resp.status_code} {resp.text[:200]}"
+                )
                 return None
         except Exception as e:
             logger.warning(f"Edge function upload error: {e}")
             return None
 
-    def upload_file_with_webp(self, img_bytes: bytes, object_path: str, content_type: str = "image/jpeg") -> dict:
+    def upload_file_with_webp(
+        self, img_bytes: bytes, object_path: str, content_type: str = "image/jpeg"
+    ) -> dict:
         """Upload original + WebP version. Returns dict with both URLs."""
         result = {"original": None, "webp": None}
 
@@ -867,7 +937,11 @@ class GitHubCdnUploader:
         if HAS_PIL:
             webp_bytes = convert_to_webp(img_bytes)
             if webp_bytes:
-                webp_path = object_path.rsplit('.', 1)[0] + '.webp' if '.' in object_path else object_path + '.webp'
+                webp_path = (
+                    object_path.rsplit(".", 1)[0] + ".webp"
+                    if "." in object_path
+                    else object_path + ".webp"
+                )
                 result["webp"] = self.upload_file(webp_bytes, webp_path, "image/webp")
                 if result["webp"]:
                     self.webp_generated += 1
@@ -894,17 +968,23 @@ class GitHubCdnUploader:
             # Skip grey/empty images for t-shirts
             if is_tshirt:
                 if idx == 0 and is_likely_tshirt_placeholder(img_bytes):
-                    logger.info(f"Skipping t-shirt placeholder image (index 0) for product {pid}: {url}")
+                    logger.info(
+                        f"Skipping t-shirt placeholder image (index 0) for product {pid}: {url}"
+                    )
                     continue
                 elif is_grey_or_empty_image(img_bytes):
-                    logger.info(f"Skipping grey/empty image for t-shirt product {pid} (index {idx}): {url}")
+                    logger.info(
+                        f"Skipping grey/empty image for t-shirt product {pid} (index {idx}): {url}"
+                    )
                     continue
 
             content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"products/{pid}/{idx:03d}_image{ext}"
 
-            upload_result = self.upload_file_with_webp(img_bytes, object_path, content_type)
+            upload_result = self.upload_file_with_webp(
+                img_bytes, object_path, content_type
+            )
             if upload_result["original"]:
                 cdn_urls.append(upload_result["original"])
             if upload_result["webp"]:
@@ -914,7 +994,9 @@ class GitHubCdnUploader:
         product.cdn_webp_urls = webp_urls
         return {"cdn_urls": cdn_urls, "webp_urls": webp_urls}
 
-    def upload_all(self, products: list[ScrapedProduct], client: Client, workers: int = 2) -> dict:
+    def upload_all(
+        self, products: list[ScrapedProduct], client: Client, workers: int = 2
+    ) -> dict:
         """Parallel upload of all product images to GitHub CDN."""
         # Ensure branch exists first
         if not self.ensure_cdn_branch():
@@ -929,11 +1011,14 @@ class GitHubCdnUploader:
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
             future_map = {
                 pool.submit(_upload_product, p): (p.third_party_product_id or p.slug)
-                for p in products if p.images
+                for p in products
+                if p.images
             }
             iterator = concurrent.futures.as_completed(future_map)
             if HAS_TQDM:
-                iterator = tqdm(iterator, total=len(future_map), desc="Uploading to GitHub CDN")
+                iterator = tqdm(
+                    iterator, total=len(future_map), desc="Uploading to GitHub CDN"
+                )
             for fut in iterator:
                 pid = future_map[fut]
                 results[pid] = fut.result()
@@ -944,15 +1029,15 @@ class GitHubCdnUploader:
 # Supabase Database sync
 # ─────────────────────────────────────────────
 
-class SupabaseSync:
 
+class SupabaseSync:
     def __init__(self, url: str, key: str, subcollection_slug: str = "uma-penca"):
         self.base = f"{url.rstrip('/')}/rest/v1"
         self.hdrs = {
-            "apikey":        key,
+            "apikey": key,
             "Authorization": f"Bearer {key}",
-            "Content-Type":  "application/json",
-            "Prefer":        "return=representation",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
         }
         self.subcollection_slug = subcollection_slug
 
@@ -961,10 +1046,14 @@ class SupabaseSync:
         return resp.json() if resp.ok else []
 
     def _post(self, path: str, payload) -> requests.Response:
-        return requests.post(f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30)
+        return requests.post(
+            f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30
+        )
 
     def _patch(self, path: str, payload: dict) -> requests.Response:
-        return requests.patch(f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30)
+        return requests.patch(
+            f"{self.base}/{path}", headers=self.hdrs, json=payload, timeout=30
+        )
 
     def get_collection_id(self, slug: str = "bhumi-print") -> Optional[str]:
         rows = self._get(f"collections?slug=eq.{slug}")
@@ -975,7 +1064,9 @@ class SupabaseSync:
         rows = self._get(f"subcollections?slug=eq.{target}")
         return rows[0]["id"] if rows else None
 
-    def existing_product(self, third_party_id: str, source: str = "uma-penca") -> Optional[dict]:
+    def existing_product(
+        self, third_party_id: str, source: str = "uma-penca"
+    ) -> Optional[dict]:
         if not third_party_id:
             return None
         rows = self._get(
@@ -1001,7 +1092,9 @@ class SupabaseSync:
         if synced_at:
             try:
                 sync_time = datetime.fromisoformat(synced_at.replace("Z", "+00:00"))
-                age_hours = (datetime.now(timezone.utc) - sync_time).total_seconds() / 3600
+                age_hours = (
+                    datetime.now(timezone.utc) - sync_time
+                ).total_seconds() / 3600
                 if age_hours > 24:
                     return True
             except Exception:
@@ -1038,45 +1131,46 @@ class SupabaseSync:
         if product.third_party_raw_data:
             product.third_party_raw_data["data_hash"] = data_hash
 
-        image_index = {
-            "total_images": len(images),
-            "images": []
-        }
+        image_index = {"total_images": len(images), "images": []}
         for idx, img_url in enumerate(images):
-            image_index["images"].append({
-                "index": idx,
-                "url": img_url,
-                "webp_url": product.cdn_webp_urls[idx] if idx < len(product.cdn_webp_urls) else None,
-            })
+            image_index["images"].append(
+                {
+                    "index": idx,
+                    "url": img_url,
+                    "webp_url": product.cdn_webp_urls[idx]
+                    if idx < len(product.cdn_webp_urls)
+                    else None,
+                }
+            )
 
         payload = {
-            "name":               product.name,
-            "slug":               product.slug,
-            "description":        product.description,
-            "short_description":  product.short_description,
-            "category":           product.category,
-            "collection_id":      collection_id,
-            "subcollection_id":   subcollection_id,
-            "price":              product.price,
-            "compare_at_price":   product.compare_at_price,
-            "stock_type":         "third_party",
-            "fulfillment_type":   "uma_penca",
-            "artist":             product.artist,
-            "brand":              product.brand,
-            "info":               product.info,
-            "materials":          product.materials,
-            "tags":               product.tags,
-            "weight":             product.weight,
-            "image":              image,
-            "images":             images,
-            "shipping_zones":     ["BR"],
-            "is_active":          product.is_active,
-            "is_featured":        False,
-            "is_archived":        False,
-            "third_party_product_id":  product.third_party_product_id,
-            "third_party_source":      product.third_party_source,
-            "third_party_synced_at":   datetime.now(timezone.utc).isoformat(),
-            "third_party_raw_data":    product.third_party_raw_data,
+            "name": product.name,
+            "slug": product.slug,
+            "description": product.description,
+            "short_description": product.short_description,
+            "category": product.category,
+            "collection_id": collection_id,
+            "subcollection_id": subcollection_id,
+            "price": product.price,
+            "compare_at_price": product.compare_at_price,
+            "stock_type": "print-on-demand",
+            "fulfillment_type": "uma_penca",
+            "artist": product.artist,
+            "brand": product.brand,
+            "info": product.info,
+            "materials": product.materials,
+            "tags": product.tags,
+            "weight": product.weight,
+            "image": image,
+            "images": images,
+            "shipping_zones": ["BR"],
+            "is_active": product.is_active,
+            "is_featured": False,
+            "is_archived": False,
+            "third_party_product_id": product.third_party_product_id,
+            "third_party_source": product.third_party_source,
+            "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
+            "third_party_raw_data": product.third_party_raw_data,
             "metadata": {
                 **(product.metadata or {}),
                 "image_index": image_index,
@@ -1085,7 +1179,9 @@ class SupabaseSync:
             },
         }
 
-        existing = self.existing_product(product.third_party_product_id or "", product.third_party_source)
+        existing = self.existing_product(
+            product.third_party_product_id or "", product.third_party_source
+        )
         if existing:
             resp = self._patch(f"products?id=eq.{existing['id']}", payload)
             action = "updated"
@@ -1122,26 +1218,34 @@ class SupabaseSync:
             self._post("product_variants", v_payload)
 
     def log_sync(self, sync_type: str, result: SyncResult):
-        self._post("third_party_sync_log", {
-            "source":          "uma-penca",
-            "sync_type":       sync_type,
-            "status":          "failed" if result.failed and not result.inserted else "success",
-            "items_processed": result.processed,
-            "items_inserted":  result.inserted,
-            "items_updated":   result.updated,
-            "items_failed":    result.failed,
-            "errors":          result.errors[:20],
-            "completed_at":    datetime.now(timezone.utc).isoformat(),
-            "duration_seconds": result.duration_seconds,
-            "triggered_by":    "python-scraper-v4",
-        })
+        self._post(
+            "third_party_sync_log",
+            {
+                "source": "uma-penca",
+                "sync_type": sync_type,
+                "status": "failed"
+                if result.failed and not result.inserted
+                else "success",
+                "items_processed": result.processed,
+                "items_inserted": result.inserted,
+                "items_updated": result.updated,
+                "items_failed": result.failed,
+                "errors": result.errors[:20],
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": result.duration_seconds,
+                "triggered_by": "python-scraper-v4",
+            },
+        )
 
 
 # ─────────────────────────────────────────────
 # Products.json generator
 # ─────────────────────────────────────────────
 
-def generate_products_json(products: list[ScrapedProduct], output_path: str, cdn_map: dict = None):
+
+def generate_products_json(
+    products: list[ScrapedProduct], output_path: str, cdn_map: dict = None
+):
     """Generate a complete products.json with all data for CI pipeline."""
     parsed = urlparse(STORE_URL)
     hostname = parsed.hostname or "store"
@@ -1165,7 +1269,9 @@ def generate_products_json(products: list[ScrapedProduct], output_path: str, cdn
     for p in products:
         product_dict = asdict(p)
         if cdn_map and p.third_party_product_id:
-            product_dict["cdn_upload_result"] = cdn_map.get(p.third_party_product_id, {})
+            product_dict["cdn_upload_result"] = cdn_map.get(
+                p.third_party_product_id, {}
+            )
         output["products"].append(product_dict)
 
     with open(output_path, "w", encoding="utf-8") as fh:
@@ -1177,6 +1283,7 @@ def generate_products_json(products: list[ScrapedProduct], output_path: str, cdn
 # ─────────────────────────────────────────────
 # Orchestrator
 # ─────────────────────────────────────────────
+
 
 def run(args) -> SyncResult:
     start = time.time()
@@ -1198,7 +1305,9 @@ def run(args) -> SyncResult:
         raw_products = extractor.fetch_product_list()
 
     if not raw_products:
-        logger.error("No product data found. The store HTML structure may have changed.")
+        logger.error(
+            "No product data found. The store HTML structure may have changed."
+        )
         sys.exit(1)
 
     logger.info(f"Total raw products: {len(raw_products)}")
@@ -1224,7 +1333,7 @@ def run(args) -> SyncResult:
 
     if not args.full and not args.dry_run and SUPABASE_URL and SUPABASE_KEY:
         logger.info("Incremental sync mode: checking for changed products...")
-        subcollection = getattr(args, 'subcollection', 'uma-penca') or 'uma-penca'
+        subcollection = getattr(args, "subcollection", "uma-penca") or "uma-penca"
         supabase_check = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, subcollection)
         synced_products = supabase_check.get_all_synced_products("uma-penca")
 
@@ -1243,7 +1352,9 @@ def run(args) -> SyncResult:
                 logger.debug(f"  Unchanged (skipped): {p.name} (ID: {tp_id})")
 
         products_to_sync = changed_products
-        logger.info(f"Incremental sync: {len(products_to_sync)} changed/new, {skipped_unchanged} unchanged")
+        logger.info(
+            f"Incremental sync: {len(products_to_sync)} changed/new, {skipped_unchanged} unchanged"
+        )
 
     # ── 3. Save raw JSON ─────────────────────────────────────
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1252,14 +1363,22 @@ def run(args) -> SyncResult:
     # ── 4. Upload images to GitHub CDN ────────────────────────
     cdn_map = {}
     if args.upload_images and GITHUB_TOKEN and GITHUB_OWNER:
-        branch = getattr(args, 'cdn_branch', 'cdn') or 'cdn'
+        branch = getattr(args, "cdn_branch", "cdn") or "cdn"
         uploader = GitHubCdnUploader(
-            GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, branch,
-            supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY
+            GITHUB_TOKEN,
+            GITHUB_OWNER,
+            GITHUB_REPO,
+            branch,
+            supabase_url=SUPABASE_URL,
+            supabase_key=SUPABASE_KEY,
         )
-        logger.info(f"Uploading images to GitHub CDN: {GITHUB_OWNER}/{GITHUB_REPO}@{branch}")
+        logger.info(
+            f"Uploading images to GitHub CDN: {GITHUB_OWNER}/{GITHUB_REPO}@{branch}"
+        )
         if SUPABASE_URL:
-            logger.info(f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image")
+            logger.info(
+                f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image"
+            )
         cdn_map = uploader.upload_all(products_to_sync, client, workers=2)
         result.images_uploaded = uploader.uploaded
         result.webp_generated = uploader.webp_generated
@@ -1274,17 +1393,21 @@ def run(args) -> SyncResult:
     generate_products_json(products, output_file, cdn_map)
 
     # ── 6. Sync to Supabase Database ──────────────────────────
-    should_sync_db = args.sync_to_db and not args.dry_run and (SUPABASE_URL and SUPABASE_KEY)
+    should_sync_db = (
+        args.sync_to_db and not args.dry_run and (SUPABASE_URL and SUPABASE_KEY)
+    )
 
     if should_sync_db:
-        subcollection_slug = getattr(args, 'subcollection', 'uma-penca') or 'uma-penca'
+        subcollection_slug = getattr(args, "subcollection", "uma-penca") or "uma-penca"
         supabase = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, subcollection_slug)
 
-        collection_slug = getattr(args, 'collection', None)
+        collection_slug = getattr(args, "collection", None)
         if not collection_slug:
             parsed_store = urlparse(STORE_URL)
             hostname = parsed_store.hostname or ""
-            path = parsed_store.path.strip("/").split("/")[0] if parsed_store.path else ""
+            path = (
+                parsed_store.path.strip("/").split("/")[0] if parsed_store.path else ""
+            )
             if "prataprint" in hostname or "prataprint" in STORE_URL.lower():
                 collection_slug = "prata-print"
             elif "bhumisprint" in hostname or "bhumisprint" in path:
@@ -1294,7 +1417,9 @@ def run(args) -> SyncResult:
 
         collection_id = supabase.get_collection_id(collection_slug)
         subcollection_id = supabase.get_subcollection_id()
-        logger.info(f"DB sync: collection='{collection_slug}' subcollection='{subcollection_slug}'")
+        logger.info(
+            f"DB sync: collection='{collection_slug}' subcollection='{subcollection_slug}'"
+        )
         if collection_id:
             logger.info(f"  collection_id = {collection_id}")
         if subcollection_id:
@@ -1330,7 +1455,9 @@ def run(args) -> SyncResult:
     elif not (SUPABASE_URL and SUPABASE_KEY):
         logger.warning("No Supabase credentials — skipping DB sync")
     elif not args.sync_to_db:
-        logger.info("No --sync-to-db flag — skipping DB sync (use --output to save JSON)")
+        logger.info(
+            "No --sync-to-db flag — skipping DB sync (use --output to save JSON)"
+        )
 
     result.duration_seconds = time.time() - start
 
@@ -1361,22 +1488,43 @@ def run(args) -> SyncResult:
 # CLI
 # ─────────────────────────────────────────────
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="UmaPenca/PrataPrint Scraper v4 — HTML-embedded JSON + GitHub CDN"
     )
-    parser.add_argument("--dry-run",       action="store_true", help="Scrape but skip DB write")
-    parser.add_argument("--full",          action="store_true", help="Full sync (all products)")
-    parser.add_argument("--product-id",    help="Fetch a single product by numeric ID")
-    parser.add_argument("--output",        help="Output JSON file")
-    parser.add_argument("--upload-images", action="store_true", help="Upload images to GitHub CDN")
-    parser.add_argument("--cdn-branch",    default="cdn",       help="CDN branch name (default: cdn)")
-    parser.add_argument("--storage-bucket", default=None,       help="Deprecated: use CDN instead")
-    parser.add_argument("--url",           default=None,        help="Store URL to scrape (overrides env)")
-    parser.add_argument("--store-id",      default=None,        help="Store numeric ID (overrides env)")
-    parser.add_argument("--subcollection", default="uma-penca", help="Subcollection slug for DB sync")
-    parser.add_argument("--collection",    default=None,        help="Collection slug for DB sync (auto-detect if not set)")
-    parser.add_argument("--sync-to-db",    action="store_true", help="Sync scraped products to Supabase DB")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Scrape but skip DB write"
+    )
+    parser.add_argument("--full", action="store_true", help="Full sync (all products)")
+    parser.add_argument("--product-id", help="Fetch a single product by numeric ID")
+    parser.add_argument("--output", help="Output JSON file")
+    parser.add_argument(
+        "--upload-images", action="store_true", help="Upload images to GitHub CDN"
+    )
+    parser.add_argument(
+        "--cdn-branch", default="cdn", help="CDN branch name (default: cdn)"
+    )
+    parser.add_argument(
+        "--storage-bucket", default=None, help="Deprecated: use CDN instead"
+    )
+    parser.add_argument(
+        "--url", default=None, help="Store URL to scrape (overrides env)"
+    )
+    parser.add_argument(
+        "--store-id", default=None, help="Store numeric ID (overrides env)"
+    )
+    parser.add_argument(
+        "--subcollection", default="uma-penca", help="Subcollection slug for DB sync"
+    )
+    parser.add_argument(
+        "--collection",
+        default=None,
+        help="Collection slug for DB sync (auto-detect if not set)",
+    )
+    parser.add_argument(
+        "--sync-to-db", action="store_true", help="Sync scraped products to Supabase DB"
+    )
     args = parser.parse_args()
 
     # Apply CLI url/store-id overrides to globals

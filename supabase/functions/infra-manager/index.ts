@@ -12,7 +12,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 serve(async (req) => {
   const url = new URL(req.url)
   const method = req.method
-  const path = url.pathname.split('/').filter(Boolean)
+  const pathParts = url.pathname.split('/').filter(Boolean)
+  // Strip function name from path (e.g. ['infra-manager', 'functions'] -> ['functions'])
+  const path = pathParts.length >= 1 ? pathParts.slice(1) : []
 
   try {
     // ============================================
@@ -155,17 +157,18 @@ serve(async (req) => {
           responseData = { raw: responseText }
         }
 
-        // Update function status
-        await supabase.from('edge_function_status').update({
-          last_execution: new Date().toISOString(),
-          last_status: testResponse.ok ? 'success' : 'error',
-          last_error: testResponse.ok ? null : responseText.substring(0, 500),
-          total_calls: supabase.raw('total_calls + 1'),
-          success_calls: testResponse.ok ? supabase.raw('success_calls + 1') : undefined,
-          error_calls: !testResponse.ok ? supabase.raw('error_calls + 1') : undefined,
-          avg_duration_ms: duration,
-          updated_at: new Date().toISOString(),
-        }).eq('function_name', functionName)
+        // Update function status with atomic counters via RPC
+        await supabase.rpc('increment_edge_function_counters', {
+          p_function_name: functionName,
+          p_increment_total: 1,
+          p_increment_success: testResponse.ok ? 1 : 0,
+          p_increment_error: testResponse.ok ? 0 : 1,
+          p_last_status: testResponse.ok ? 'success' : 'error',
+          p_last_error: testResponse.ok ? null : responseText.substring(0, 500),
+          p_last_execution: new Date().toISOString(),
+          p_avg_duration_ms: duration,
+          p_updated_at: new Date().toISOString(),
+        })
 
         // Log the operation
         await supabase.from('operation_logs').insert({
@@ -190,13 +193,15 @@ serve(async (req) => {
       } catch (error) {
         const duration = Date.now() - startTime
 
-        await supabase.from('edge_function_status').update({
-          last_execution: new Date().toISOString(),
-          last_status: 'error',
-          last_error: error.message,
-          error_calls: supabase.raw('error_calls + 1'),
-          updated_at: new Date().toISOString(),
-        }).eq('function_name', functionName)
+        await supabase.rpc('increment_edge_function_counters', {
+          p_function_name: functionName,
+          p_increment_total: 1,
+          p_increment_success: 0,
+          p_increment_error: 1,
+          p_last_status: 'error',
+          p_last_error: error.message,
+          p_updated_at: new Date().toISOString(),
+        })
 
         return new Response(JSON.stringify({
           error: `Failed to test function: ${error.message}`,
