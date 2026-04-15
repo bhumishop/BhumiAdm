@@ -73,12 +73,18 @@ function isValidPath(path: string): boolean {
 
 /**
  * Validate JWT token for admin access using custom session tokens
+ * Also accepts raw SUPABASE_SERVICE_ROLE_KEY as fallback
  */
 async function validateAdminAuth(req: Request): Promise<boolean> {
   const authHeader = req.headers.get('Authorization')
   if (!authHeader || !authHeader.startsWith('Bearer ')) return false
 
   const token = authHeader.substring(7)
+
+  // Also accept raw service role key (for server-to-server calls)
+  if (token === SUPABASE_SERVICE_ROLE_KEY) {
+    return true
+  }
 
   try {
     const { payload } = await jwtVerify(

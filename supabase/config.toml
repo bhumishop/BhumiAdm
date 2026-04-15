@@ -5,7 +5,7 @@
 project_id = "BhumiAdm"
 
 [functions.upload-cdn-image]
-verify_jwt = true
+verify_jwt = false
 
 [functions.abacatepay-webhook]
 verify_jwt = false
