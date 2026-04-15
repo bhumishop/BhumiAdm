@@ -16,6 +16,10 @@ const IntegrationsView = () => import('../views/IntegrationsView.vue')
 const UserRolesView = () => import('../views/UserRolesView.vue')
 const LiveDashboard = () => import('../views/LiveDashboard.vue')
 const NetworkGraph = () => import('../views/NetworkGraph.vue')
+const SalesDashboard = () => import('../views/SalesDashboard.vue')
+const ShopConfigurator = () => import('../views/ShopConfigurator.vue')
+const VisualOrchestrator = () => import('../views/VisualOrchestrator.vue')
+const ConfigView = () => import('../views/ConfigView.vue')
 const NotFoundView = () => import('../views/NotFoundView.vue')
 
 const routes: RouteRecordRaw[] = [
@@ -102,6 +106,30 @@ const routes: RouteRecordRaw[] = [
     name: 'networkGraph',
     component: NetworkGraph,
     meta: { requiresAuth: true, title: 'BhumiAdm - Network Graph' }
+  },
+  {
+    path: '/vendas',
+    name: 'salesDashboard',
+    component: SalesDashboard,
+    meta: { requiresAuth: true, title: 'BhumiAdm - Sales Dashboard' }
+  },
+  {
+    path: '/configurador',
+    name: 'shopConfigurator',
+    component: ShopConfigurator,
+    meta: { requiresAuth: true, title: 'BhumiAdm - Shop Configurator' }
+  },
+  {
+    path: '/orchestrator',
+    name: 'visualOrchestrator',
+    component: VisualOrchestrator,
+    meta: { requiresAuth: true, title: 'BhumiAdm - Visual Orchestrator' }
+  },
+  {
+    path: '/configuracoes',
+    name: 'config',
+    component: ConfigView,
+    meta: { requiresAuth: true, title: 'BhumiAdm - Configurations' }
   },
   {
     path: '/:pathMatch(.*)*',

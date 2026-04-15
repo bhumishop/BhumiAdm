@@ -1,10 +1,20 @@
 // GitHub CDN utilities for BhumiAdm admin panel
-// Uploads images via Supabase Edge Function proxy to avoid exposing GitHub token in frontend bundle
+// Uploads images via the Supabase Edge Function proxy (upload-cdn-image)
 // The edge function uses GITHUB_TOKEN stored as a Supabase secret (never in frontend)
+// Auth is handled via the admin session token from localStorage
 //
 // CI/CD workflows (Python scrapers) upload directly using the GitHub token from workflow secrets
 
 const JSDELIVR_BASE = 'https://cdn.jsdelivr.net/gh'
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://pyidnhtwlxlyuwswaazf.supabase.co'
+const EDGE_FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`
+
+/**
+ * Get the admin session token from localStorage
+ */
+function getAdminToken() {
+  return localStorage.getItem('bhumi_admin_token')
+}
 
 /**
  * Upload an image file to GitHub CDN via the Supabase Edge Function proxy.
@@ -17,16 +27,14 @@ export async function uploadImageToCdn(file, objectPath) {
   formData.append('image', file)
   formData.append('path', objectPath)
 
-  const response = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-cdn-image`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`,
-      },
-      body: formData,
-    }
-  )
+  const token = getAdminToken()
+  const response = await fetch(`${EDGE_FUNCTIONS_BASE}/upload-cdn-image`, {
+    method: 'POST',
+    headers: {
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    },
+    body: formData,
+  })
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Upload failed' }))

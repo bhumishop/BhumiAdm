@@ -3,15 +3,42 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
 function corsHeaders(origin?: string) {
-  // In production, replace '*' with your actual domain(s)
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
-  const allowOrigin = allowedOrigins.includes(origin) ? origin : (allowedOrigins[0] || '*')
+  const allowOrigin = allowedOrigins.includes(origin || '') ? origin : (allowedOrigins[0] || '*')
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
   }
+}
+
+// Rate limiting for webhook endpoint
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 100 // Higher limit for webhook
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+function getClientIP(req: Request): string {
+  return req.headers.get('x-real-ip')
+    || req.headers.get('cf-connecting-ip')
+    || 'unknown'
 }
 
 /**
@@ -85,6 +112,16 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders(req.headers.get('origin') || undefined) })
   }
 
+  // Rate limit webhook requests (prevent DoS)
+  const clientIP = getClientIP(req)
+  if (!checkRateLimit(clientIP)) {
+    console.warn('Webhook rate limit exceeded from IP:', clientIP)
+    return new Response(
+      JSON.stringify({ error: 'Rate limit exceeded' }),
+      { status: 429, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
@@ -102,6 +139,14 @@ serve(async (req) => {
     // Verify signature - required for all webhook calls
     if (!signature) {
       console.error('Missing webhook signature')
+
+      // Log failed verification
+      await supabase.rpc('log_webhook_verification', {
+        p_webhook_type: 'abacatepay',
+        p_success: false,
+        p_error_message: 'Missing signature'
+      }).catch(() => {})
+
       return new Response(
         JSON.stringify({ error: 'Missing signature' }),
         { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
@@ -111,6 +156,14 @@ serve(async (req) => {
     const isValid = verifyWebhookSignature(rawBody, signature)
     if (!isValid) {
       console.error('Invalid webhook signature')
+
+      // Log failed verification
+      await supabase.rpc('log_webhook_verification', {
+        p_webhook_type: 'abacatepay',
+        p_success: false,
+        p_error_message: 'Invalid signature'
+      }).catch(() => {})
+
       return new Response(
         JSON.stringify({ error: 'Invalid signature' }),
         { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
@@ -122,6 +175,13 @@ serve(async (req) => {
     const eventId = payload.id || payload.event_id || `${event}-${Date.now()}`
 
     console.log('Webhook received:', event, 'ID:', eventId)
+
+    // Log successful verification
+    await supabase.rpc('log_webhook_verification', {
+      p_webhook_type: 'abacatepay',
+      p_success: true,
+      p_event_id: eventId
+    }).catch(() => {})
 
     // Check idempotency - skip if already processed
     const alreadyProcessed = await isEventAlreadyProcessed(supabase, eventId)
@@ -268,7 +328,7 @@ serve(async (req) => {
   } catch (err) {
     console.error('Webhook error:', err)
     return new Response(
-      JSON.stringify({ error: err.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
     )
   }

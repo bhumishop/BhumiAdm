@@ -28,6 +28,7 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
+import { jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const GITHUB_TOKEN = Deno.env.get('GITHUB_TOKEN') || ''
 const GITHUB_OWNER = Deno.env.get('GITHUB_OWNER') || 'BhumiAdm'
@@ -35,6 +36,7 @@ const GITHUB_REPO = Deno.env.get('GITHUB_REPO') || 'BhumiAdm'
 const CDN_BRANCH = Deno.env.get('CDN_BRANCH') || 'cdn'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || ''
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const CDN_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_OWNER}/${GITHUB_REPO}@${CDN_BRANCH}`
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`
@@ -43,7 +45,10 @@ const GITHUB_API = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/
 const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
 
 function getCorsHeaders(origin?: string) {
-  const allowOrigin = ALLOWED_ORIGINS.includes(origin || '') ? origin : (ALLOWED_ORIGINS[0] || '*')
+  const allowOrigin = ALLOWED_ORIGINS.includes(origin || '') ? origin : (ALLOWED_ORIGINS[0] || 'null')
+  if (ALLOWED_ORIGINS.length === 0 && !origin) {
+    console.warn('ALLOWED_ORIGINS not configured - CORS will be restrictive')
+  }
   return {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
@@ -67,7 +72,7 @@ function isValidPath(path: string): boolean {
 }
 
 /**
- * Validate JWT token for admin access
+ * Validate JWT token for admin access using custom session tokens
  */
 async function validateAdminAuth(req: Request): Promise<boolean> {
   const authHeader = req.headers.get('Authorization')
@@ -75,22 +80,16 @@ async function validateAdminAuth(req: Request): Promise<boolean> {
 
   const token = authHeader.substring(7)
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return false
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-  const { data: { user }, error } = await supabase.auth.getUser(token)
-
-  if (error || !user) return false
-
-  // Check if user is admin
-  const { data: roles } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', user.id)
-    .eq('role', 'admin')
-    .single()
-
-  return !!roles
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(JWT_SECRET),
+      { algorithms: ['HS256'] }
+    )
+    return payload.role === 'admin'
+  } catch {
+    return false
+  }
 }
 
 serve(async (req) => {
@@ -173,7 +172,6 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         cdnUrl: uploadResult.cdnUrl,
-        sha: uploadResult.sha,
         path: objectPath
       }),
       { status: 200, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } }

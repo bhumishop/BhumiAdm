@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
 # Build output
 dist/
@@ -13,9 +14,8 @@ dist/
 
 # Logs
 *.log
-
-# Lock files (keep package-lock.json out)
-*lock*
+npm-debug.log*
+pnpm-debug.log*
 
 # OS files
 .DS_Store
@@ -24,8 +24,20 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
+*.egg-info/
+
+# Supabase CLI temp files
+supabase/.temp/
+
+# Coverage (testing)
+coverage/
+
+# Lock files - keep pnpm-lock.yaml but ignore package-lock.json
+package-lock.json

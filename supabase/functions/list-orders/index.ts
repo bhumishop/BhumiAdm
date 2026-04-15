@@ -22,6 +22,37 @@ const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
+// Rate limiting for write operations
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 50
+const RATE_LIMIT_WINDOW = 60 * 1000
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+function getClientIP(req: Request): string {
+  // Prefer x-real-ip from trusted proxy, never trust x-forwarded-for from untrusted sources
+  return req.headers.get('x-real-ip')
+    || req.headers.get('cf-connecting-ip') // Cloudflare
+    || 'unknown'
+}
+
+const MAX_PAGE_LIMIT = 200
+
 function corsHeaders(origin?: string) {
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
   const allowOrigin = allowedOrigins.includes(origin || '') ? origin : (allowedOrigins[0] || '*')
@@ -70,6 +101,17 @@ serve(async (req) => {
     )
   }
 
+  // Rate limit write operations
+  if (req.method !== 'GET') {
+    const clientIP = getClientIP(req)
+    if (!checkRateLimit(clientIP)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }),
+        { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
   const url = new URL(req.url)
   const pathParts = url.pathname.split('/').filter(Boolean)
   const orderId = pathParts[pathParts.length - 1]
@@ -81,8 +123,8 @@ serve(async (req) => {
     // ============================================
     if (req.method === 'GET' && !isSingleOrder) {
       const params = url.searchParams
-      const page = parseInt(params.get('page') || '1', 10)
-      const limit = parseInt(params.get('limit') || '50', 10)
+      const page = Math.max(1, parseInt(params.get('page') || '1', 10))
+      const limit = Math.min(MAX_PAGE_LIMIT, Math.max(1, parseInt(params.get('limit') || '50', 10)))
       const offset = (page - 1) * limit
       const status = params.get('status')
       const paymentStatus = params.get('payment_status')
@@ -110,7 +152,9 @@ serve(async (req) => {
         query = query.lte('created_at', dateTo)
       }
       if (search) {
-        query = query.or(`order_number.ilike.%${search}%,customer_email.ilike.%${search}%,customer_name.ilike.%${search}%`)
+        // Escape wildcard characters to prevent wildcard injection
+        const escapedSearch = search.replace(/%/g, '\\%').replace(/_/g, '\\_')
+        query = query.or(`order_number.ilike.%${escapedSearch}%,customer_email.ilike.%${escapedSearch}%,customer_name.ilike.%${escapedSearch}%`)
       }
 
       const { data, error, count } = await query
@@ -314,7 +358,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('list-orders error:', error)
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   }

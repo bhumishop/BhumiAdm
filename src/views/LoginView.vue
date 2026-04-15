@@ -69,12 +69,19 @@ const route = useRoute()
 const adminStore = useAdminAuthStore()
 
 const googleLoaded = ref(false)
+let googleButtonRetries = 0
+const GOOGLE_BUTTON_MAX_RETRIES = 20 // 10 seconds max
 
 async function handleSignIn() {
   try {
     await adminStore.signInWithGoogle()
     const redirect = route.query.redirect || '/'
-    router.push(redirect)
+    // Prevent open redirect attacks - only allow relative paths
+    if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
+      router.push(redirect)
+    } else {
+      router.push('/')
+    }
   } catch (e) {
     console.error('Login error:', e)
   }
@@ -82,6 +89,10 @@ async function handleSignIn() {
 
 function renderGoogleButton() {
   if (typeof google === 'undefined' || !google.accounts?.id) {
+    if (++googleButtonRetries > GOOGLE_BUTTON_MAX_RETRIES) {
+      console.error('Google Identity Services failed to load')
+      return
+    }
     setTimeout(renderGoogleButton, 500)
     return
   }

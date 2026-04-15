@@ -27,6 +27,11 @@ function clearCache(): void {
   cacheTimestamp = 0
 }
 
+// Export for cross-store cache clearing on signOut
+export function clearProductsCache(): void {
+  clearCache()
+}
+
 // Mock data for demo mode
 const mockCategories = [
   { id: 'camisetas', name: 'Camisetas', icon: '👕', sort_order: 1, is_active: true, metadata: {}, created_at: '', updated_at: '', description: null as string | null, parent_id: null as string | null, collection_id: null as string | null },
@@ -60,7 +65,7 @@ const mockProducts: Product[] = [
     shipping_zones: [],
     weight: 0.3,
     low_stock_threshold: 5,
-    fulfillment_type: 'own',
+    fulfillment_type: 'uiclap',
     metadata: {},
     dimensions: null,
     video_url: null,

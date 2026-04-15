@@ -1,6 +1,54 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const ABACATEPAY_API = 'https://api.abacatepay.com'
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+// Rate limiting: track requests per IP
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 20 // requests per window
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+/**
+ * Verify admin session token from Authorization header
+ */
+async function verifyAdmin(req: Request): Promise<boolean> {
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false
+
+  try {
+    const { payload } = await jwtVerify(
+      authHeader.substring(7),
+      new TextEncoder().encode(JWT_SECRET),
+      { algorithms: ['HS256'] }
+    )
+    return payload.role === 'admin'
+  } catch {
+    return false
+  }
+}
 
 function corsHeaders(origin?: string) {
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
@@ -10,7 +58,18 @@ function corsHeaders(origin?: string) {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
   }
+}
+
+/**
+ * Get client IP from request headers
+ */
+function getClientIP(req: Request): string {
+  // Prefer x-real-ip from trusted proxy, never trust x-forwarded-for from untrusted sources
+  return req.headers.get('x-real-ip')
+    || req.headers.get('cf-connecting-ip') // Cloudflare
+    || 'unknown'
 }
 
 /**
@@ -83,6 +142,24 @@ async function callAbacatePay(endpoint: string, method: string, body: any, maxRe
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders(req.headers.get('origin') || undefined) })
+  }
+
+  // Rate limiting
+  const clientIP = getClientIP(req)
+  if (!checkRateLimit(clientIP)) {
+    return new Response(
+      JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }),
+      { status: 429, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Require admin authentication
+  const isAdmin = await verifyAdmin(req)
+  if (!isAdmin) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized: admin access required' }),
+      { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+    )
   }
 
   try {
@@ -218,21 +295,48 @@ serve(async (req) => {
           }
         }
 
+        // Validate frequency
+        const validFrequencies = ['ONE_TIME', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
+        const frequency = data.frequency || 'ONE_TIME'
+        if (!validFrequencies.includes(frequency)) {
+          return new Response(
+            JSON.stringify({ error: `Invalid frequency. Must be one of: ${validFrequencies.join(', ')}` }),
+            { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+          )
+        }
+
+        // Validate payment methods
+        const validMethods = ['CREDIT_CARD', 'DEBIT_CARD', 'PIX', 'BOLETO', 'INSTALLMENTS']
+        const methods = data.methods || ['CREDIT_CARD', 'PIX']
+        if (!Array.isArray(methods) || !methods.every((m: string) => validMethods.includes(m))) {
+          return new Response(
+            JSON.stringify({ error: `Invalid payment methods. Allowed: ${validMethods.join(', ')}` }),
+            { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+          )
+        }
+
         const billingData = {
-          frequency: data.frequency || 'ONE_TIME',
-          methods: data.methods || ['CREDIT_CARD', 'PIX'],
+          frequency,
+          methods,
           products: data.products.map(p => ({
-            name: sanitizeString(p.name),
+            name: sanitizeString(p.name).substring(0, 200),
             price: p.price,
             quantity: p.quantity,
-            description: p.description ? sanitizeString(p.description) : undefined
+            description: p.description ? sanitizeString(p.description).substring(0, 500) : undefined
           })),
         }
 
-        // Validate return URLs
+        // Validate return URLs against allowed domains
+        const allowedDomains = (Deno.env.get('ALLOWED_RETURN_URL_DOMAINS') || '').split(',').filter(Boolean)
         if (data.returnUrl) {
           try {
-            new URL(data.returnUrl)
+            const url = new URL(data.returnUrl)
+            if (allowedDomains.length > 0 && !allowedDomains.includes(url.hostname)) {
+              return new Response(
+                JSON.stringify({ error: 'returnUrl domain not allowed' }),
+                { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+              )
+            }
             billingData.returnUrl = data.returnUrl
           } catch {
             return new Response(
@@ -244,7 +348,13 @@ serve(async (req) => {
 
         if (data.completionUrl) {
           try {
-            new URL(data.completionUrl)
+            const url = new URL(data.completionUrl)
+            if (allowedDomains.length > 0 && !allowedDomains.includes(url.hostname)) {
+              return new Response(
+                JSON.stringify({ error: 'completionUrl domain not allowed' }),
+                { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+              )
+            }
             billingData.completionUrl = data.completionUrl
           } catch {
             return new Response(
@@ -292,7 +402,7 @@ serve(async (req) => {
   } catch (err) {
     console.error('create-billing error:', err)
     return new Response(
-      JSON.stringify({ error: err.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
     )
   }

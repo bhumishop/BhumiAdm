@@ -23,7 +23,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.list-orders]
-verify_jwt = false
+verify_jwt = true
 
 [functions.list-collections]
 verify_jwt = false
@@ -32,12 +32,78 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.dashboard-metrics]
-verify_jwt = false
+verify_jwt = true
 
 [functions.inventory-management]
-verify_jwt = false
+verify_jwt = true
 
 [functions.manage-integrations]
+verify_jwt = true
+
+[functions.storefront-products]
+verify_jwt = false
+
+[functions.storefront-orders]
+verify_jwt = false
+
+[functions.manage-variants]
+verify_jwt = true
+
+[functions.manage-users]
+verify_jwt = true
+
+[functions.track-analytics]
+verify_jwt = false
+
+[functions.manage-shipping]
+verify_jwt = false
+
+[functions.manage-orders-advanced]
+verify_jwt = true
+
+[functions.network-graph]
+verify_jwt = true
+
+[functions.user-roles]
+verify_jwt = true
+
+[functions.infra-manager]
+verify_jwt = true
+
+[functions.user-tracker]
+verify_jwt = false
+
+[functions.telemetry-collector]
+verify_jwt = false
+
+[functions.shop-config]
+verify_jwt = true
+
+[functions.sales-analytics]
+verify_jwt = true
+
+[functions.storefront-auth]
+verify_jwt = false
+
+[functions.storefront-cart]
+verify_jwt = false
+
+[functions.storefront-shipping]
+verify_jwt = false
+
+[functions.storefront-products]
+verify_jwt = false
+
+[functions.storefront-orders]
+verify_jwt = false
+
+[functions.uma-penca-proxy]
+verify_jwt = false
+
+[functions.uma-penca-shipping]
+verify_jwt = false
+
+[functions.umapenca-prefill]
 verify_jwt = false
 
 [api]
@@ -54,8 +120,8 @@ extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [api.tls]
-# Enable HTTPS endpoints locally using a self-signed certificate.
-enabled = false
+# Enable HTTPS endpoints using a self-signed certificate.
+enabled = true
 # Paths to self-signed certificate pair.
 # cert_path = "../certs/my-cert.pem"
 # key_path = "../certs/my-key.pem"
@@ -102,17 +168,16 @@ sql_paths = ["./seed.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
-enabled = false
+enabled = true
 # List of IPv4 CIDR blocks allowed to connect to the database.
-# Defaults to allow all IPv4 connections. Set empty array to block all IPs.
-allowed_cidrs = ["0.0.0.0/0"]
+# Restrict to your application servers and Supabase services only
+allowed_cidrs = ["0.0.0.0/0"] # Update with your server IPs in production
 # List of IPv6 CIDR blocks allowed to connect to the database.
-# Defaults to allow all IPv6 connections. Set empty array to block all IPs.
-allowed_cidrs_v6 = ["::/0"]
+allowed_cidrs_v6 = ["::/0"] # Update with your server IPs in production
 
 # Uncomment to reject non-secure connections to the database.
-# [db.ssl_enforcement]
-# enabled = true
+[db.ssl_enforcement]
+enabled = true
 
 [realtime]
 enabled = true
@@ -208,10 +273,10 @@ enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
-minimum_password_length = 6
+minimum_password_length = 8
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
-password_requirements = ""
+password_requirements = "lower_upper_letters_digits"
 
 # Configure passkey sign-ins.
 # [auth.passkey]
@@ -252,7 +317,7 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.

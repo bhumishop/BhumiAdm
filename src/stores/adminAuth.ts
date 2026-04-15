@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { AdminUser } from '../types'
 import { edgeApi } from '../api/edgeApi'
+import { clearProductsCache } from './products'
+import { clearOrdersCache } from './orders'
 
 const SESSION_TIMEOUT_MS = 24 * 60 * 60 * 1000 // 24 hours
 const TOKEN_KEY = 'bhumi_admin_token'

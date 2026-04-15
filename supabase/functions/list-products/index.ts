@@ -23,6 +23,38 @@ const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
+// Rate limiting for write operations
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 100 // requests per minute for writes
+const RATE_LIMIT_WINDOW = 60 * 1000
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+function getClientIP(req: Request): string {
+  // Prefer x-real-ip from trusted proxy, never trust x-forwarded-for from untrusted sources
+  return req.headers.get('x-real-ip')
+    || req.headers.get('cf-connecting-ip') // Cloudflare
+    || 'unknown'
+}
+
+// Max pagination limit to prevent DoS
+const MAX_PAGE_LIMIT = 200
+
 function corsHeaders(origin?: string) {
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
   const allowOrigin = allowedOrigins.includes(origin || '') ? origin : (allowedOrigins[0] || '*')
@@ -70,6 +102,12 @@ function generateSlug(name: string): string {
     .replace(/^-|-$/g, '')
 }
 
+// Input sanitization
+function sanitizeString(str: string): string {
+  if (typeof str !== 'string') return ''
+  return str.replace(/[<>'"&]/g, '').trim()
+}
+
 serve(async (req) => {
   const origin = req.headers.get('origin') || undefined
   const cors = corsHeaders(origin)
@@ -82,11 +120,21 @@ serve(async (req) => {
   const isReadOperation = req.method === 'GET'
   const auth = isReadOperation ? null : await verifyAdmin(req)
 
-  if (!isReadOperation && !auth?.valid) {
-    return new Response(
-      JSON.stringify({ error: 'Unauthorized: admin access required' }),
-      { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
+  // Rate limit write operations
+  if (!isReadOperation) {
+    if (!auth?.valid) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: admin access required' }),
+        { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+    const clientIP = getClientIP(req)
+    if (!checkRateLimit(clientIP)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }),
+        { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
   }
 
   const url = new URL(req.url)
@@ -100,8 +148,8 @@ serve(async (req) => {
     // ============================================
     if (req.method === 'GET' && !isSingleProduct) {
       const params = url.searchParams
-      const page = parseInt(params.get('page') || '1', 10)
-      const limit = parseInt(params.get('limit') || '50', 10)
+      const page = Math.max(1, parseInt(params.get('page') || '1', 10))
+      const limit = Math.min(MAX_PAGE_LIMIT, Math.max(1, parseInt(params.get('limit') || '50', 10)))
       const offset = (page - 1) * limit
       const category = params.get('category')
       const collectionId = params.get('collection_id')
@@ -197,15 +245,27 @@ serve(async (req) => {
         )
       }
 
+      // Sanitize product string fields
+      const sanitizedProduct: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(product)) {
+        if (key === 'price' || key === 'compare_at_price' || key === 'stock_quantity' ||
+            key === 'collection_id' || key === 'subcollection_id' || key === 'is_active' ||
+            key === 'is_featured' || key === 'is_archived') {
+          sanitizedProduct[key] = value
+        } else if (typeof value === 'string') {
+          sanitizedProduct[key] = sanitizeString(value)
+        }
+      }
+
       // Generate slug if not provided
-      if (!product.slug) {
-        product.slug = generateSlug(product.name)
+      if (!sanitizedProduct.slug) {
+        sanitizedProduct.slug = generateSlug(sanitizedProduct.name as string)
       }
 
       // Create product
       const { data: newProduct, error: createError } = await supabase
         .from('products')
-        .insert(product)
+        .insert(sanitizedProduct)
         .select()
         .single()
 
@@ -240,10 +300,23 @@ serve(async (req) => {
       const body = await req.json()
       const { product, variants } = body
 
+      // Sanitize product string fields
+      const sanitizedProduct: Record<string, unknown> = { updated_at: new Date().toISOString() }
+      for (const [key, value] of Object.entries(product)) {
+        if (key === 'id' || key === 'created_at') continue
+        if (key === 'price' || key === 'compare_at_price' || key === 'stock_quantity' ||
+            key === 'collection_id' || key === 'subcollection_id' || key === 'is_active' ||
+            key === 'is_featured' || key === 'is_archived') {
+          sanitizedProduct[key] = value
+        } else if (typeof value === 'string') {
+          sanitizedProduct[key] = sanitizeString(value)
+        }
+      }
+
       // Update product
       const { data: updatedProduct, error: updateError } = await supabase
         .from('products')
-        .update({ ...product, updated_at: new Date().toISOString() })
+        .update(sanitizedProduct)
         .eq('id', parseInt(productId, 10))
         .select()
         .single()
@@ -351,6 +424,167 @@ serve(async (req) => {
       )
     }
 
+    // ============================================
+    // Variant endpoints
+    // ============================================
+    if (req.method === 'GET' && pathParts.includes('variants') && !pathParts.includes('bulk') && !pathParts.includes('stock')) {
+      const productId = url.searchParams.get('product_id')
+      let query = supabase
+        .from('product_variants')
+        .select('*, products(name)')
+        .order('created_at', { ascending: false })
+
+      if (productId) query = query.eq('product_id', parseInt(productId, 10))
+
+      const { data, error } = await query
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (req.method === 'GET' && pathParts.includes('options')) {
+      const { data, error } = await supabase
+        .from('product_options')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .catch(() => ({ data: [], error: null }))
+
+      return new Response(
+        JSON.stringify({ data: data || [] }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (req.method === 'POST' && pathParts.includes('variants') && pathParts.includes('stock')) {
+      const body = await req.json()
+      if (!body.sku || typeof body.quantity !== 'number') {
+        return new Response(
+          JSON.stringify({ error: 'sku and quantity are required' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const { data: variant } = await supabase
+        .from('product_variants')
+        .select('id, stock_quantity, product_id')
+        .eq('sku', body.sku)
+        .single()
+
+      if (!variant) {
+        return new Response(
+          JSON.stringify({ error: 'Variant not found' }),
+          { status: 404, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const { data, error } = await supabase
+        .from('product_variants')
+        .update({
+          stock_quantity: variant.stock_quantity + body.quantity,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', variant.id)
+        .select()
+        .single()
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (req.method === 'POST' && pathParts.includes('variants') && !pathParts.includes('stock')) {
+      const body = await req.json()
+      if (!body.product_id) {
+        return new Response(
+          JSON.stringify({ error: 'product_id is required' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      if (pathParts.includes('bulk')) {
+        const { variants } = body
+        if (!variants || !Array.isArray(variants)) {
+          return new Response(
+            JSON.stringify({ error: 'variants array is required' }),
+            { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+          )
+        }
+        const { data, error } = await supabase
+          .from('product_variants')
+          .insert(variants)
+          .select()
+        if (error) throw error
+        return new Response(
+          JSON.stringify({ data }),
+          { status: 201, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const { data, error } = await supabase
+        .from('product_variants')
+        .insert(body)
+        .select()
+        .single()
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 201, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (req.method === 'PUT' && pathParts.includes('variants')) {
+      const variantId = pathParts[pathParts.length - 1]
+      if (!/^\d+$/.test(variantId)) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid variant ID' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+      const body = await req.json()
+      const { data, error } = await supabase
+        .from('product_variants')
+        .update({ ...body, updated_at: new Date().toISOString() })
+        .eq('id', parseInt(variantId, 10))
+        .select()
+        .single()
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (req.method === 'DELETE' && pathParts.includes('variants')) {
+      const variantId = pathParts[pathParts.length - 1]
+      if (!/^\d+$/.test(variantId)) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid variant ID' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+      const { error } = await supabase
+        .from('product_variants')
+        .delete()
+        .eq('id', parseInt(variantId, 10))
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ message: 'Variant deleted' }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     return new Response(
       JSON.stringify({ error: 'Not found' }),
       { status: 404, headers: { ...cors, 'Content-Type': 'application/json' } }
@@ -358,8 +592,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('list-products error:', error)
+    const isDatabaseError = error.message?.includes('database') || error.message?.includes('SQL')
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({ error: isDatabaseError ? 'Internal server error' : (error.message || 'Internal server error') }),
       { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   }

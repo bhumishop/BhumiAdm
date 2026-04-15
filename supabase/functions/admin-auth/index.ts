@@ -20,9 +20,58 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ADMIN_GOOGLE_SUBS = Deno.env.get('ADMIN_GOOGLE_SUBS') || '' // Comma-separated Google sub values
 const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY // For session tokens
-const SESSION_TTL = parseInt(Deno.env.get('SESSION_TTL') || '86400', 10) // 24 hours default
+const SESSION_TTL = parseInt(Deno.env.get('SESSION_TTL') || '14400', 10) // 4 hours default (reduced from 24h)
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+// Rate limiting: max 20 login attempts per IP per minute
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 20
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+// Higher rate limit for GET/DELETE (session verification)
+const RATE_LIMIT_GENERAL_MAX = 200
+function checkRateLimitGeneral(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+
+  if (record.count >= RATE_LIMIT_GENERAL_MAX) {
+    return false
+  }
+
+  record.count++
+  return true
+}
+
+function getClientIP(req: Request): string {
+  // Prefer x-real-ip from trusted proxy, never trust x-forwarded-for from untrusted sources
+  // In production, configure your reverse proxy to set x-real-ip correctly
+  return req.headers.get('x-real-ip')
+    || req.headers.get('cf-connecting-ip') // Cloudflare
+    || 'unknown'
+}
 
 // Google's public keys for verifying ID tokens
 const googleJWKS = createRemoteJWKSet(
@@ -82,7 +131,10 @@ async function verifySessionToken(token: string): Promise<Record<string, unknown
  */
 function isAdminSub(googleSub: string): boolean {
   const allowedSubs = ADMIN_GOOGLE_SUBS.split(',').filter(Boolean)
-  if (allowedSubs.length === 0) return true // Setup mode - allow all
+  if (allowedSubs.length === 0) {
+    console.error('ADMIN_GOOGLE_SUBS not configured - denying all access')
+    return false // Deny by default - never allow unconfigured access
+  }
   return allowedSubs.includes(googleSub)
 }
 
@@ -109,6 +161,25 @@ serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: cors })
+  }
+
+  // Rate limit all requests (stricter for login, lighter for verification)
+  const clientIP = getClientIP(req)
+  if (req.method === 'POST') {
+    if (!checkRateLimit(clientIP)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many login attempts. Try again later.' }),
+        { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+  } else if (req.method === 'GET' || req.method === 'DELETE') {
+    // Higher limit for verification/sign-out
+    if (!checkRateLimitGeneral(clientIP)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }),
+        { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
   }
 
   const url = new URL(req.url)

@@ -123,6 +123,13 @@
           <div class="detail-row"><span class="detail-label">RECEITA</span><span class="detail-value text-green">R$ {{ networkStore.selectedNode.total_revenue?.toFixed(2) || '0.00' }}</span></div>
           <div class="detail-row"><span class="detail-label">PRE&Ccedil;O</span><span class="detail-value">R$ {{ networkStore.selectedNode.price?.toFixed(2) || '0.00' }}</span></div>
         </template>
+
+        <template v-if="networkStore.selectedNode.type === 'config'">
+          <div class="detail-row"><span class="detail-label">TIPO</span><span class="detail-value">{{ networkStore.selectedNode.config_type }}</span></div>
+          <div class="detail-row"><span class="detail-label">STATUS</span><span class="detail-value" :class="networkStore.selectedNode.enabled ? 'text-green' : 'text-red'">{{ networkStore.selectedNode.enabled ? 'ATIVO' : 'INATIVO' }}</span></div>
+          <div v-if="networkStore.selectedNode.location" class="detail-row"><span class="detail-label">LOCAL</span><span class="detail-value">{{ networkStore.selectedNode.location }}</span></div>
+          <div v-if="networkStore.selectedNode.provider" class="detail-row"><span class="detail-label">PROVEDOR</span><span class="detail-value">{{ networkStore.selectedNode.provider }}</span></div>
+        </template>
       </div>
     </div>
 
@@ -149,8 +156,10 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Network, DataSet } from 'vis-network/standalone'
 import { useNetworkStore } from '../stores/network'
+import { useShopConfigStore } from '../stores/shopConfig'
 
 const networkStore = useNetworkStore()
+const shopConfig = useShopConfigStore()
 const graphContainer = ref(null)
 let networkInstance = null
 let nodesDataSet = null
@@ -162,6 +171,7 @@ const filters = [
   { value: 'gateway', label: 'GATEWAYS' },
   { value: 'order', label: 'PEDIDOS' },
   { value: 'product', label: 'PRODUTOS' },
+  { value: 'config', label: 'CONFIG' },
 ].map(f => ({ ...f, get count() {
   if (f.value === 'all') return networkStore.nodes.length
   return (networkStore.nodes || []).filter(n => n.type === f.value).length
@@ -172,6 +182,7 @@ const nodeConfig = {
   gateway: { color: '#00FF41', size: 35, shape: 'diamond', font: { color: '#00FF41', size: 12, face: 'JetBrains Mono' } },
   order: { color: '#FF3347', size: 20, shape: 'dot', font: { color: '#FF3347', size: 10, face: 'JetBrains Mono' } },
   product: { color: '#00E5FF', size: 15, shape: 'dot', font: { color: '#00E5FF', size: 10, face: 'JetBrains Mono' } },
+  config: { color: '#FFB800', size: 25, shape: 'triangle', font: { color: '#FFB800', size: 11, face: 'JetBrains Mono' } },
 }
 
 function formatVisNodes(nodes) {
@@ -232,6 +243,12 @@ function updateGraph() {
 
 async function refreshGraph() {
   await networkStore.buildGraph()
+  // Also fetch shop config to add config nodes
+  try {
+    await shopConfig.fetchConfig()
+  } catch (e) {
+    // Config might not exist
+  }
   updateGraph()
 }
 

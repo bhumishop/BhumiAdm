@@ -16,6 +16,11 @@ function clearCache(): void {
   cacheTimestamp = 0
 }
 
+// Export for cross-store cache clearing on signOut
+export function clearOrdersCache(): void {
+  clearCache()
+}
+
 export const useOrderStore = defineStore('orders', () => {
   const orders = ref<Order[]>([])
   const loading = ref(false)

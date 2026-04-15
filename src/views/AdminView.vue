@@ -82,6 +82,12 @@
           <span v-if="!sidebarCollapsed">PAGAMENTOS</span>
         </router-link>
 
+        <router-link to="/vendas" class="nav-item" active-class="active">
+          <span class="nav-icon">&#x1F4CA;</span>
+          <span v-if="!sidebarCollapsed">VENDAS</span>
+          <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
+        </router-link>
+
         <router-link to="/estoque" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4CB;</span>
           <span v-if="!sidebarCollapsed">ESTOQUE</span>
@@ -105,6 +111,23 @@
         <router-link to="/usuarios" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F465;</span>
           <span v-if="!sidebarCollapsed">USU&Aacute;RIOS</span>
+        </router-link>
+
+        <router-link to="/configurador" class="nav-item" active-class="active">
+          <span class="nav-icon">&#x2699;</span>
+          <span v-if="!sidebarCollapsed">CONFIGURADOR</span>
+          <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
+        </router-link>
+
+        <router-link to="/orchestrator" class="nav-item" active-class="active">
+          <span class="nav-icon">&#x1F310;</span>
+          <span v-if="!sidebarCollapsed">ORCHESTRATOR</span>
+          <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
+        </router-link>
+
+        <router-link to="/configuracoes" class="nav-item" active-class="active">
+          <span class="nav-icon">&#x1F527;</span>
+          <span v-if="!sidebarCollapsed">CONFIGURA&Ccedil;&Otilde;ES</span>
         </router-link>
       </nav>
 
@@ -182,6 +205,10 @@ const routeNames = {
   subcollections: 'SUBCOLE&Ccedil;&Otilde;ES',
   variants: 'VARIANTES',
   payments: 'PAGAMENTOS',
+  salesDashboard: 'VENDAS',
+  shopConfigurator: 'CONFIGURADOR',
+  visualOrchestrator: 'ORCHESTRATOR',
+  config: 'CONFIGURA&Ccedil;&Otilde;ES',
   inventory: 'ESTOQUE',
   integrations: 'INTEGRA&Ccedil;&Otilde;ES',
   userRoles: 'USU&Aacute;RIOS',

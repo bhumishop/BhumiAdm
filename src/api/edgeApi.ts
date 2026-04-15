@@ -32,8 +32,25 @@ import type {
   BulkAction,
 } from '../types'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://pyidnhtwlxlyuwswaazf.supabase.co'
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+if (!SUPABASE_URL) {
+  throw new Error('VITE_SUPABASE_URL environment variable is required')
+}
 const EDGE_FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`
+
+/**
+ * Sanitize error messages for display to users
+ * Prevents XSS via reflected error messages from backend
+ */
+export function sanitizeErrorMessage(msg: unknown): string {
+  if (typeof msg !== 'string') return 'An unexpected error occurred'
+  // Strip HTML tags and limit length
+  const sanitized = msg.replace(/<[^>]*>/g, '').replace(/[<>&"']/g, (c) => {
+    const entities: Record<string, string> = { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }
+    return entities[c] || c
+  })
+  return sanitized.substring(0, 200) // Limit length
+}
 
 /**
  * Get stored auth token from localStorage
@@ -634,6 +651,62 @@ export const edgeApi = {
   },
 
   // ============================================
+  // Shop Configuration
+  // ============================================
+  shopConfig: {
+    async get(): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('shop-config')
+    },
+
+    async save(config: Record<string, unknown>): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('shop-config', {
+        method: 'POST',
+        body: JSON.stringify(config),
+      })
+    },
+
+    async updateGateway(gateway: string, updates: Record<string, unknown>): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('shop-config/gateways', {
+        method: 'PUT',
+        body: JSON.stringify({ gateway, updates }),
+      })
+    },
+
+    async updateProductRule(productType: string, rule: Record<string, unknown>): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('shop-config/rules', {
+        method: 'PUT',
+        body: JSON.stringify({ product_type: productType, rule }),
+      })
+    },
+
+    async getAvailableGateways(location?: string, productType?: string): Promise<{ data: Record<string, unknown>[] }> {
+      const params = new URLSearchParams()
+      if (location) params.set('location', location)
+      if (productType) params.set('product_type', productType)
+      const query = params.toString() ? `?${params.toString()}` : ''
+      return fetchWithAuth(`shop-config/available${query}`)
+    },
+  },
+
+  // ============================================
+  // Sales Analytics
+  // ============================================
+  sales: {
+    async getStats(days?: number): Promise<{ data: Record<string, unknown> }> {
+      const query = days ? `?days=${days}` : ''
+      return fetchWithAuth(`sales-analytics${query}`)
+    },
+
+    async getByGateway(): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('sales-analytics/by-gateway')
+    },
+
+    async getByLocation(): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('sales-analytics/by-location')
+    },
+  },
+
+  // ============================================
   // CDN Image Upload
   // ============================================
   cdn: {
@@ -660,6 +733,155 @@ export const edgeApi = {
       }
 
       return response.json()
+    },
+  },
+
+  // ============================================
+  // Infrastructure Manager
+  // ============================================
+  infraManager: {
+    async getOverview(): Promise<{ data: { overview: Record<string, unknown>; functions: Record<string, unknown>[]; sessions: Record<string, unknown>[]; recent_operations: Record<string, unknown>[] } }> {
+      return fetchWithAuth('infra-manager')
+    },
+
+    async getFunctions(): Promise<{ data: Record<string, unknown>[] }> {
+      return fetchWithAuth('infra-manager/functions')
+    },
+
+    async getFunction(name: string): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`infra-manager/functions/${name}`)
+    },
+
+    async updateFunction(name: string, updates: { status?: string; config?: Record<string, unknown> }): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`infra-manager/functions/${name}`, {
+        method: 'PUT',
+        body: JSON.stringify(updates),
+      })
+    },
+
+    async testFunction(name: string, args: Record<string, unknown> = {}): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`infra-manager/functions/${name}/test`, {
+        method: 'POST',
+        body: JSON.stringify({ args }),
+      })
+    },
+
+    async getLogs(limit = 50): Promise<{ data: Record<string, unknown>[] }> {
+      return fetchWithAuth(`infra-manager/logs?limit=${limit}`)
+    },
+
+    async logOperation(logEntry: Record<string, unknown>): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('infra-manager/log', {
+        method: 'POST',
+        body: JSON.stringify(logEntry),
+      })
+    },
+
+    async getOrchestratorGraph(): Promise<{ data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] } }> {
+      return fetchWithAuth('infra-manager/orchestrator-graph')
+    },
+  },
+
+  // ============================================
+  // User Tracker
+  // ============================================
+  userTracker: {
+    async createSession(sessionData: Record<string, unknown>): Promise<{ data: Record<string, unknown>; action: string }> {
+      return fetchWithAuth('user-tracker/session', {
+        method: 'POST',
+        body: JSON.stringify(sessionData),
+      })
+    },
+
+    async updateSession(sessionId: string, action: string): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`user-tracker/session/${sessionId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ action }),
+      })
+    },
+
+    async getSessions(activeOnly = true): Promise<{ data: Record<string, unknown>[] }> {
+      return fetchWithAuth(`user-tracker/sessions${activeOnly ? '' : '?active=false'}`)
+    },
+
+    async getSessionCounts(): Promise<{ data: { active_sessions: number; total_sessions: number } }> {
+      return fetchWithAuth('user-tracker/sessions/count')
+    },
+
+    async recordGeolocation(geoData: Record<string, unknown>): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth('user-tracker/geolocation', {
+        method: 'POST',
+        body: JSON.stringify(geoData),
+      })
+    },
+
+    async getGeolocations(userId?: string, limit = 50): Promise<{ data: Record<string, unknown>[] }> {
+      const query = userId ? `?user_id=${userId}&limit=${limit}` : `?limit=${limit}`
+      return fetchWithAuth(`user-tracker/geolocations${query}`)
+    },
+
+    async getMapData(): Promise<{ data: Record<string, unknown>[] }> {
+      return fetchWithAuth('user-tracker/map')
+    },
+
+    async getActiveUsersWithGeo(): Promise<{ data: Record<string, unknown>[] }> {
+      return fetchWithAuth('user-tracker/active-users')
+    },
+  },
+
+  // ============================================
+  // Telemetry Collector
+  // ============================================
+  telemetryCollector: {
+    async ingestSpans(spans: Record<string, unknown>[]): Promise<{ data: Record<string, unknown>[]; accepted: number }> {
+      return fetchWithAuth('telemetry-collector/spans', {
+        method: 'POST',
+        body: JSON.stringify(spans),
+      })
+    },
+
+    async ingestMetrics(metrics: Record<string, unknown>[]): Promise<{ data: Record<string, unknown>[]; accepted: number }> {
+      return fetchWithAuth('telemetry-collector/metrics', {
+        method: 'POST',
+        body: JSON.stringify(metrics),
+      })
+    },
+
+    async getSpans(
+      traceId?: string,
+      name?: string,
+      status?: string,
+      service?: string,
+      limit = 50
+    ): Promise<{ data: Record<string, unknown>[] }> {
+      const params = new URLSearchParams()
+      if (traceId) params.set('trace_id', traceId)
+      if (name) params.set('name', name)
+      if (status) params.set('status_code', status)
+      if (service) params.set('service_name', service)
+      params.set('limit', String(limit))
+      return fetchWithAuth(`telemetry-collector/spans?${params.toString()}`)
+    },
+
+    async getTrace(traceId: string): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`telemetry-collector/spans/${traceId}`)
+    },
+
+    async getMetrics(name?: string, type?: string, hours = 24, limit = 100): Promise<{ data: Record<string, unknown>[] }> {
+      const params = new URLSearchParams()
+      if (name) params.set('name', name)
+      if (type) params.set('type', type)
+      params.set('hours', String(hours))
+      params.set('limit', String(limit))
+      return fetchWithAuth(`telemetry-collector/metrics?${params.toString()}`)
+    },
+
+    async getAnalysis(hours = 24): Promise<{ data: Record<string, unknown> }> {
+      return fetchWithAuth(`telemetry-collector/analysis?hours=${hours}`)
+    },
+
+    async healthCheck(): Promise<{ status: string; timestamp: string }> {
+      return fetchWithAuth('telemetry-collector/health')
     },
   },
 }

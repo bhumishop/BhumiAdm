@@ -22,7 +22,7 @@ export interface SessionToken {
 // ============================================
 
 export type StockType = 'print-on-demand' | 'in-stock' | 'digital' | 'dropshipping'
-export type FulfillmentType = 'own' | 'uma_penca' | 'digital' | 'third_party'
+export type FulfillmentType = 'uma penca' | 'uiclap' | 'custom'
 export type ProductCategory = string
 
 export interface ProductVariant {
@@ -535,4 +535,310 @@ export interface BulkOperationRequest {
 export interface BulkOperationResponse {
   message: string
   count: number
+}
+
+// ============================================
+// Shop Configuration Types
+// ============================================
+
+export type ProductType = 'tshirt' | 'mug' | 'smug' | 'book' | 'accessory' | 'art' | 'digital'
+export type PaymentProvider = 'umapenca' | 'uiclap' | 'custom'
+export type PaymentGateway = 'mercadopago' | 'abacatepay' | 'pix_bricks' | 'umapenca_native' | 'paypal'
+export type PaymentMethodType = 'pix' | 'card' | 'boleto'
+export type CustomerLocation = 'brazil' | 'international'
+
+export interface PaymentGatewayConfig {
+  id: string
+  gateway: PaymentGateway
+  provider: PaymentProvider
+  enabled: boolean
+  supported_methods: PaymentMethodType[]
+  credentials: Record<string, unknown>
+  location_restriction: CustomerLocation | 'all'
+  min_amount?: number
+  max_amount?: number
+  metadata: Record<string, unknown>
+}
+
+export interface ProductPaymentRule {
+  id: string
+  product_type: ProductType
+  provider: PaymentProvider
+  gateways: PaymentGateway[]
+  location_overrides?: {
+    brazil?: PaymentGateway[]
+    international?: PaymentGateway[]
+  }
+  priority: number
+  is_active: boolean
+}
+
+export interface ShopConfig {
+  id: string
+  store_name: string
+  store_description: string
+  contact_email: string
+  whatsapp: string
+  instagram: string
+  external_links: {
+    mercado_livre?: string
+    umapenca?: string
+    uiclap?: string
+  }
+  shipping: {
+    free_shipping_above: number
+    default_shipping: number
+    production_days: number
+  }
+  policies: {
+    return_policy: string
+    shipping_info: string
+  }
+  banner: {
+    title: string
+    subtitle: string
+    image_url: string
+  }
+  payment_gateways: PaymentGatewayConfig[]
+  product_payment_rules: ProductPaymentRule[]
+  location_rules: {
+    brazil_gateways: PaymentGateway[]
+    international_gateways: PaymentGateway[]
+  }
+  metadata: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}
+
+// ============================================
+// Sales Dashboard Types
+// ============================================
+
+export type SaleStatus =
+  | 'payment_cancelled'
+  | 'payment_pending'
+  | 'payment_processing'
+  | 'direct_umapenca'
+  | 'sold_abacatepay'
+  | 'sold_mercadopago'
+  | 'sold_pix_bricks'
+  | 'completed'
+  | 'refunded'
+
+export interface SaleRecord {
+  id: string
+  order_id: string
+  order_number: string
+  status: SaleStatus
+  payment_gateway: PaymentGateway | null
+  product_type: ProductType | null
+  provider: PaymentProvider | null
+  customer_location: CustomerLocation
+  customer_name: string
+  customer_email: string
+  customer_address: string | null
+  customer_state: string | null
+  customer_country: string
+  total: number
+  currency: string
+  items: Array<{
+    product_name: string
+    quantity: number
+    price: number
+  }>
+  payment_method_type: PaymentMethodType | null
+  created_at: string
+  updated_at: string
+  metadata: Record<string, unknown>
+}
+
+export interface SalesStats {
+  total_sales: number
+  total_revenue: number
+  by_status: Record<SaleStatus, { count: number; revenue: number }>
+  by_gateway: Record<PaymentGateway, { count: number; revenue: number }>
+  by_location: {
+    brazil: { count: number; revenue: number }
+    international: { count: number; revenue: number }
+  }
+  by_product_type: Record<ProductType, { count: number; revenue: number }>
+  by_payment_method: Record<PaymentMethodType, { count: number; revenue: number }>
+  recent_orders: SaleRecord[]
+}
+
+// ============================================
+// Visual Config Node Types
+// ============================================
+
+export type ConfigNodeType =
+  | 'product_type'
+  | 'provider'
+  | 'payment_gateway'
+  | 'location_rule'
+  | 'payment_method'
+  | 'product_specific'
+
+export type ConfigEdgeType = 'assigns' | 'enables' | 'restricts' | 'overrides' | 'routes'
+
+export interface ConfigNode {
+  id: string
+  type: ConfigNodeType
+  label: string
+  data: Record<string, unknown>
+  enabled: boolean
+  config?: Record<string, unknown>
+}
+
+export interface ConfigEdge {
+  from: string
+  to: string
+  type: ConfigEdgeType
+  label: string
+  condition?: string
+  enabled: boolean
+}
+
+// ============================================
+// Infrastructure Orchestrator Types
+// ============================================
+
+export type EdgeFunctionStatus = 'active' | 'inactive' | 'degraded' | 'error'
+export type OperationStatus = 'running' | 'success' | 'error' | 'timeout'
+export type GeolocationSource = 'gps' | 'ip' | 'manual'
+export type OtelSpanKind = 'INTERNAL' | 'SERVER' | 'CLIENT' | 'PRODUCER' | 'CONSUMER'
+export type OtelStatusCode = 'UNSET' | 'OK' | 'ERROR'
+export type OtelMetricType = 'COUNTER' | 'GAUGE' | 'HISTOGRAM' | 'SUMMARY'
+
+export interface EdgeFunctionConfig {
+  id: string
+  function_name: string
+  status: EdgeFunctionStatus
+  last_execution: string | null
+  last_status: string | null
+  last_error: string | null
+  total_calls: number
+  success_calls: number
+  error_calls: number
+  avg_duration_ms: number | null
+  config: Record<string, unknown>
+  updated_at: string
+}
+
+export interface UserSession {
+  id: string
+  user_id: string
+  email: string | null
+  session_token: string | null
+  ip_address: string | null
+  user_agent: string | null
+  started_at: string
+  last_active: string
+  ended_at: string | null
+  is_active: boolean
+  metadata: Record<string, unknown>
+}
+
+export interface UserGeolocation {
+  id: string
+  user_id: string
+  session_id: string | null
+  latitude: number | null
+  longitude: number | null
+  city: string | null
+  region: string | null
+  country: string | null
+  country_code: string | null
+  ip_address: string | null
+  accuracy_meters: number | null
+  source: GeolocationSource
+  recorded_at: string
+  metadata: Record<string, unknown>
+}
+
+export interface OperationLog {
+  id: string
+  operation: string
+  entity_type: string | null
+  entity_id: string | null
+  user_id: string | null
+  status: OperationStatus
+  duration_ms: number | null
+  request_payload: Record<string, unknown> | null
+  response_payload: Record<string, unknown> | null
+  error_message: string | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
+  metadata: Record<string, unknown>
+}
+
+export interface OtelSpan {
+  id: string
+  trace_id: string
+  span_id: string
+  parent_span_id: string | null
+  name: string
+  kind: OtelSpanKind
+  start_time: string
+  end_time: string | null
+  duration_ns: number | null
+  status_code: OtelStatusCode
+  status_message: string | null
+  service_name: string
+  resource_attributes: Record<string, unknown>
+  span_attributes: Record<string, unknown>
+  events: unknown[]
+  links: unknown[]
+  created_at: string
+}
+
+export interface OtelMetric {
+  id: string
+  name: string
+  description: string | null
+  unit: string | null
+  type: OtelMetricType
+  value: number | null
+  count: number | null
+  sum: number | null
+  min: number | null
+  max: number | null
+  bucket_bounds: number[] | null
+  bucket_counts: number[] | null
+  timestamp: string
+  resource_attributes: Record<string, unknown>
+  metric_attributes: Record<string, unknown>
+  created_at: string
+}
+
+export interface InfraOverview {
+  total_functions: number
+  active_functions: number
+  degraded_functions: number
+  error_functions: number
+  total_sessions: number
+  active_sessions: number
+  total_operations: number
+  success_rate: number
+  avg_response_time: number
+  error_rate: number
+}
+
+export interface OrchestratorNode {
+  id: string
+  type: 'edge_function' | 'database' | 'user_session' | 'geolocation' | 'telemetry' | 'operation'
+  label: string
+  status: string
+  data: Record<string, unknown>
+  enabled: boolean
+  config?: Record<string, unknown>
+}
+
+export interface OrchestratorEdge {
+  from: string
+  to: string
+  type: 'calls' | 'queries' | 'tracks' | 'reports' | 'depends'
+  label: string
+  enabled: boolean
+  condition?: string
 }

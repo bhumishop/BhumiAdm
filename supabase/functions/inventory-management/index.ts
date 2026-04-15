@@ -156,15 +156,108 @@ serve(async (req) => {
       )
     }
 
+    // PUT /inventory-management/stock - Direct stock adjustment
+    if (req.method === 'PUT' && action === 'stock') {
+      const body = await req.json()
+      const { product_id, variant_id, quantity_change } = body
+
+      if (!product_id || typeof quantity_change !== 'number') {
+        return new Response(
+          JSON.stringify({ error: 'product_id and quantity_change are required' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const movementType = quantity_change > 0 ? 'in' : 'out'
+      const absQuantity = Math.abs(quantity_change)
+
+      // Record movement
+      await supabase.rpc('record_inventory_movement', {
+        p_product_id: product_id,
+        p_variant_id: variant_id || null,
+        p_movement_type: movementType,
+        p_quantity: absQuantity,
+        p_order_id: body.order_id || null,
+        p_notes: body.notes || 'Manual stock adjustment',
+      }).catch(() => {})
+
+      // Update product stock using raw SQL via RPC
+      const { data, error } = await supabase.rpc('update_product_stock', {
+        p_product_id: product_id,
+        p_quantity_change: quantity_change,
+      }).catch(async () => {
+        // Fallback: fetch current stock and update manually
+        const { data: product } = await supabase
+          .from('products')
+          .select('stock_quantity')
+          .eq('id', product_id)
+          .single()
+
+        if (!product) throw new Error('Product not found')
+
+        return await supabase
+          .from('products')
+          .update({
+            stock_quantity: product.stock_quantity + quantity_change,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', product_id)
+          .select()
+          .single()
+      })
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // GET /inventory-management/low-stock - Get low stock alerts
+    if (req.method === 'GET' && action === 'low-stock') {
+      const threshold = parseInt(url.searchParams.get('threshold') || '10', 10)
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, stock_quantity, stock_type, low_stock_threshold')
+        .eq('is_active', true)
+        .eq('is_archived', false)
+        .lte('stock_quantity', threshold)
+        .order('stock_quantity', { ascending: true })
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // GET /inventory-management/products - Get products with stock status
+    if (req.method === 'GET' && action === 'products') {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, stock_quantity, stock_type, low_stock_threshold, is_active, is_archived')
+        .eq('is_archived', false)
+        .order('stock_quantity', { ascending: true })
+
+      if (error) throw error
+
+      return new Response(
+        JSON.stringify({ data }),
+        { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     return new Response(
       JSON.stringify({ error: 'Not found' }),
       { status: 404, headers: { ...cors, 'Content-Type': 'application/json' } }
     )
-
   } catch (error) {
     console.error('inventory-management error:', error)
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   }

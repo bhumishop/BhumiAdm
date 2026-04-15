@@ -88,13 +88,16 @@ serve(async (req) => {
         .limit(10)
 
       // Get low stock products
-      const { data: lowStock } = await supabase
+      const { data: allProducts } = await supabase
         .from('products')
         .select('id, name, stock_quantity, low_stock_threshold')
         .eq('is_active', true)
         .eq('is_archived', false)
-        .lte('stock_quantity', supabase.raw('low_stock_threshold'))
-        .limit(10)
+        .limit(100)
+
+      const lowStock = (allProducts || [])
+        .filter(p => p.stock_quantity <= (p.low_stock_threshold || 0))
+        .slice(0, 10)
 
       // Get collection summary
       const { data: collections } = await supabase
@@ -218,7 +221,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('dashboard-metrics error:', error)
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   }
