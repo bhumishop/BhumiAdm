@@ -1,7 +1,31 @@
-*lock*
-.env*
+# Dependencies
 node_modules/
-*.log
-dist/
-*env*
 
+# Build output
+dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.test
+
+# Logs
+*.log
+
+# Lock files (keep package-lock.json out)
+*lock*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
