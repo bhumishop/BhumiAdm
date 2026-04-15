@@ -104,7 +104,7 @@ jobs:
         run: pip install -r .github/workflows/scripts/shared/requirements.txt
 
       - name: Create output directory
-        run: mkdir -p .github/workflows/scripts/${{ matrix.store }}/output
+        run: mkdir -p data/${{ matrix.store }}
 
       - name: Configure store parameters
         id: store-config
@@ -125,7 +125,7 @@ jobs:
         id: sync
         run: |
           SCRIPT=".github/workflows/scripts/umapenca.py"
-          OUTPUT=".github/workflows/scripts/${{ matrix.store }}/output/products.json"
+          OUTPUT="data/${{ matrix.store }}/products.json"
           CMD="python3 $SCRIPT --full --output $OUTPUT"
           CMD="$CMD --url ${{ steps.store-config.outputs.url }}"
           CMD="$CMD --store-id ${{ steps.store-config.outputs.store_id }}"
@@ -142,7 +142,7 @@ jobs:
       - name: Verify products.json
         if: success()
         run: |
-          OUTPUT=".github/workflows/scripts/${{ matrix.store }}/output/products.json"
+          OUTPUT="data/${{ matrix.store }}/products.json"
           python3 -c "
           import json
           with open('$OUTPUT') as f:
@@ -165,7 +165,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: products-${{ matrix.store }}-${{ github.run_id }}
-          path: .github/workflows/scripts/${{ matrix.store }}/output/products.json
+          path: data/${{ matrix.store }}/products.json
           retention-days: 30
 
       - name: Commit and push products.json
@@ -173,7 +173,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/scripts/${{ matrix.store }}/output/products.json
+          git add data/${{ matrix.store }}/products.json
           git diff --staged --quiet || git commit -m "chore: update ${{ matrix.store }} products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
@@ -216,13 +216,13 @@ jobs:
         run: pip install -r .github/workflows/scripts/shared/requirements.txt
 
       - name: Create output directory
-        run: mkdir -p .github/workflows/scripts/uiclap/output
+        run: mkdir -p data/uiclap
 
       - name: Run UICLAP Scraper + Upload to CDN + Sync to DB
         id: sync
         run: |
           SCRIPT=".github/workflows/scripts/uiclap.py"
-          OUTPUT=".github/workflows/scripts/uiclap/output/products.json"
+          OUTPUT="data/uiclap/products.json"
           CMD="python3 $SCRIPT --output $OUTPUT"
           CMD="$CMD --bio-url https://uiclap.bio/levikarmadrum"
           CMD="$CMD --collection bhumi-livros"
@@ -239,7 +239,7 @@ jobs:
       - name: Verify products.json
         if: success()
         run: |
-          OUTPUT=".github/workflows/scripts/uiclap/output/products.json"
+          OUTPUT="data/uiclap/products.json"
           python3 -c "
           import json
           with open('$OUTPUT') as f:
@@ -259,7 +259,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: products-uiclap-${{ github.run_id }}
-          path: .github/workflows/scripts/uiclap/output/products.json
+          path: data/uiclap/products.json
           retention-days: 30
 
       - name: Commit and push products.json
@@ -267,7 +267,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/scripts/uiclap/output/products.json
+          git add data/uiclap/products.json
           git diff --staged --quiet || git commit -m "chore: update uiclap products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
