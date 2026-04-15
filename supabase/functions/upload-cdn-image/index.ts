@@ -210,21 +210,15 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     // URL-encode the path for GitHub API
     const encodedPath = objectPath.split('/').map(encodeURIComponent).join('/')
     
-    // Check if file already exists
+    // Check if file already exists and get its SHA
     const checkUrl = `${GITHUB_API}/${encodedPath}?ref=${CDN_BRANCH}`
     const checkResp = await fetch(checkUrl, { headers })
     
+    let existingSha = null
     if (checkResp.ok) {
       const existing = await checkResp.json()
-      const sha = existing.sha
-      console.log(`File already exists: ${objectPath}, sha: ${sha}`)
-      return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha }
-    }
-    
-    // If check failed with something other than 404, log it
-    if (!checkResp.ok && checkResp.status !== 404) {
-      const checkErrorText = await checkResp.text()
-      console.log(`Check failed with ${checkResp.status}: ${checkErrorText}`)
+      existingSha = existing.sha
+      console.log(`File already exists: ${objectPath}, sha: ${existingSha}`)
     }
 
     // Encode file as base64 (chunked to avoid stack overflow)
@@ -242,9 +236,10 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
       method: 'PUT',
       headers,
       body: JSON.stringify({
-        message: `chore: add product image ${objectPath}`,
+        message: `chore: ${existingSha ? 'update' : 'add'} product image ${objectPath}`,
         content: contentB64,
         branch: CDN_BRANCH,
+        ...(existingSha ? { sha: existingSha } : {}),
       }),
     })
 
@@ -259,7 +254,7 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
     
     if (uploadResp.status === 409 && attempt < maxRetries - 1) {
-      // Conflict: another process updated the branch, retry
+      // Conflict: SHA mismatch or concurrent update, re-fetch SHA and retry
       console.log(`409 conflict on ${objectPath}, retry ${attempt + 1}/${maxRetries}`)
       continue
     }
