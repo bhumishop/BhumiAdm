@@ -1359,6 +1359,7 @@ class SupabaseSync:
             "third_party_source": "uiclap",
             "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
             "third_party_raw_data": book.third_party_raw_data,
+            "product_url": book.third_party_product_url,
             "metadata": {
                 **(book.metadata or {}),
                 "image_index": image_index,

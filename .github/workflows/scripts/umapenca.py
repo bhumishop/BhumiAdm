@@ -869,28 +869,45 @@ class GitHubCdnUploader:
         return self._upload_via_edge_function(file_bytes, object_path, content_type)
 
     def _upload_direct(
-        self, file_bytes: bytes, object_path: str, content_type: str
+        self, file_bytes: bytes, object_path: str, content_type: str, max_retries: int = 3
     ) -> Optional[str]:
         """Upload directly via GitHub Contents API."""
         content_b64 = base64.b64encode(file_bytes).decode("utf-8")
-        resp = requests.put(
-            f"{self.base_url}/{object_path}",
-            headers=self.headers,
-            json={
+        for attempt in range(max_retries):
+            payload = {
                 "message": f"chore: add product image {object_path}",
                 "content": content_b64,
                 "branch": self.branch,
-            },
-            timeout=60,
-        )
-        if resp.ok:
-            self.uploaded += 1
-            return self._make_cdn_url(object_path)
-        else:
-            logger.warning(
-                f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}"
+            }
+            # If file already exists, we need its SHA to update
+            existing_sha = self._get_file_sha(object_path)
+            if existing_sha:
+                payload["sha"] = existing_sha
+                logger.debug(f"File exists, using SHA: {existing_sha[:8]}...")
+
+            resp = requests.put(
+                f"{self.base_url}/{object_path}",
+                headers=self.headers,
+                json=payload,
+                timeout=60,
             )
-            return None
+            if resp.ok:
+                self.uploaded += 1
+                return self._make_cdn_url(object_path)
+            elif resp.status_code == 409 and attempt < max_retries - 1:
+                # Conflict: branch was updated by another process, retry with fresh SHA
+                logger.debug(
+                    f"409 conflict on {object_path}, retry {attempt + 1}/{max_retries}"
+                )
+                continue
+            else:
+                logger.warning(
+                    f"Direct CDN upload failed for {object_path}: {resp.status_code} {resp.text[:200]}"
+                )
+                if resp.status_code == 409:
+                    return None  # exhausted retries
+                return None
+        return None
 
     def _upload_via_edge_function(
         self, file_bytes: bytes, object_path: str, content_type: str
@@ -1141,7 +1158,7 @@ class SupabaseSync:
             "price": product.price,
             "compare_at_price": product.compare_at_price,
             "stock_type": "print-on-demand",
-            "fulfillment_type": "uma_penca",
+            "fulfillment_type": "uma penca",
             "artist": product.artist,
             "brand": product.brand,
             "info": product.info,
@@ -1158,6 +1175,7 @@ class SupabaseSync:
             "third_party_source": product.third_party_source,
             "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
             "third_party_raw_data": product.third_party_raw_data,
+            "product_url": product.third_party_product_url,
             "metadata": {
                 **(product.metadata or {}),
                 "image_index": image_index,

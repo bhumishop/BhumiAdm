@@ -192,7 +192,7 @@ serve(async (req) => {
 /**
  * Upload a file to GitHub via the Contents API.
  */
-async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, contentType: string) {
+async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, contentType: string, maxRetries: number = 3) {
   if (!GITHUB_TOKEN) {
     console.error('GITHUB_TOKEN is not set')
     return null
@@ -206,40 +206,56 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
 
   console.log(`Uploading to GitHub: ${objectPath}, size: ${fileBytes.length} bytes`)
 
-  // Check if file already exists
-  const checkUrl = `${GITHUB_API}/${objectPath}?ref=${CDN_BRANCH}`
-  const checkResp = await fetch(checkUrl, { headers })
-  let sha: string | null = null
-  if (checkResp.ok) {
-    const existing = await checkResp.json()
-    sha = existing.sha
-    console.log(`File already exists: ${objectPath}, sha: ${sha}`)
-    return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha }
-  }
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    // Check if file already exists
+    const checkUrl = `${GITHUB_API}/${objectPath}?ref=${CDN_BRANCH}`
+    const checkResp = await fetch(checkUrl, { headers })
+    if (checkResp.ok) {
+      const existing = await checkResp.json()
+      const sha = existing.sha
+      console.log(`File already exists: ${objectPath}, sha: ${sha}`)
+      return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha }
+    }
 
-  // Encode file as base64
-  const contentB64 = btoa(String.fromCharCode(...fileBytes))
+    // Encode file as base64 (chunked to avoid stack overflow)
+    const CHUNK_SIZE = 0x8000 // 32KB chunks
+    let contentB64 = ''
+    for (let i = 0; i < fileBytes.length; i += CHUNK_SIZE) {
+      const chunk = fileBytes.subarray(i, i + CHUNK_SIZE)
+      contentB64 += String.fromCharCode.apply(null, Array.from(chunk))
+    }
+    contentB64 = btoa(contentB64)
 
-  // Upload via Contents API
-  const uploadUrl = `${GITHUB_API}/${objectPath}`
-  const uploadResp = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify({
-      message: `chore: add product image ${objectPath}`,
-      content: contentB64,
-      branch: CDN_BRANCH,
-    }),
-  })
+    // Upload via Contents API
+    const uploadUrl = `${GITHUB_API}/${objectPath}`
+    const uploadResp = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        message: `chore: add product image ${objectPath}`,
+        content: contentB64,
+        branch: CDN_BRANCH,
+      }),
+    })
 
-  if (!uploadResp.ok) {
+    if (uploadResp.ok) {
+      const data = await uploadResp.json()
+      const cdnUrl = `${CDN_BASE}/${objectPath}`
+      console.log(`Uploaded: ${objectPath} -> ${cdnUrl}`)
+      return { cdnUrl, sha: data.content?.sha }
+    }
+
     const errorText = await uploadResp.text()
+    if (uploadResp.status === 409 && attempt < maxRetries - 1) {
+      // Conflict: another process updated the branch, retry
+      console.log(`409 conflict on ${objectPath}, retry ${attempt + 1}/${maxRetries}`)
+      continue
+    }
+
     console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
     return null
   }
 
-  const data = await uploadResp.json()
-  const cdnUrl = `${CDN_BASE}/${objectPath}`
-  console.log(`Uploaded: ${objectPath} -> ${cdnUrl}`)
-  return { cdnUrl, sha: data.content?.sha }
+  console.error(`Exhausted retries for ${objectPath}`)
+  return null
 }
