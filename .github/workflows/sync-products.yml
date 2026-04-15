@@ -50,19 +50,21 @@ jobs:
         run: |
           STORE="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.store || 'all' }}"
           if [ "$STORE" = "all" ]; then
-            echo 'stores=["prataprint", "bhumisprint"]' >> $GITHUB_OUTPUT
+            echo 'stores=["prataprint", "bhumisprint"]' >> "$GITHUB_OUTPUT"
           elif [ "$STORE" = "uiclap" ]; then
-            echo 'stores=[]' >> $GITHUB_OUTPUT
+            echo 'stores=[]' >> "$GITHUB_OUTPUT"
+          elif [ "$STORE" = "prataprint" ] || [ "$STORE" = "bhumisprint" ]; then
+            echo "stores=[\"$STORE\"]" >> "$GITHUB_OUTPUT"
           else
-            echo "stores=[\"$STORE\"]" >> $GITHUB_OUTPUT
+            echo 'stores=["prataprint", "bhumisprint"]' >> "$GITHUB_OUTPUT"
           fi
       - id: set-uiclap
         run: |
           STORE="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.store || 'all' }}"
           if [ "$STORE" = "all" ] || [ "$STORE" = "uiclap" ]; then
-            echo "run=true" >> $GITHUB_OUTPUT
+            echo "run=true" >> "$GITHUB_OUTPUT"
           else
-            echo "run=false" >> $GITHUB_OUTPUT
+            echo "run=false" >> "$GITHUB_OUTPUT"
           fi
 
   # ── Sync UmaPenca stores (prataprint, bhumisprint) ──────
@@ -278,8 +280,12 @@ jobs:
   # ── Verify all products on site ─────────────────────────
   verify-site:
     name: Verify Products on Site
-    needs: [sync-umapenca, sync-uiclap]
-    if: always()
+    needs: [generate-matrix, sync-umapenca, sync-uiclap]
+    if: >-
+      always() &&
+      (needs.generate-matrix.outputs.umapenca_stores != '[]' || needs.generate-matrix.outputs.run_uiclap == 'true') &&
+      (needs.sync-umapenca.result == 'success' || needs.sync-umapenca.result == 'skipped') &&
+      (needs.sync-uiclap.result == 'success' || needs.sync-uiclap.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -321,8 +327,10 @@ jobs:
   # ── Notify on failure ───────────────────────────────────
   notify-failure:
     name: Notify on Failure
-    needs: [sync-umapenca, sync-uiclap, verify-site]
-    if: failure()
+    needs: [generate-matrix, sync-umapenca, sync-uiclap, verify-site]
+    if: >-
+      failure() &&
+      (needs.sync-umapenca.result == 'failure' || needs.sync-uiclap.result == 'failure' || needs.verify-site.result == 'failure')
     runs-on: ubuntu-latest
     steps:
       - name: Create failure issue
