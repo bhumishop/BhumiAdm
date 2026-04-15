@@ -1,0 +1,336 @@
+name: Sync Products (UmaPenca + UICLAP) → GitHub CDN + Supabase
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      store:
+        description: 'Store to sync'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - prataprint
+          - bhumisprint
+          - uiclap
+      upload_images:
+        description: 'Upload images to GitHub CDN'
+        required: false
+        type: boolean
+        default: true
+      sync_to_db:
+        description: 'Sync to Supabase Database'
+        required: false
+        type: boolean
+        default: true
+  push:
+    branches: [master, main]
+    # Run on EVERY push to master/main (no paths filter)
+    # This ensures products are re-scraped and synced on every merge/deploy
+
+# Permissions needed: read repo contents, write to cdn branch
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  # ── Generate matrix of stores to sync ────────────────────
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      umapenca_stores: ${{ steps.set-umapenca.outputs.stores }}
+      run_uiclap: ${{ steps.set-uiclap.outputs.run }}
+    steps:
+      - id: set-umapenca
+        run: |
+          STORE="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.store || 'all' }}"
+          if [ "$STORE" = "all" ]; then
+            echo 'stores=["prataprint", "bhumisprint"]' >> $GITHUB_OUTPUT
+          elif [ "$STORE" = "uiclap" ]; then
+            echo 'stores=[]' >> $GITHUB_OUTPUT
+          else
+            echo "stores=[\"$STORE\"]" >> $GITHUB_OUTPUT
+          fi
+      - id: set-uiclap
+        run: |
+          STORE="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.store || 'all' }}"
+          if [ "$STORE" = "all" ] || [ "$STORE" = "uiclap" ]; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Sync UmaPenca stores (prataprint, bhumisprint) ──────
+  sync-umapenca:
+    name: Sync ${{ matrix.store }} (UmaPenca)
+    needs: generate-matrix
+    if: ${{ needs.generate-matrix.outputs.umapenca_stores != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        store: ${{ fromJson(needs.generate-matrix.outputs.umapenca_stores) }}
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_OWNER: ${{ github.repository_owner }}
+      # Always target BhumiAdm repo for CDN (where the cdn branch lives)
+      GITHUB_REPO: BhumiAdm
+      CDN_BRANCH: cdn
+      UPLOAD_IMAGES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_images || 'true' }}
+      SYNC_TO_DB: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sync_to_db || 'true' }}
+
+    steps:
+      - name: Checkout BhumiAdm repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          repository: ${{ github.repository_owner }}/BhumiAdm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r .github/workflows/scripts/shared/requirements.txt
+
+      - name: Create output directory
+        run: mkdir -p .github/workflows/scripts/${{ matrix.store }}/output
+
+      - name: Configure store parameters
+        id: store-config
+        run: |
+          STORE="${{ matrix.store }}"
+          if [ "$STORE" = "prataprint" ]; then
+            echo "url=https://prataprint.bhumisparshaschool.org" >> $GITHUB_OUTPUT
+            echo "store_id=11210" >> $GITHUB_OUTPUT
+            echo "collection=prata-print" >> $GITHUB_OUTPUT
+          elif [ "$STORE" = "bhumisprint" ]; then
+            echo "url=https://umapenca.com/bhumisprint" >> $GITHUB_OUTPUT
+            echo "store_id=11205" >> $GITHUB_OUTPUT
+            echo "collection=bhumi-print" >> $GITHUB_OUTPUT
+          fi
+          echo "subcollection=uma-penca" >> $GITHUB_OUTPUT
+
+      - name: Run Scraper + Upload to CDN + Sync to DB
+        id: sync
+        run: |
+          SCRIPT=".github/workflows/scripts/umapenca.py"
+          OUTPUT=".github/workflows/scripts/${{ matrix.store }}/output/products.json"
+          CMD="python3 $SCRIPT --full --output $OUTPUT"
+          CMD="$CMD --url ${{ steps.store-config.outputs.url }}"
+          CMD="$CMD --store-id ${{ steps.store-config.outputs.store_id }}"
+          CMD="$CMD --collection ${{ steps.store-config.outputs.collection }}"
+          CMD="$CMD --subcollection ${{ steps.store-config.outputs.subcollection }}"
+          CMD="$CMD --cdn-branch cdn"
+
+          [ "${{ env.UPLOAD_IMAGES }}" = "true" ] && CMD="$CMD --upload-images"
+          [ "${{ env.SYNC_TO_DB }}" = "true" ] && CMD="$CMD --sync-to-db"
+
+          echo "Running: $CMD"
+          eval $CMD
+
+      - name: Verify products.json
+        if: success()
+        run: |
+          OUTPUT=".github/workflows/scripts/${{ matrix.store }}/output/products.json"
+          python3 -c "
+          import json
+          with open('$OUTPUT') as f:
+              data = json.load(f)
+          print(f\"Store: {data.get('store',{}).get('name','?')}\")
+          print(f\"Products: {data.get('total_products',0)}\")
+          cats = {}
+          for p in data.get('products',[]):
+              c = p.get('category','?'); cats[c] = cats.get(c,0)+1
+          print('Categories:', dict(cats))
+          # Check CDN URLs
+          cdn_count = sum(1 for p in data.get('products',[]) if p.get('cdn_image_urls'))
+          webp_count = sum(1 for p in data.get('products',[]) if p.get('cdn_webp_urls'))
+          print(f'Products with CDN images: {cdn_count}')
+          print(f'Products with WebP: {webp_count}')
+          "
+
+      - name: Upload products.json artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: products-${{ matrix.store }}-${{ github.run_id }}
+          path: .github/workflows/scripts/${{ matrix.store }}/output/products.json
+          retention-days: 30
+
+      - name: Commit and push products.json
+        if: success() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/scripts/${{ matrix.store }}/output/products.json
+          git diff --staged --quiet || git commit -m "chore: update ${{ matrix.store }} products.json
+
+          🤖 Generated with [Qoder](https://qoder.com)"
+          git push
+
+  # ── Sync UICLAP books ───────────────────────────────────
+  sync-uiclap:
+    name: Sync UICLAP Books
+    needs: generate-matrix
+    if: ${{ needs.generate-matrix.outputs.run_uiclap == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_OWNER: ${{ github.repository_owner }}
+      # Always target BhumiAdm repo for CDN (where the cdn branch lives)
+      GITHUB_REPO: BhumiAdm
+      CDN_BRANCH: cdn
+      UPLOAD_IMAGES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_images || 'true' }}
+      SYNC_TO_DB: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sync_to_db || 'true' }}
+
+    steps:
+      - name: Checkout BhumiAdm repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          repository: ${{ github.repository_owner }}/BhumiAdm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r .github/workflows/scripts/shared/requirements.txt
+
+      - name: Create output directory
+        run: mkdir -p .github/workflows/scripts/uiclap/output
+
+      - name: Run UICLAP Scraper + Upload to CDN + Sync to DB
+        id: sync
+        run: |
+          SCRIPT=".github/workflows/scripts/uiclap.py"
+          OUTPUT=".github/workflows/scripts/uiclap/output/products.json"
+          CMD="python3 $SCRIPT --output $OUTPUT"
+          CMD="$CMD --bio-url https://uiclap.bio/levikarmadrum"
+          CMD="$CMD --collection bhumi-livros"
+          CMD="$CMD --subcollection uiclap"
+          CMD="$CMD --fetch-details"
+          CMD="$CMD --cdn-branch cdn"
+
+          [ "${{ env.UPLOAD_IMAGES }}" = "true" ] && CMD="$CMD --upload-images"
+          [ "${{ env.SYNC_TO_DB }}" = "true" ] && CMD="$CMD --sync-to-db"
+
+          echo "Running: $CMD"
+          eval $CMD
+
+      - name: Verify products.json
+        if: success()
+        run: |
+          OUTPUT=".github/workflows/scripts/uiclap/output/products.json"
+          python3 -c "
+          import json
+          with open('$OUTPUT') as f:
+              data = json.load(f)
+          print(f\"Source: {data.get('source','?')}\")
+          print(f\"Books: {data.get('total_products',0)}\")
+          cdn_count = sum(1 for p in data.get('products',[]) if p.get('cdn_image_urls'))
+          webp_count = sum(1 for p in data.get('products',[]) if p.get('cdn_webp_urls'))
+          print(f'Products with CDN images: {cdn_count}')
+          print(f'Products with WebP: {webp_count}')
+          for b in data.get('products',[])[:3]:
+              print(f\"  - {b.get('name','?')} | R\${b.get('price',0):.2f} | variants: {len(b.get('variants',[]))}\")
+          "
+
+      - name: Upload products.json artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: products-uiclap-${{ github.run_id }}
+          path: .github/workflows/scripts/uiclap/output/products.json
+          retention-days: 30
+
+      - name: Commit and push products.json
+        if: success() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/scripts/uiclap/output/products.json
+          git diff --staged --quiet || git commit -m "chore: update uiclap products.json
+
+          🤖 Generated with [Qoder](https://qoder.com)"
+          git push
+
+  # ── Verify all products on site ─────────────────────────
+  verify-site:
+    name: Verify Products on Site
+    needs: [sync-umapenca, sync-uiclap]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Verify Supabase products
+        run: |
+          python3 -c "
+          import requests, os, sys
+
+          url = os.environ['SUPABASE_URL']
+          key = os.environ['SUPABASE_SERVICE_ROLE_KEY']
+          base = f'{url}/rest/v1'
+          hdrs = {'apikey': key, 'Authorization': f'Bearer {key}'}
+
+          checks = [
+            ('PrataPrint',  'products?collection_id=eq.98451b1d-6bf9-4113-80b0-949533b1bc4d&is_active=eq.true&select=id'),
+            ('BhumiPrint',  'products?collection_id=eq.8e744ffa-c748-49f4-8e56-0edb40de0432&is_active=eq.true&select=id'),
+            ('BhumiLivros', 'products?collection_id=eq.c8ff0cea-576c-47cb-af86-dd23285b85a5&is_active=eq.true&select=id'),
+          ]
+
+          all_ok = True
+          for name, query in checks:
+              r = requests.get(f'{base}/{query}', headers=hdrs, timeout=15)
+              count = len(r.json()) if r.ok else -1
+              status = 'PASS' if count > 0 else 'FAIL'
+              if count <= 0: all_ok = False
+              print(f'  [{status}] {name}: {count} active products')
+
+          # Check variants
+          r = requests.get(f'{base}/product_variants?select=id&limit=1', headers=hdrs, timeout=15)
+          vcount = len(r.json()) if r.ok else 0
+          print(f'  [INFO] Total variants accessible: {vcount}+')
+
+          sys.exit(0 if all_ok else 1)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+  # ── Notify on failure ───────────────────────────────────
+  notify-failure:
+    name: Notify on Failure
+    needs: [sync-umapenca, sync-uiclap, verify-site]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create failure issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Product Sync Failed - Run #${{ github.run_number }}`,
+              body: `The product sync workflow failed.\n\n**Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n**Branch:** ${{ github.ref_name }}`,
+              labels: ['bug', 'automation']
+            })
