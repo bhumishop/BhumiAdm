@@ -1162,7 +1162,7 @@ class GitHubCdnUploader:
 
             content_type = mimetypes.guess_type(img_url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"uiclap/{pid}/{idx:03d}_cover{ext}"
+            object_path = f"products/{pid}/{idx:03d}_cover{ext}"
 
             upload_result = self.upload_file_with_webp(
                 img_bytes, object_path, content_type
