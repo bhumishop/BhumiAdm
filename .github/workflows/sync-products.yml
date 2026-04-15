@@ -26,15 +26,19 @@ on:
         required: false
         type: boolean
         default: true
-  push:
-    branches: [master, main]
-    # Run on EVERY push to master/main (no paths filter)
-    # This ensures products are re-scraped and synced on every merge/deploy
+  # push:
+  #   branches: [master, main]
+  #   # Run on EVERY push to master/main (no paths filter)
+  #   # This ensures products are re-scraped and synced on every merge/deploy
 
 # Permissions needed: read repo contents, write to cdn branch
 permissions:
   contents: write
   packages: read
+
+concurrency:
+  group: bhumiadm-sync
+  cancel-in-progress: true
 
 jobs:
   # ── Generate matrix of stores to sync ────────────────────

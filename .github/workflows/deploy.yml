@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: bhumiadm-pages
+  group: bhumiadm-deploy
   cancel-in-progress: false
 
 jobs:
