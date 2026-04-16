@@ -88,6 +88,14 @@ async function handleSignIn() {
 }
 
 function renderGoogleButton() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  const isConfigured = clientId && !clientId.includes('YOUR_') && !clientId.includes('your-')
+
+  if (!isConfigured) {
+    console.error('[BhumiAdm] Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID in .env.')
+    return
+  }
+
   if (typeof google === 'undefined' || !google.accounts?.id) {
     if (++googleButtonRetries > GOOGLE_BUTTON_MAX_RETRIES) {
       console.error('Google Identity Services failed to load')
@@ -98,7 +106,7 @@ function renderGoogleButton() {
   }
 
   google.accounts.id.initialize({
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    client_id: clientId,
     callback: async (response) => {
       try {
         await handleSignIn()

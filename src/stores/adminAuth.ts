@@ -10,6 +10,14 @@ const TOKEN_KEY = 'bhumi_admin_token'
 const ADMIN_KEY = 'bhumi_admin'
 const TIMESTAMP_KEY = 'bhumi_admin_timestamp'
 
+// Validate Google client ID is configured
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+const isGoogleConfigured = GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes('YOUR_') && !GOOGLE_CLIENT_ID.includes('your-')
+
+if (!isGoogleConfigured) {
+  console.warn('[BhumiAdm] Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID in .env to enable admin login.')
+}
+
 export const useAdminAuthStore = defineStore('adminAuth', () => {
   const admin = ref<AdminUser | null>(null)
   const loading = ref(false)
@@ -33,8 +41,13 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
 
     try {
       const idToken = await new Promise<string>((resolve, reject) => {
+        if (!isGoogleConfigured) {
+          reject(new Error('Google OAuth is not configured. Set VITE_GOOGLE_CLIENT_ID in .env.'))
+          return
+        }
+
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          client_id: GOOGLE_CLIENT_ID,
           callback: (response) => {
             if (response.credential) {
               resolve(response.credential)
@@ -48,7 +61,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
             window.google.accounts.oauth2
               .initTokenClient({
-                client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+                client_id: GOOGLE_CLIENT_ID,
                 scope: 'email profile',
                 callback: (resp) => {
                   if (resp.access_token) {
