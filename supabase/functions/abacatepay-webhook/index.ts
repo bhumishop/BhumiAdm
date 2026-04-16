@@ -1,10 +1,16 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createHmac, timingSafeEqual } from 'node:crypto'
 
 function corsHeaders(origin?: string) {
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
-  const allowOrigin = allowedOrigins.includes(origin || '') ? origin : (allowedOrigins[0] || '*')
+  if (!allowedOrigins.length) {
+    return {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    }
+  }
+  const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,
@@ -15,8 +21,8 @@ function corsHeaders(origin?: string) {
 
 // Rate limiting for webhook endpoint
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT_MAX = 100 // Higher limit for webhook
-const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX = 100
+const RATE_LIMIT_WINDOW = 60 * 1000
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
@@ -42,35 +48,73 @@ function getClientIP(req: Request): string {
 }
 
 /**
- * Verify webhook signature using HMAC-SHA256
- * AbacatePay sends signature in x-webhook-signature header
+ * Verify webhook signature using HMAC-SHA256 (Web Crypto API)
  */
-function verifyWebhookSignature(payload: string, signature: string): boolean {
+async function verifyWebhookSignature(payload: string, signature: string): Promise<boolean> {
   const webhookSecret = Deno.env.get('ABACATEPAY_WEBHOOK_SECRET')
   if (!webhookSecret) {
-    // In production, signature verification MUST be enforced
-    console.error('ABACATEPAY_WEBHOOK_SECRET not configured - rejecting webhook')
+    console.error('ABACATEPAY_WEBHOOK_SECRET not configured')
     return false
   }
 
-  const expectedSignature = createHmac('sha256', webhookSecret)
-    .update(payload)
-    .digest('hex')
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(webhookSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
 
-  // Use timing-safe comparison to prevent timing attacks
-  const signatureBuffer = new TextEncoder().encode(signature)
-  const expectedBuffer = new TextEncoder().encode(expectedSignature)
+  const signatureBuffer = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(payload)
+  )
 
-  if (signatureBuffer.length !== expectedBuffer.length) {
+  const expectedSignature = Array.from(new Uint8Array(signatureBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+
+  // Timing-safe comparison
+  if (signature.length !== expectedSignature.length) {
     return false
   }
 
-  return timingSafeEqual(signatureBuffer, expectedBuffer)
+  const sigBytes = encoder.encode(signature)
+  const expBytes = encoder.encode(expectedSignature)
+  let result = 0
+  for (let i = 0; i < sigBytes.length; i++) {
+    result |= sigBytes[i] ^ expBytes[i]
+  }
+  return result === 0
+}
+
+/**
+ * Validate webhook payload structure
+ */
+function validatePayload(payload: any): { valid: boolean; event?: string; eventId?: string; error?: string } {
+  const event = payload.event || payload.type
+  const allowedEvents = ['billing.paid', 'pix.paid', 'pix.expired']
+
+  if (!event || typeof event !== 'string') {
+    return { valid: false, error: 'Missing or invalid event type' }
+  }
+
+  if (!allowedEvents.includes(event)) {
+    return { valid: false, error: `Unknown event type: ${event}` }
+  }
+
+  const eventId = payload.id || payload.event_id
+  if (!eventId || typeof eventId !== 'string' || eventId.length > 255) {
+    return { valid: false, error: 'Missing or invalid event ID' }
+  }
+
+  return { valid: true, event, eventId }
 }
 
 /**
  * Check and record webhook event for idempotency
- * Returns true if event was already processed
  */
 async function isEventAlreadyProcessed(supabase: any, eventId: string): Promise<boolean> {
   const { data, error } = await supabase
@@ -80,7 +124,7 @@ async function isEventAlreadyProcessed(supabase: any, eventId: string): Promise<
     .eq('status', 'processed')
     .single()
 
-  if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+  if (error && error.code !== 'PGRST116') {
     console.error('Error checking webhook idempotency:', error)
   }
 
@@ -97,13 +141,21 @@ async function recordWebhookEvent(supabase: any, eventId: string, eventType: str
       .insert({
         event_id: eventId,
         event_type: eventType,
-        payload: payload,
+        payload: {
+          event: eventType,
+          id: payload.id,
+          data: payload.data ? {
+            id: payload.data.id,
+            billing_id: payload.data.billing_id,
+            pix_qr_code_id: payload.data.pix_qr_code_id,
+            status: payload.data.status
+          } : null
+        },
         status: 'processed',
         processed_at: new Date().toISOString()
       })
   } catch (err) {
     console.error('Failed to record webhook event:', err)
-    // Don't throw - event was already processed
   }
 }
 
@@ -112,10 +164,9 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders(req.headers.get('origin') || undefined) })
   }
 
-  // Rate limit webhook requests (prevent DoS)
+  // Rate limit webhook requests
   const clientIP = getClientIP(req)
   if (!checkRateLimit(clientIP)) {
-    console.warn('Webhook rate limit exceeded from IP:', clientIP)
     return new Response(
       JSON.stringify({ error: 'Rate limit exceeded' }),
       { status: 429, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
@@ -132,38 +183,18 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Read raw body for signature verification
     const rawBody = await req.text()
     const signature = req.headers.get('x-webhook-signature') || req.headers.get('X-Webhook-Signature')
 
-    // Verify signature - required for all webhook calls
     if (!signature) {
-      console.error('Missing webhook signature')
-
-      // Log failed verification
-      await supabase.rpc('log_webhook_verification', {
-        p_webhook_type: 'abacatepay',
-        p_success: false,
-        p_error_message: 'Missing signature'
-      }).catch(() => {})
-
       return new Response(
         JSON.stringify({ error: 'Missing signature' }),
         { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
       )
     }
 
-    const isValid = verifyWebhookSignature(rawBody, signature)
+    const isValid = await verifyWebhookSignature(rawBody, signature)
     if (!isValid) {
-      console.error('Invalid webhook signature')
-
-      // Log failed verification
-      await supabase.rpc('log_webhook_verification', {
-        p_webhook_type: 'abacatepay',
-        p_success: false,
-        p_error_message: 'Invalid signature'
-      }).catch(() => {})
-
       return new Response(
         JSON.stringify({ error: 'Invalid signature' }),
         { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
@@ -171,22 +202,22 @@ serve(async (req) => {
     }
 
     const payload = JSON.parse(rawBody)
-    const event = payload.event || payload.type
-    const eventId = payload.id || payload.event_id || `${event}-${Date.now()}`
+    const validation = validatePayload(payload)
+
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const { event, eventId } = validation
 
     console.log('Webhook received:', event, 'ID:', eventId)
 
-    // Log successful verification
-    await supabase.rpc('log_webhook_verification', {
-      p_webhook_type: 'abacatepay',
-      p_success: true,
-      p_event_id: eventId
-    }).catch(() => {})
-
-    // Check idempotency - skip if already processed
+    // Check idempotency
     const alreadyProcessed = await isEventAlreadyProcessed(supabase, eventId)
     if (alreadyProcessed) {
-      console.log('Webhook event already processed:', eventId)
       return new Response(
         JSON.stringify({ received: true, message: 'Already processed' }),
         { headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
@@ -194,20 +225,18 @@ serve(async (req) => {
     }
 
     if (event === 'billing.paid' || event === 'pix.paid') {
-      // Extract payment reference
       const billingId = payload.data?.id || payload.data?.billing_id || payload.billing_id
       const pixId = payload.data?.id || payload.data?.pix_qr_code_id || payload.pix_qr_code_id
       const paymentRef = billingId || pixId
 
       if (!paymentRef) {
-        console.error('No payment reference found in webhook payload')
+        await recordWebhookEvent(supabase, eventId, event, payload)
         return new Response(
           JSON.stringify({ error: 'No payment reference' }),
           { status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
         )
       }
 
-      // Find order by payment reference (stored in pix_key column)
       const { data: orders, error: findError } = await supabase
         .from('orders')
         .select('id, order_number, payment_status, total')
@@ -215,13 +244,10 @@ serve(async (req) => {
         .limit(1)
 
       if (findError) {
-        console.error('Error finding order:', findError)
         throw findError
       }
 
       if (!orders || orders.length === 0) {
-        console.log('No order found for payment ref:', paymentRef)
-        // Record event even if no order found (to avoid reprocessing)
         await recordWebhookEvent(supabase, eventId, event, payload)
         return new Response(
           JSON.stringify({ message: 'No matching order' }),
@@ -231,9 +257,7 @@ serve(async (req) => {
 
       const order = orders[0]
 
-      // Idempotency check: skip if already marked as paid
       if (order.payment_status === 'paid') {
-        console.log('Order already marked as paid:', order.order_number)
         await recordWebhookEvent(supabase, eventId, event, payload)
         return new Response(
           JSON.stringify({ message: 'Already processed' }),
@@ -241,7 +265,6 @@ serve(async (req) => {
         )
       }
 
-      // Update order payment status atomically
       const { error: updateError } = await supabase
         .from('orders')
         .update({
@@ -251,33 +274,26 @@ serve(async (req) => {
           updated_at: new Date().toISOString()
         })
         .eq('id', order.id)
-        .eq('payment_status', 'pending') // Ensure we only update if still pending
+        .eq('payment_status', 'pending')
 
       if (updateError) {
-        console.error('Error updating order:', updateError)
         throw updateError
       }
 
-      // Add status history entry
-      const { error: historyError } = await supabase
-        .from('order_status_history')
-        .insert({
-          order_id: order.id,
-          from_status: 'pending',
-          to_status: 'processing',
-          changed_by: 'system',
-          changed_by_role: 'webhook',
-          description: `Pagamento confirmado via AbacatePay - ${event}`
-        })
+      try {
+        await supabase
+          .from('order_status_history')
+          .insert({
+            order_id: order.id,
+            from_status: 'pending',
+            to_status: 'processing',
+            changed_by: 'system',
+            changed_by_role: 'webhook',
+            description: `Pagamento confirmado via AbacatePay - ${event}`
+          })
+      } catch { /* ignore history errors */ }
 
-      if (historyError) {
-        console.error('Error inserting status history:', historyError)
-        // Don't throw — order is already updated
-      }
-
-      // Record the webhook event for idempotency
       await recordWebhookEvent(supabase, eventId, event, payload)
-
       console.log('Order updated to paid:', order.order_number)
     }
 
@@ -302,22 +318,23 @@ serve(async (req) => {
             })
             .eq('id', orders[0].id)
 
-          await supabase
-            .from('order_status_history')
-            .insert({
-              order_id: orders[0].id,
-              from_status: 'pending',
-              to_status: 'cancelled',
-              changed_by: 'system',
-              changed_by_role: 'webhook',
-              description: 'PIX expirou - pagamento nao concluido'
-            })
+          try {
+            await supabase
+              .from('order_status_history')
+              .insert({
+                order_id: orders[0].id,
+                from_status: 'pending',
+                to_status: 'cancelled',
+                changed_by: 'system',
+                changed_by_role: 'webhook',
+                description: 'PIX expirou - pagamento nao concluido'
+              })
+          } catch { /* ignore history errors */ }
 
           console.log('Order marked as expired:', orders[0].order_number)
         }
       }
 
-      // Record the webhook event
       await recordWebhookEvent(supabase, eventId, event, payload)
     }
 

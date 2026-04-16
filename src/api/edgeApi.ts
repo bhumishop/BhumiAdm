@@ -35,6 +35,7 @@ import router from '../router'
 
 // Get SUPABASE_URL from Vite env variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY || ''
 
 // Don't throw on import - fail gracefully when API is actually used
 const EDGE_FUNCTIONS_BASE = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1` : ''
@@ -61,6 +62,67 @@ function getAuthToken(): string | null {
 }
 
 /**
+ * Decode JWT and check if it's near expiry (within 5 minutes)
+ */
+function isTokenNearExpiry(token: string): boolean {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return true
+    const payload = JSON.parse(atob(parts[1]))
+    if (!payload.exp) return true
+    const expiryMs = payload.exp * 1000
+    const fiveMinutes = 5 * 60 * 1000
+    return Date.now() >= expiryMs - fiveMinutes
+  } catch {
+    return true
+  }
+}
+
+/**
+ * Refresh the auth token
+ */
+async function refreshToken(): Promise<string | null> {
+  try {
+    if (!EDGE_FUNCTIONS_BASE) return null
+
+    const response = await fetch(`${EDGE_FUNCTIONS_BASE}/admin-auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': import.meta.env.VITE_SUPABASE_KEY || '',
+      },
+    })
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+    if (data.token) {
+      localStorage.setItem('bhumi_admin_token', data.token)
+      if (data.admin) {
+        localStorage.setItem('bhumi_admin', JSON.stringify(data.admin))
+      }
+      localStorage.setItem('bhumi_admin_timestamp', Date.now().toString())
+      return data.token
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Clear auth state and redirect to login
+ */
+function clearAuthAndRedirect(): void {
+  localStorage.removeItem('bhumi_admin_token')
+  localStorage.removeItem('bhumi_admin')
+  localStorage.removeItem('bhumi_admin_timestamp')
+  router.push({ name: 'login' }).catch(() => {
+    window.location.href = import.meta.env.BASE_URL + 'login'
+  })
+}
+
+/**
  * Make authenticated request to edge function
  */
 async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -71,10 +133,16 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
     )
   }
 
-  const token = getAuthToken()
+  let token = getAuthToken()
+
+  // If token is near expiry, try to refresh it
+  if (token && isTokenNearExpiry(token)) {
+    token = await refreshToken()
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON_KEY,
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(options.headers as Record<string, string> || {}),
   }
@@ -85,13 +153,23 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
   })
 
   if (response.status === 401) {
-    localStorage.removeItem('bhumi_admin_token')
-    localStorage.removeItem('bhumi_admin')
-    localStorage.removeItem('bhumi_admin_timestamp')
-    // Use Vue Router navigation instead of hard redirect to avoid 404 on GitHub Pages
-    router.push({ name: 'login' }).catch(() => {
-      window.location.href = import.meta.env.BASE_URL + 'login'
-    })
+    // Try to refresh the token once
+    const newToken = await refreshToken()
+    if (newToken) {
+      // Retry with new token
+      headers['Authorization'] = `Bearer ${newToken}`
+      const retryResponse = await fetch(`${EDGE_FUNCTIONS_BASE}/${endpoint}`, {
+        ...options,
+        headers,
+      })
+
+      if (retryResponse.ok) {
+        return retryResponse.json() as Promise<T>
+      }
+    }
+
+    // Refresh failed or retry also failed
+    clearAuthAndRedirect()
     throw new Error('Unauthorized')
   }
 
@@ -735,7 +813,13 @@ export const edgeApi = {
         )
       }
 
-      const token = getAuthToken()
+      let token = getAuthToken()
+
+      // If token is near expiry, try to refresh it
+      if (token && isTokenNearExpiry(token)) {
+        token = await refreshToken()
+      }
+
       const formData = new FormData()
       formData.append('image', file)
       formData.append('path', path)
@@ -743,10 +827,32 @@ export const edgeApi = {
       const response = await fetch(`${EDGE_FUNCTIONS_BASE}/upload-cdn-image`, {
         method: 'POST',
         headers: {
+          'apikey': SUPABASE_ANON_KEY,
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: formData,
       })
+
+      if (response.status === 401) {
+        const newToken = await refreshToken()
+        if (newToken) {
+          const retryResponse = await fetch(`${EDGE_FUNCTIONS_BASE}/upload-cdn-image`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${newToken}`,
+            },
+            body: formData,
+          })
+
+          if (retryResponse.ok) {
+            return retryResponse.json()
+          }
+        }
+
+        clearAuthAndRedirect()
+        throw new Error('Unauthorized')
+      }
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Upload failed' }))

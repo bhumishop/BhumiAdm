@@ -10,6 +10,21 @@ const TOKEN_KEY = 'bhumi_admin_token'
 const ADMIN_KEY = 'bhumi_admin'
 const TIMESTAMP_KEY = 'bhumi_admin_timestamp'
 
+/**
+ * Decode JWT and extract expiration time
+ * Returns the expiration timestamp in milliseconds, or 0 if invalid
+ */
+function getTokenExpiration(token: string): number {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return 0
+    const payload = JSON.parse(atob(parts[1]))
+    return payload.exp ? payload.exp * 1000 : 0
+  } catch {
+    return 0
+  }
+}
+
 // Validate Google client ID is configured
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 const isGoogleConfigured = GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes('YOUR_') && !GOOGLE_CLIENT_ID.includes('your-')
@@ -29,7 +44,18 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     const timestamp = localStorage.getItem(TIMESTAMP_KEY)
     if (!timestamp) return false
     const elapsed = Date.now() - parseInt(timestamp, 10)
-    return elapsed < SESSION_TIMEOUT_MS
+    if (elapsed >= SESSION_TIMEOUT_MS) return false
+
+    // Also check JWT actual expiration
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (token) {
+      const exp = getTokenExpiration(token)
+      if (exp && Date.now() >= exp) {
+        return false
+      }
+    }
+
+    return true
   }
 
   /**
