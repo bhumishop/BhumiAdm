@@ -26,6 +26,13 @@
         <div class="login-form">
           <p class="form-prompt">Fa&ccedil;a login para continuar</p>
 
+          <!-- Show error when Google OAuth is not configured -->
+          <div v-if="!isGoogleConfigured" class="config-error">
+            <span class="error-icon">⚠</span>
+            <p>Google OAuth n&atilde;o est&aacute; configurado.</p>
+            <p class="error-detail">Defina VITE_GOOGLE_CLIENT_ID no arquivo .env para habilitar o login.</p>
+          </div>
+
           <div id="google-signin-button" class="google-button"></div>
 
           <div v-if="adminStore.error" class="error-box">
@@ -33,7 +40,7 @@
             <span>{{ adminStore.error }}</span>
           </div>
 
-          <div v-if="!googleLoaded" class="loading-placeholder">
+          <div v-if="!googleLoaded && isGoogleConfigured" class="loading-placeholder">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
@@ -73,6 +80,7 @@ const route = useRoute()
 const adminStore = useAdminAuthStore()
 
 const googleLoaded = ref(false)
+const isGoogleConfigured = ref(false)
 let googleButtonRetries = 0
 const GOOGLE_BUTTON_MAX_RETRIES = 20
 
@@ -147,7 +155,14 @@ onMounted(async () => {
     router.push('/admin')
     return
   }
-  renderGoogleButton()
+  
+  // Check if Google OAuth is configured
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  isGoogleConfigured.value = clientId && !clientId.includes('YOUR_') && !clientId.includes('your-')
+  
+  if (isGoogleConfigured.value) {
+    renderGoogleButton()
+  }
 })
 </script>
 
@@ -311,6 +326,37 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   margin-bottom: var(--space-4);
+}
+
+.config-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 20px;
+  margin-bottom: var(--space-1);
+}
+
+.config-error p {
+  font-size: 13px;
+  color: var(--warning);
+  margin: 0;
+  font-weight: 500;
+}
+
+.error-detail {
+  font-size: 11px !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400 !important;
 }
 
 :deep(.nsm7Bb-HzV7m-LgbsSe) {

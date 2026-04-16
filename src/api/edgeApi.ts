@@ -121,6 +121,7 @@ function clearAuthAndRedirect(): void {
   localStorage.removeItem('bhumi_admin_token')
   localStorage.removeItem('bhumi_admin')
   localStorage.removeItem('bhumi_admin_timestamp')
+  console.warn('[BhumiAdm] Authentication expired or invalid, redirecting to login')
   router.push({ name: 'login' }).catch(() => {
     window.location.href = import.meta.env.BASE_URL + 'login'
   })
@@ -178,6 +179,7 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
     }
 
     // Refresh failed or login endpoint
+    console.warn(`[BhumiAdm] 401 Unauthorized on ${endpoint}`)
     clearAuthAndRedirect()
     throw new Error('Unauthorized')
   }

@@ -35,7 +35,10 @@ async function verifyAdmin(req: Request): Promise<boolean> {
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-auth/verify`, {
     method: 'POST',
-    headers: { Authorization: authHeader },
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/json',
+    },
   })
 
   if (!response.ok) return false

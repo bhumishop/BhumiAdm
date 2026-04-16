@@ -312,15 +312,18 @@ onMounted(async () => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
 
+  // Double-check authentication - router guard should have handled this, but be safe
   if (!adminStore.admin) {
     await adminStore.initialize()
   }
   
+  // If still not authenticated, redirect to login immediately
   if (!adminStore.admin) {
     router.push('/login')
     return
   }
 
+  // Only load network data after confirming authentication
   try {
     await networkStore.buildGraph()
     networkStore.subscribeToRealtime()

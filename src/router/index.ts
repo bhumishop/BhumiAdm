@@ -201,10 +201,10 @@ const router = createRouter({
   }
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, _from) => {
   const adminStore = useAdminAuthStore()
 
-  // Only initialize once - if already has admin info, skip
+  // Initialize auth state if not already done and not currently loading
   if (!adminStore.admin && !adminStore.loading) {
     await adminStore.initialize()
   }
@@ -212,10 +212,12 @@ router.beforeEach(async (to) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const isGuest = to.matched.some(record => record.meta.guest)
 
+  // Redirect to login if route requires auth and user is not authenticated
   if (requiresAuth && !adminStore.admin) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
+  // Redirect to dashboard if already logged in and trying to access login
   if (isGuest && adminStore.admin) {
     return { name: 'admin' }
   }

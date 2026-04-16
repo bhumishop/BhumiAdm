@@ -33,6 +33,20 @@ if (!isGoogleConfigured) {
   console.warn('[BhumiAdm] Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID in .env to enable admin login.')
 }
 
+// Validate Supabase configuration
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const isSupabaseConfigured = SUPABASE_URL && !SUPABASE_URL.includes('placeholder')
+
+if (!isSupabaseConfigured) {
+  console.error('[BhumiAdm] Supabase is not configured. Set VITE_SUPABASE_URL in .env.')
+}
+
+// Validate base URL configuration
+const BASE_URL = import.meta.env.BASE_URL
+if (BASE_URL && BASE_URL !== '/' && !BASE_URL.startsWith('/')) {
+  console.warn('[BhumiAdm] VITE_BASE_URL should start with / if set. Current:', BASE_URL)
+}
+
 export const useAdminAuthStore = defineStore('adminAuth', () => {
   const admin = ref<AdminUser | null>(null)
   const loading = ref(false)
@@ -192,15 +206,26 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   async function initialize(): Promise<void> {
     const saved = localStorage.getItem(ADMIN_KEY)
     const token = localStorage.getItem(TOKEN_KEY)
+    
     if (saved && token && isSessionValid()) {
       try {
         admin.value = JSON.parse(saved) as AdminUser
-      } catch {
-        // Corrupted data, just clear it
+        console.log('[BhumiAdm] Session restored for:', admin.value?.email)
+      } catch (e) {
+        console.warn('[BhumiAdm] Corrupted session data, clearing...')
+        // Corrupted data, clear it
         localStorage.removeItem(ADMIN_KEY)
         localStorage.removeItem(TOKEN_KEY)
         localStorage.removeItem(TIMESTAMP_KEY)
+        admin.value = null
       }
+    } else if (saved || token) {
+      // Have some data but session is invalid - clean up
+      console.log('[BhumiAdm] Invalid session, clearing...')
+      localStorage.removeItem(ADMIN_KEY)
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(TIMESTAMP_KEY)
+      admin.value = null
     }
   }
 
