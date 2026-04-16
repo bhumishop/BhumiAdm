@@ -965,7 +965,14 @@ class GitHubCdnUploader:
         self.webp_generated = 0
 
     def ensure_cdn_branch(self):
-        """Create CDN branch if it doesn't exist."""
+        """Create CDN branch if it doesn't exist.
+        In CI environment, skip git operations - just save files locally.
+        """
+        # In CI, skip git branch operations
+        if os.environ.get('GITHUB_ACTIONS'):
+            logger.info("Running in GitHub Actions - saving images locally for workflow to push")
+            return True
+
         try:
             resp = requests.get(
                 f"https://api.github.com/repos/{self.owner}/{self.repo}/branches/{self.branch}",
@@ -1046,10 +1053,15 @@ class GitHubCdnUploader:
     ) -> Optional[str]:
         """Upload a file to the CDN branch. Returns CDN URL or None.
         Falls back to Supabase Edge Function if direct GitHub API fails.
+        In CI environment, saves files locally for the workflow to push.
 
         Uses content-hash-based skip: if the file exists on the CDN branch,
         it is skipped (GitHub blob SHA is content-based, so same path = same content).
         """
+        # In CI, save locally instead of using GitHub API
+        if os.environ.get('GITHUB_ACTIONS'):
+            return self._save_local(file_bytes, object_path)
+
         # Check if file already exists on CDN
         existing_sha = None
         if not self.use_edge_function:
@@ -1183,10 +1195,24 @@ class GitHubCdnUploader:
         """Generate jsDelivr CDN URL for a file in the CDN branch."""
         return f"https://cdn.jsdelivr.net/gh/{self.owner}/{self.repo}@{self.branch}/{object_path}"
 
+    def _save_local(self, file_bytes: bytes, object_path: str) -> Optional[str]:
+        """Save file locally in CI for workflow to push later."""
+        try:
+            file_path = Path("cdn_images") / object_path
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.write_bytes(file_bytes)
+            self.uploaded += 1
+            logger.debug(f"Saved locally: {object_path}")
+            return self._make_cdn_url(object_path)
+        except Exception as e:
+            logger.error(f"Failed to save file locally: {e}")
+            return None
+
     def upload_product_images(self, book: ScrapedBook, client: Client) -> dict:
         """Download and upload all images for a book to GitHub CDN.
 
-        Checks if the file already exists on the CDN BEFORE downloading to save time.
+        In CI, saves files locally for workflow to push.
+        Checks if the file already exists locally BEFORE downloading to save time.
         """
         pid = book.third_party_product_id or book.slug or "unknown"
         cdn_urls = []
@@ -1197,8 +1223,20 @@ class GitHubCdnUploader:
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"products/{pid}/{idx:03d}_cover{ext}"
 
-            # Check CDN existence BEFORE downloading
-            if not self.use_edge_function:
+            # In CI, check local filesystem before downloading
+            if os.environ.get('GITHUB_ACTIONS'):
+                local_path = Path("cdn_images") / object_path
+                if local_path.exists():
+                    logger.debug(f"[{pid}] Skipping unchanged image #{idx}")
+                    cdn_urls.append(self._make_cdn_url(object_path))
+                    # Also check WebP
+                    webp_path = object_path.rsplit(".", 1)[0] + ".webp"
+                    webp_local = Path("cdn_images") / webp_path
+                    if webp_local.exists():
+                        webp_urls.append(self._make_cdn_url(webp_path))
+                    continue
+            # Check CDN existence BEFORE downloading (non-CI)
+            elif not self.use_edge_function:
                 sha = self._get_file_sha(object_path)
                 if sha:
                     logger.debug(f"[{pid}] Skipping unchanged image #{idx}")
@@ -1230,11 +1268,14 @@ class GitHubCdnUploader:
     def upload_all(
         self, books: list[ScrapedBook], client: Client, workers: int = 2
     ) -> dict:
-        """Parallel upload of all book images to GitHub CDN."""
-        # Ensure branch exists first
-        if not self.ensure_cdn_branch():
-            logger.error("Failed to ensure CDN branch exists")
-            return {}
+        """Parallel upload of all book images to GitHub CDN.
+        In CI, saves files locally for workflow to push.
+        """
+        # Skip branch management in CI
+        if not os.environ.get('GITHUB_ACTIONS'):
+            if not self.ensure_cdn_branch():
+                logger.error("Failed to ensure CDN branch exists")
+                return {}
 
         results = {}
 

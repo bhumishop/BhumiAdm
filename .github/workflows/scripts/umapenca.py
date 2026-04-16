@@ -720,8 +720,16 @@ class GitHubCdnUploader:
         return self._skipped
 
     def ensure_cdn_branch(self) -> bool:
-        """Checkout/create CDN branch locally."""
+        """In CI environment, we skip git branch operations and just save files locally.
+        The workflow will handle pushing to the cdn branch.
+        """
         import subprocess
+
+        # In CI, just ensure we're in a valid git repo and save files locally
+        # Don't try to checkout/switch branches
+        if os.environ.get('GITHUB_ACTIONS'):
+            logger.info("Running in GitHub Actions - saving images locally for workflow to push")
+            return True
 
         try:
             # Fetch the branch
@@ -896,8 +904,18 @@ class GitHubCdnUploader:
         return {"cdn_urls": cdn_urls, "webp_urls": webp_urls}
 
     def commit_and_push(self) -> bool:
-        """Git add, commit, and push all saved images."""
+        """Git add, commit, and push all saved images.
+        In CI environment, skip this - the workflow handles pushing.
+        """
         import subprocess
+
+        # In CI, don't commit/push - workflow will handle it
+        if os.environ.get('GITHUB_ACTIONS'):
+            logger.info(f"In CI mode - {self._uploaded} images saved locally for workflow to push")
+            # Still save manifest if there were skips
+            if self._skipped > 0:
+                self._save_hash_manifest()
+            return True
 
         if self._uploaded == 0:
             logger.info("No new images to upload (all unchanged)")
@@ -967,10 +985,14 @@ class GitHubCdnUploader:
         client,
         workers: int = 1,
     ) -> dict:
-        """Save all product images locally, then commit and push."""
-        if not self.ensure_cdn_branch():
-            logger.error("Failed to checkout CDN branch; aborting image upload")
-            return {}
+        """Save all product images locally, then commit and push.
+        In CI, just save files locally - workflow handles pushing.
+        """
+        # Skip branch management in CI
+        if not os.environ.get('GITHUB_ACTIONS'):
+            if not self.ensure_cdn_branch():
+                logger.error("Failed to checkout CDN branch; aborting image upload")
+                return {}
 
         results: dict = {}
 

@@ -183,6 +183,15 @@ jobs:
           🤖 Generated with [Qoder](https://qoder.com)"
           git push --force-with-lease origin ${{ github.ref_name }}
 
+      - name: Upload CDN images artifact
+        if: success() && env.UPLOAD_IMAGES == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdn-images-${{ matrix.store }}-${{ github.run_id }}
+          path: cdn_images/products/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ── Sync UICLAP books ───────────────────────────────────
   sync-uiclap:
     name: Sync UICLAP Books
@@ -277,6 +286,15 @@ jobs:
           🤖 Generated with [Qoder](https://qoder.com)"
           git push --force-with-lease origin ${{ github.ref_name }}
 
+      - name: Upload CDN images artifact
+        if: success() && env.UPLOAD_IMAGES == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdn-images-uiclap-${{ github.run_id }}
+          path: cdn_images/products/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ── Verify all products on site ─────────────────────────
   verify-site:
     name: Verify Products on Site
@@ -325,10 +343,79 @@ jobs:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VITE_SUPABASE_SERVICE_ROLE }}
 
+  # ── Push CDN images to cdn branch ───────────────────────
+  push-cdn-images:
+    name: Push CDN Images to CDN Branch
+    needs: [sync-umapenca, sync-uiclap]
+    if: >-
+      always() &&
+      (needs.sync-umapenca.result == 'success' || needs.sync-uiclap.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Download all CDN image artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-cdn-images
+          pattern: cdn-images-*
+          merge-multiple: true
+
+      - name: Check for downloaded images
+        id: check-images
+        run: |
+          if [ -d "downloaded-cdn-images/products" ] && [ "$(ls -A downloaded-cdn-images/products 2>/dev/null)" ]; then
+            echo "has_images=true" >> $GITHUB_OUTPUT
+            echo "Found CDN images to push"
+          else
+            echo "has_images=false" >> $GITHUB_OUTPUT
+            echo "No CDN images found"
+          fi
+
+      - name: Push CDN images to cdn branch
+        if: steps.check-images.outputs.has_images == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Fetch cdn branch
+          git fetch origin cdn || true
+
+          # Create or checkout cdn branch
+          if git show-ref --verify --quiet refs/heads/cdn; then
+            git checkout cdn
+          else
+            git checkout -b cdn origin/master
+          fi
+
+          # Copy downloaded images to repo
+          mkdir -p products
+          cp -r downloaded-cdn-images/products/* products/ 2>/dev/null || true
+
+          # Add and commit
+          git add products/
+          git diff --staged --quiet || git commit -m "chore: upload CDN product images
+
+          🤖 Generated with [Qoder](https://qoder.com)"
+
+          # Push to cdn branch
+          git push --force-with-lease origin cdn
+          echo "Successfully pushed CDN images to cdn branch"
+
+      - name: No images to push
+        if: steps.check-images.outputs.has_images == 'false'
+        run: echo "No CDN images to push - skipping"
+
   # ── Notify on failure ───────────────────────────────────
   notify-failure:
     name: Notify on Failure
-    needs: [generate-matrix, sync-umapenca, sync-uiclap, verify-site]
+    needs: [generate-matrix, sync-umapenca, sync-uiclap, verify-site, push-cdn-images]
     if: >-
       failure() &&
       (needs.sync-umapenca.result == 'failure' || needs.sync-uiclap.result == 'failure' || needs.verify-site.result == 'failure')
