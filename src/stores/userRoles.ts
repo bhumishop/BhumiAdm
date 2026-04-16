@@ -51,9 +51,17 @@ export const useUserRolesStore = defineStore('userRoles', () => {
       const result = await edgeApi.userRoles.list()
       users.value = (result.data as unknown as UserRoleRecord[]) || []
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Erro ao carregar usuários'
-      console.error('fetchUsers error:', err)
-      users.value = []
+      // Gracefully handle missing edge function
+      const message = err instanceof Error ? err.message : ''
+      if (message.includes('500') || message.includes('Internal server error') || message.includes('Function not found')) {
+        console.warn('user-roles edge function not deployed, showing empty state')
+        users.value = []
+        error.value = null
+      } else {
+        error.value = message || 'Erro ao carregar usuários'
+        console.error('fetchUsers error:', err)
+        users.value = []
+      }
     } finally {
       loading.value = false
     }

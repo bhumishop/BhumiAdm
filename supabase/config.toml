@@ -7,6 +7,12 @@ project_id = "BhumiAdm"
 [functions.upload-cdn-image]
 verify_jwt = false
 
+[functions.create-mercadopago-preference]
+verify_jwt = true
+
+[functions.mercadopago-webhook]
+verify_jwt = false
+
 [functions.abacatepay-webhook]
 verify_jwt = false
 

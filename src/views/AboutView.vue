@@ -15,37 +15,37 @@
       
       <div class="projects-grid">
         <div class="project-card card">
-          <h3>🧘 Cyber Manju</h3>
+          <h3>&#x1F9D8; Cyber Manju</h3>
           <p>Série audiovisual que combina ensinamentos budistas com estética cyberpunk. 
              Uma jornada filosófica em formato digital.</p>
         </div>
 
         <div class="project-card card">
-          <h3>📱 Techno Sutra</h3>
+          <h3>&#x1F4F1; Techno Sutra</h3>
           <p>Projeto de Realidade Aumentada que traz os sutras budistas para a era digital. 
              Interativo, acessível e moderno.</p>
         </div>
 
         <div class="project-card card">
-          <h3>💿 BhumiStudio Records</h3>
+          <h3>&#x1F4BF; BhumiStudio Records</h3>
           <p>Gravadora independente com produções de música budista e mindfulness. 
              Álbuns, singles e experiências sonoras únicas.</p>
         </div>
 
         <div class="project-card card">
-          <h3>📖 Prata Ativa</h3>
+          <h3>&#x1F4D6; Prata Ativa</h3>
           <p>Livro que explora conceitos de sabedoria e prática budista de forma acessível 
              e contemporânea.</p>
         </div>
 
         <div class="project-card card">
-          <h3>🌱 7k Project</h3>
+          <h3>&#x1F331; 7k Project</h3>
           <p>Projeto ambiental focado em reflorestamento e sustentabilidade. 
              Plantamos árvores e educamos sobre meio ambiente.</p>
         </div>
 
         <div class="project-card card">
-          <h3>🌍 Guardiões da Terra</h3>
+          <h3>&#x1F30D; Guardi&otilde;es da Terra</h3>
           <p>Iniciativa que mobiliza jovens para ações de preservação ambiental 
              e consciência ecológica.</p>
         </div>
@@ -89,7 +89,7 @@
 
 .section-subtitle {
   font-size: 1.5rem;
-  color: var(--accent-green);
+  color: var(--success);
   margin-bottom: 1.5rem;
 }
 
@@ -147,11 +147,11 @@
 }
 
 .social-links a {
-  color: var(--accent-purple-light);
+  color: var(--gold-light);
   font-weight: 600;
 }
 
 .social-links a:hover {
-  color: var(--accent-green);
+  color: var(--success);
 }
 </style>

@@ -8,6 +8,10 @@ const BRAZILIAN_STATES = [
   'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ]
 
+const INTERNATIONAL_ZONES = [
+  { code: 'INTL', name: 'Internacional', description: 'Envio internacional' }
+]
+
 const STATE_NAMES: Record<string, string> = {
   'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
   'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
@@ -36,6 +40,7 @@ export const useShippingStore = defineStore('shipping', () => {
   const activeZones = computed(() => zones.value.filter(z => z.is_active !== false))
   const activeDeliveryTypes = computed(() => deliveryTypes.value.filter(d => d.is_active !== false))
   const brazilianStates = computed(() => BRAZILIAN_STATES)
+  const internationalZones = computed(() => INTERNATIONAL_ZONES)
 
   function getStateName(state: string): string {
     return STATE_NAMES[state] || state
@@ -58,8 +63,16 @@ export const useShippingStore = defineStore('shipping', () => {
       const result = await edgeApi.shipping.getZones()
       zones.value = result.data || []
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Erro ao carregar zonas de frete'
-      console.error('fetchZones error:', err)
+      // Gracefully handle missing edge function
+      const message = err instanceof Error ? err.message : ''
+      if (message.includes('500') || message.includes('Internal server error') || message.includes('Function not found')) {
+        console.warn('shipping-calculator edge function not deployed, using local data')
+        zones.value = []
+        error.value = null
+      } else {
+        error.value = message || 'Erro ao carregar zonas de frete'
+        console.error('fetchZones error:', err)
+      }
     } finally {
       loading.value = false
     }
@@ -70,8 +83,15 @@ export const useShippingStore = defineStore('shipping', () => {
       const result = await edgeApi.shipping.getDeliveryTypes()
       deliveryTypes.value = (result.data as unknown as DeliveryType[]) || []
     } catch (err: unknown) {
-      console.error('fetchDeliveryTypes error:', err)
-      deliveryTypes.value = []
+      // Gracefully handle missing edge function
+      const message = err instanceof Error ? err.message : ''
+      if (message.includes('500') || message.includes('Internal server error') || message.includes('Function not found')) {
+        console.warn('shipping-calculator edge function not deployed, using local data')
+        deliveryTypes.value = []
+      } else {
+        console.error('fetchDeliveryTypes error:', err)
+        deliveryTypes.value = []
+      }
     }
   }
 
@@ -156,6 +176,7 @@ export const useShippingStore = defineStore('shipping', () => {
     activeZones,
     activeDeliveryTypes,
     brazilianStates,
+    internationalZones,
     getStateName,
     calculateShipping,
     fetchZones,

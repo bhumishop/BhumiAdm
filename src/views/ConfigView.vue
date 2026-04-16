@@ -194,8 +194,8 @@ function resetConfig() {
 }
 
 .config-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 2rem;
 }
@@ -203,7 +203,7 @@ function resetConfig() {
 .config-section h2 {
   font-size: 1.25rem;
   margin-bottom: 1.5rem;
-  color: var(--accent-purple-light);
+  color: var(--gold-light);
 }
 
 .form-group {
@@ -235,7 +235,7 @@ function resetConfig() {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--accent-purple);
+  border-color: var(--gold);
 }
 
 .config-actions {
@@ -255,13 +255,13 @@ function resetConfig() {
 }
 
 .btn-primary {
-  background: var(--accent-purple);
-  color: #00FF41;
+  background: var(--gold);
+  color: var(--bg-base);
   border: none;
 }
 
 .btn-primary:hover {
-  background: var(--accent-purple-light);
+  background: var(--gold-light);
 }
 
 .btn-secondary {
@@ -271,7 +271,7 @@ function resetConfig() {
 }
 
 .btn-secondary:hover {
-  border-color: var(--accent-purple);
+  border-color: var(--gold);
   color: var(--text-primary);
 }
 

@@ -19,7 +19,7 @@
     <div v-else class="subcollections-list">
       <div v-for="sub in filteredSubcollections" :key="sub.id" class="subcollection-card">
         <div class="sub-header">
-          <span class="sub-icon">{{ sub.icon || '📦' }}</span>
+          <span class="sub-icon">{{ sub.icon || '&#x1F4E6;' }}</span>
           <div class="sub-info">
             <h3>{{ sub.name }}</h3>
             <span class="sub-slug">{{ sub.slug }}</span>
@@ -43,8 +43,12 @@
             {{ sub.is_active ? 'Ativo' : 'Inativo' }}
           </span>
           <div class="actions">
-            <button class="btn-icon" @click="editSubcollection(sub)">✏️</button>
-            <button class="btn-icon danger" @click="deleteSubcollection(sub.id)">🗑️</button>
+            <button class="btn-icon" @click="editSubcollection(sub)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+</button>
+            <button class="btn-icon danger" @click="deleteSubcollection(sub.id)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+</button>
           </div>
         </div>
       </div>
@@ -192,36 +196,36 @@ onMounted(async () => {
 <style scoped>
 .subcollections-view { padding: 1rem; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.page-header h2 { margin: 0; color: #00FF41; }
+.page-header h2 { margin: 0; color: var(--success); }
 .filters { margin-bottom: 1.5rem; }
-.filter-select { padding: 0.75rem; background: #100314; border: 1px solid #2a2a4a; color: #00FF41; border-radius: 8px; }
+.filter-select { padding: 0.75rem; background: var(--bg-elevated); border: var(--border); color: var(--text-primary); border-radius: 8px; }
 .subcollections-list { display: grid; gap: 1rem; }
-.subcollection-card { background: #16051c; border: 1px solid #2a2a4a; border-radius: 12px; padding: 1.5rem; }
+.subcollection-card { background: var(--bg-surface); border: var(--border); border-radius: 12px; padding: 1.5rem; }
 .sub-header { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .sub-icon { font-size: 2rem; }
-.sub-info h3 { margin: 0 0 0.25rem 0; color: #00FF41; }
-.sub-slug { font-size: 0.85rem; color: #00CC33; display: block; }
-.collection-name { font-size: 0.8rem; color: #9D4EDD; }
+.sub-info h3 { margin: 0 0 0.25rem 0; color: var(--success); }
+.sub-slug { font-size: 0.85rem; color: var(--success); display: block; }
+.collection-name { font-size: 0.8rem; color: var(--gold); }
 .sub-details { margin-bottom: 1rem; }
 .detail-item { margin-bottom: 0.5rem; }
-.label { color: #00CC33; margin-right: 0.5rem; }
-.value { color: #00FF41; }
+.label { color: var(--success); margin-right: 0.5rem; }
+.value { color: var(--success); }
 .sub-footer { display: flex; justify-content: space-between; align-items: center; }
 .status-badge { padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-.status-badge.active { background: rgba(0, 255, 65, 0.2); color: #00FF41; }
-.status-badge.inactive { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+.status-badge.active { background: var(--success-bg); color: var(--success); }
+.status-badge.inactive { background: var(--danger-bg); color: var(--danger); }
 .actions { display: flex; gap: 0.5rem; }
-.btn-icon { background: #100314; border: 1px solid #2a2a4a; padding: 0.5rem; border-radius: 4px; cursor: pointer; }
-.btn-icon.danger:hover { border-color: #ff4444; }
+.btn-icon { background: var(--bg-elevated); border: var(--border); padding: 0.5rem; border-radius: 4px; cursor: pointer; }
+.btn-icon.danger:hover { border-color: var(--danger); }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: #16051c; border: 1px solid #2a2a4a; border-radius: 12px; padding: 2rem; width: 90%; max-width: 500px; }
-.modal h3 { margin-top: 0; color: #00FF41; }
+.modal { background: var(--bg-surface); border: var(--border); border-radius: 12px; padding: 2rem; width: 90%; max-width: 500px; }
+.modal h3 { margin-top: 0; color: var(--success); }
 .form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; color: #00FF41; font-weight: 600; }
-.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; background: #100314; border: 1px solid #2a2a4a; color: #00FF41; border-radius: 4px; }
+.form-group label { display: block; margin-bottom: 0.5rem; color: var(--success); font-weight: 600; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; background: var(--bg-elevated); border: var(--border); color: var(--text-primary); border-radius: 4px; }
 .form-group input[type="checkbox"] { width: auto; margin-right: 0.5rem; }
 .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
-.loading { text-align: center; padding: 3rem; color: #00CC33; }
-.btn-primary { background: #7B2CBF; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
-.btn-secondary { background: #100314; color: #00FF41; border: 1px solid #2a2a4a; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.loading { text-align: center; padding: 3rem; color: var(--success); }
+.btn-primary { background: var(--gold); color: var(--bg-base); border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn-secondary { background: var(--bg-elevated); color: var(--success); border: var(--border); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
 </style>

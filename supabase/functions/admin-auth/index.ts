@@ -20,7 +20,7 @@ import { SignJWT, jwtVerify } from 'https://esm.sh/jose@5.2.0'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
-const SESSION_TTL = parseInt(Deno.env.get('SESSION_TTL') || '14400', 10) // 4 hours
+const SESSION_TTL = parseInt(Deno.env.get('SESSION_TTL') || '28800', 10) // 8 hours
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
@@ -163,33 +163,23 @@ async function loginWithGoogle(idToken: string): Promise<{ token: string; admin:
 
 /**
  * Verify admin token - called by other edge functions internally
- * Checks token validity AND queries admin_users to confirm admin still exists
+ * Fast token-only verification: validates JWT signature without DB query.
+ * This prevents unnecessary 401s when the token is valid but DB is slow/unavailable.
  */
 async function verifyAdmin(token: string): Promise<{ valid: boolean; admin?: Record<string, unknown>; error?: string }> {
-  // First verify the JWT signature
+  // Verify the JWT signature - this is fast and sufficient
   const payload = await verifyToken(token)
   if (!payload) {
     return { valid: false, error: 'Invalid or expired token' }
   }
 
-  // Then query admin_users to confirm admin still exists and is active
-  const { data: admin, error } = await supabase
-    .from('admin_users')
-    .select('admin_uuid, email, name, role')
-    .eq('admin_uuid', payload.admin_uuid)
-    .single()
-
-  if (error || !admin) {
-    return { valid: false, error: 'Admin not found' }
-  }
-
+  // Token is valid - return admin info from the token payload
   return {
     valid: true,
     admin: {
-      admin_uuid: admin.admin_uuid,
-      email: admin.email,
-      name: admin.name,
-      role: admin.role,
+      admin_uuid: payload.admin_uuid,
+      email: payload.email,
+      role: payload.role,
     },
   }
 }

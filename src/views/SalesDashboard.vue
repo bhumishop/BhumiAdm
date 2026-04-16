@@ -237,7 +237,7 @@ function formatDate(dateStr) {
 .btn-flat {
   padding: var(--space-2) var(--space-4);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -249,8 +249,8 @@ function formatDate(dateStr) {
 
 .btn-flat:hover:not(:disabled) {
   background: var(--bg-hover);
-  border-color: var(--purple);
-  color: var(--purple);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .btn-flat:disabled {
@@ -268,7 +268,7 @@ function formatDate(dateStr) {
 
 .stat-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -284,21 +284,21 @@ function formatDate(dateStr) {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--purple);
+  background: var(--gold);
 }
 
 .stat-card.revenue::before {
-  background: var(--green);
+  background: var(--success);
 }
 
 .stat-card.revenue .stat-value {
-  color: var(--green);
+  color: var(--success);
 }
 
 .stat-icon {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .stat-label {
@@ -329,11 +329,11 @@ function formatDate(dateStr) {
 }
 
 .section-title {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: var(--purple);
+  color: var(--gold);
   margin-bottom: var(--space-4);
 }
 
@@ -345,20 +345,20 @@ function formatDate(dateStr) {
 
 .status-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   padding: var(--space-3);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .status-card:hover {
-  border-color: var(--purple);
+  border-color: var(--gold);
   background: var(--bg-elevated);
 }
 
 .status-card.active {
-  border-color: var(--purple);
-  background: rgba(139, 92, 246, 0.1);
+  border-color: var(--gold);
+  background: var(--gold-bg);
 }
 
 .status-header {
@@ -397,7 +397,7 @@ function formatDate(dateStr) {
 .status-revenue {
   font-family: var(--font-mono);
   font-size: 0.85rem;
-  color: var(--green);
+  color: var(--success);
   font-weight: 600;
 }
 
@@ -410,7 +410,7 @@ function formatDate(dateStr) {
 
 .gateway-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   padding: var(--space-3);
   display: flex;
   flex-direction: column;
@@ -420,20 +420,20 @@ function formatDate(dateStr) {
 }
 
 .gateway-card:hover {
-  border-color: var(--cyan);
+  border-color: var(--info);
   background: var(--bg-elevated);
 }
 
 .gateway-card.active {
-  border-color: var(--cyan);
-  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--info);
+  background: var(--info-bg);
 }
 
 .gateway-name {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--info);
   text-transform: uppercase;
 }
 
@@ -445,7 +445,7 @@ function formatDate(dateStr) {
 .gateway-revenue {
   font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: var(--green);
+  color: var(--success);
   font-weight: 600;
 }
 
@@ -460,7 +460,7 @@ function formatDate(dateStr) {
 .flat-select {
   padding: var(--space-2) var(--space-3);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -471,7 +471,7 @@ function formatDate(dateStr) {
 
 .flat-select:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .flat-input {
@@ -479,7 +479,7 @@ function formatDate(dateStr) {
   min-width: 200px;
   padding: var(--space-2) var(--space-3);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -489,7 +489,7 @@ function formatDate(dateStr) {
 
 .flat-input:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .flat-input::placeholder {
@@ -501,14 +501,14 @@ function formatDate(dateStr) {
 .empty-state {
   text-align: center;
   padding: var(--space-16);
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border);
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--purple);
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
   margin: 0 auto var(--space-4);
   animation: spin 1s linear infinite;
 }
@@ -530,7 +530,7 @@ function formatDate(dateStr) {
 
 /* Table */
 .table-wrapper {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   background: var(--bg-surface);
   overflow-x: auto;
 }
@@ -544,7 +544,7 @@ function formatDate(dateStr) {
   padding: var(--space-3) var(--space-4);
   text-align: left;
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
@@ -554,7 +554,7 @@ function formatDate(dateStr) {
 
 .flat-table td {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   color: var(--text-primary);
   vertical-align: middle;
 }
@@ -566,7 +566,7 @@ function formatDate(dateStr) {
 .order-id {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--purple);
+  color: var(--gold);
   font-size: 0.875rem;
 }
 
@@ -593,15 +593,15 @@ function formatDate(dateStr) {
 }
 
 .location-badge.brazil {
-  background: rgba(34, 197, 94, 0.1);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
 }
 
 .location-badge.international {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3B82F6;
-  color: #3B82F6;
+  background: var(--info-bg);
+  border-color: var(--info);
+  color: var(--info);
 }
 
 .state-code {
@@ -634,7 +634,7 @@ function formatDate(dateStr) {
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 0.9rem;
-  color: var(--green);
+  color: var(--success);
 }
 
 .date-cell {

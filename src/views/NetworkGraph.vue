@@ -25,42 +25,54 @@
       </div>
 
       <div class="toolbar-right">
-        <button @click="refreshGraph" :disabled="networkStore.loading" class="btn btn-icon" title="Atualizar">&#x27F3;</button>
-        <button @click="resetView" class="btn btn-icon" title="Resetar">&#x2302;</button>
+        <button @click="refreshGraph" :disabled="networkStore.loading" class="btn btn-icon" title="Atualizar">⟳</button>
+        <button @click="resetView" class="btn btn-icon" title="Resetar">⌂</button>
       </div>
     </div>
 
     <!-- Stats Bar -->
     <div class="stats-bar">
-      <div class="stat-item purple">
-        <span class="stat-icon">&#x1F3EA;</span>
-        <span class="stat-value text-purple">{{ networkStore.nodeCounts.store || 0 }}</span>
+      <div class="stat-item gold">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+</span>
+        <span class="stat-value text-gold">{{ networkStore.nodeCounts.store || 0 }}</span>
         <span class="stat-label">LOJAS</span>
       </div>
-      <div class="stat-item green">
-        <span class="stat-icon">&#x1F4B3;</span>
-        <span class="stat-value text-green">{{ networkStore.nodeCounts.gateway || 0 }}</span>
+      <div class="stat-item success">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+</span>
+        <span class="stat-value text-success">{{ networkStore.nodeCounts.gateway || 0 }}</span>
         <span class="stat-label">GATEWAYS</span>
       </div>
-      <div class="stat-item red">
-        <span class="stat-icon">&#x1F6D2;</span>
-        <span class="stat-value text-red">{{ networkStore.nodeCounts.order || 0 }}</span>
+      <div class="stat-item danger">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+</span>
+        <span class="stat-value text-danger">{{ networkStore.nodeCounts.order || 0 }}</span>
         <span class="stat-label">PEDIDOS</span>
       </div>
-      <div class="stat-item cyan">
-        <span class="stat-icon">&#x1F4E6;</span>
-        <span class="stat-value text-cyan">{{ networkStore.nodeCounts.product || 0 }}</span>
+      <div class="stat-item info">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+</span>
+        <span class="stat-value text-info">{{ networkStore.nodeCounts.product || 0 }}</span>
         <span class="stat-label">PRODUTOS</span>
       </div>
-      <div class="stat-item purple">
-        <span class="stat-icon">&#x1F517;</span>
-        <span class="stat-value text-purple">{{ networkStore.connectionCount }}</span>
+      <div class="stat-item gold">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+</span>
+        <span class="stat-value text-gold">{{ networkStore.connectionCount }}</span>
         <span class="stat-label">CONEX&Otilde;ES</span>
       </div>
-      <div v-if="networkStore.lastActivity" class="stat-item green">
-        <span class="stat-icon">&#x23F1;</span>
-        <span class="stat-value text-green">{{ formatTimeAgo(networkStore.lastActivity) }}</span>
-        <span class="stat-label">&Uacute;LTIMA ATIV.</span>
+      <div v-if="networkStore.lastActivity" class="stat-item success">
+        <span class="stat-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+</span>
+        <span class="stat-value text-success">{{ formatTimeAgo(networkStore.lastActivity) }}</span>
+        <span class="stat-label">&uacute;LTIMA ATIV.</span>
       </div>
     </div>
 
@@ -78,7 +90,7 @@
     <!-- Node Detail Panel -->
     <div v-if="networkStore.selectedNode" class="node-panel">
       <div class="panel-header">
-        <h4>[ DETALHES DO N&Oacute; ]</h4>
+        <h4>[ DETALHES DO NÓ ]</h4>
         <button @click="networkStore.clearSelection()" class="close-btn">&times;</button>
       </div>
       <div class="panel-body">
@@ -99,7 +111,7 @@
           <div class="detail-row"><span class="detail-label">FONTE</span><span class="detail-value">{{ networkStore.selectedNode.source }}</span></div>
           <div class="detail-row"><span class="detail-label">PEDIDOS</span><span class="detail-value">{{ networkStore.selectedNode.order_count }}</span></div>
           <div class="detail-row"><span class="detail-label">RECEITA</span><span class="detail-value text-green">R$ {{ networkStore.selectedNode.revenue?.toFixed(2) || '0.00' }}</span></div>
-          <div class="detail-row"><span class="detail-label">&Uacute;LTIMO SYNC</span><span class="detail-value">{{ formatTimeAgo(networkStore.selectedNode.last_sync) }}</span></div>
+          <div class="detail-row"><span class="detail-label">ÚLTIMO SYNC</span><span class="detail-value">{{ formatTimeAgo(networkStore.selectedNode.last_sync) }}</span></div>
         </template>
 
         <template v-if="networkStore.selectedNode.type === 'gateway'">
@@ -121,7 +133,7 @@
         <template v-if="networkStore.selectedNode.type === 'product'">
           <div class="detail-row"><span class="detail-label">VENDAS</span><span class="detail-value">{{ networkStore.selectedNode.sales_count }}</span></div>
           <div class="detail-row"><span class="detail-label">RECEITA</span><span class="detail-value text-green">R$ {{ networkStore.selectedNode.total_revenue?.toFixed(2) || '0.00' }}</span></div>
-          <div class="detail-row"><span class="detail-label">PRE&Ccedil;O</span><span class="detail-value">R$ {{ networkStore.selectedNode.price?.toFixed(2) || '0.00' }}</span></div>
+          <div class="detail-row"><span class="detail-label">PREÇO</span><span class="detail-value">R$ {{ networkStore.selectedNode.price?.toFixed(2) || '0.00' }}</span></div>
         </template>
 
         <template v-if="networkStore.selectedNode.type === 'config'">
@@ -283,7 +295,6 @@ watch(() => networkStore.edges, updateGraph, { deep: true })
 onMounted(async () => {
   await networkStore.buildGraph()
   setTimeout(() => initNetwork(), 100)
-  networkStore.subscribeToRealtime()
 })
 
 onUnmounted(async () => {
@@ -321,7 +332,7 @@ onUnmounted(async () => {
 .toolbar-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--purple);
+  color: var(--gold);
   letter-spacing: 1px;
   margin: 0;
 }
@@ -331,35 +342,35 @@ onUnmounted(async () => {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
-  background: var(--red-bg);
-  border: 1px solid var(--red);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
 }
 
 .connection-status.connected {
-  background: var(--green-bg);
-  border-color: var(--green);
+  background: var(--success-bg);
+  border-color: var(--success);
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
-  background: var(--red);
+  background: var(--danger);
   animation: pulse 2s infinite;
 }
 
 .connection-status.connected .status-dot {
-  background: var(--green);
+  background: var(--success);
 }
 
 .connection-status span:last-child {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--red);
+  color: var(--danger);
 }
 
 .connection-status.connected span:last-child {
-  color: var(--green);
+  color: var(--success);
 }
 
 .toolbar-center {
@@ -386,17 +397,17 @@ onUnmounted(async () => {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
-  transition: all var(--transition);
+  transition: all var(--transition-base);
 }
 
 .filter-btn:hover {
   background: var(--bg-elevated);
   border-color: var(--purple);
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .filter-btn.active {
-  background: var(--purple);
+  background: var(--gold);
   border-color: var(--purple);
   color: var(--bg-base);
 }
@@ -408,7 +419,7 @@ onUnmounted(async () => {
 }
 
 .filter-btn.active .filter-count {
-  background: var(--purple-dark);
+  background: var(--gold-dark);
   color: white;
 }
 
@@ -448,10 +459,10 @@ onUnmounted(async () => {
   height: 2px;
 }
 
-.stat-item.purple::before { background: var(--purple); }
-.stat-item.green::before { background: var(--green); }
-.stat-item.red::before { background: var(--red); }
-.stat-item.cyan::before { background: var(--cyan); }
+.stat-item.purple::before { background: var(--gold); }
+.stat-item.green::before { background: var(--success); }
+.stat-item.red::before { background: var(--danger); }
+.stat-item.cyan::before { background: var(--info); }
 
 .stat-icon { font-size: 16px; }
 
@@ -500,7 +511,7 @@ onUnmounted(async () => {
   width: 40px;
   height: 40px;
   border: var(--border);
-  border-top-color: var(--purple);
+  border-top-color: var(--gold);
   animation: spin 1s linear infinite;
 }
 
@@ -508,7 +519,7 @@ onUnmounted(async () => {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--purple);
+  color: var(--gold);
 }
 
 /* Node Detail Panel */
@@ -531,7 +542,7 @@ onUnmounted(async () => {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--purple);
+  background: var(--gold);
 }
 
 .panel-header {
@@ -547,7 +558,7 @@ onUnmounted(async () => {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--purple);
+  color: var(--gold);
   margin: 0;
 }
 
@@ -562,11 +573,11 @@ onUnmounted(async () => {
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 16px;
-  transition: all var(--transition);
+  transition: all var(--transition-base);
 }
 
 .close-btn:hover {
-  background: var(--red);
+  background: var(--danger);
   border-color: var(--red);
   color: white;
 }
@@ -624,7 +635,7 @@ onUnmounted(async () => {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--green);
+  color: var(--success);
   margin: 0;
 }
 
@@ -642,9 +653,9 @@ onUnmounted(async () => {
   transition: background var(--transition);
 }
 
-.event-insert { border-color: var(--green); }
-.event-update { border-color: var(--cyan); }
-.event-delete { border-color: var(--red); }
+.event-insert { border-color: var(--success); }
+.event-update { border-color: var(--info); }
+.event-delete { border-color: var(--danger); }
 
 .event-icon {
   font-size: 12px;

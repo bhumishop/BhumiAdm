@@ -276,7 +276,7 @@
                   <span>Last: {{ formatTime(user.last_active) }}</span>
                 </div>
                 <div v-if="user.geolocation" class="user-geo">
-                  <span class="geo-icon">&#x1F4CD;</span>
+                  <span class="geo-icon">📍</span>
                   {{ user.geolocation.city }}, {{ user.geolocation.country_code }}
                 </div>
               </div>
@@ -383,17 +383,249 @@
 
       <!-- ===== GRAPH VIEW TAB ===== -->
       <div v-if="activeTab === 'graph'" class="tab-panel">
+        <div class="graph-controls-bar">
+          <div class="graph-toggles">
+            <button
+              :class="{ active: graphView === 'unified' }"
+              @click="graphView = 'unified'"
+              class="graph-toggle-btn"
+            >
+              UNIFIED_GRAPH
+            </button>
+            <button
+              :class="{ active: graphView === 'infrastructure' }"
+              @click="graphView = 'infrastructure'"
+              class="graph-toggle-btn"
+            >
+              INFRASTRUCTURE
+            </button>
+            <button
+              :class="{ active: graphView === 'shop' }"
+              @click="graphView = 'shop'"
+              class="graph-toggle-btn"
+            >
+              SHOP_CONFIG
+            </button>
+          </div>
+          <div class="graph-actions">
+            <button @click="saveAllConfig" class="btn-primary" :disabled="saving">
+              {{ saving ? 'SAVING...' : 'SAVE_CONFIG' }}
+            </button>
+            <button @click="applyLocationRules" class="btn-flat">
+              APPLY_RULES
+            </button>
+          </div>
+        </div>
         <div class="panel-layout full-height">
-          <div class="graph-panel">
-            <h3 class="panel-title">[ INFRASTRUCTURE_GRAPH ]</h3>
+          <div class="graph-panel unified-graph">
+            <h3 class="panel-title">[ UNIFIED_VISUAL_GRAPH ]</h3>
             <div ref="orchestratorGraphRef" class="graph-canvas"></div>
             <div class="graph-legend">
-              <div class="legend-item"><span class="legend-dot" style="background: #8B5CF6;"></span> Orchestrator</div>
-              <div class="legend-item"><span class="legend-dot" style="background: #00E5FF;"></span> Edge Function</div>
-              <div class="legend-item"><span class="legend-dot" style="background: #00FF41;"></span> User Session</div>
-              <div class="legend-item"><span class="legend-dot" style="background: #FFB800;"></span> Geolocation</div>
+              <div class="legend-section">
+                <span class="legend-label">INFRASTRUCTURE</span>
+                <div class="legend-item"><span class="legend-dot" style="background: #8B5CF6;"></span> Orchestrator</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #00E5FF;"></span> Edge Function</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #00FF41;"></span> User Session</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #FFB800;"></span> Geolocation</div>
+              </div>
+              <div class="legend-section">
+                <span class="legend-label">SHOP_SERVICES</span>
+                <div class="legend-item"><span class="legend-dot" style="background: #A855F7;"></span> Product Type</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #06B6D4;"></span> Provider</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #22C55E;"></span> Payment Gateway</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #F59E0B;"></span> Location Rule</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #FF3347;"></span> Payment Method</div>
+              </div>
+              <div class="legend-section">
+                <span class="legend-label">NETWORK</span>
+                <div class="legend-item"><span class="legend-dot" style="background: #7B2CBF;"></span> Store</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #FF6B6B;"></span> Order</div>
+                <div class="legend-item"><span class="legend-dot" style="background: #FFE66D;"></span> Customer</div>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Configurator Side Panel (shown in graph tab) -->
+  <div v-if="activeTab === 'graph'" class="shop-config-sidebar">
+    <div class="sidebar-tabs">
+      <button
+        :class="{ active: sidebarTab === 'products' }"
+        @click="sidebarTab = 'products'"
+        class="sidebar-tab"
+      >
+        PRODUCTS
+      </button>
+      <button
+        :class="{ active: sidebarTab === 'gateways' }"
+        @click="sidebarTab = 'gateways'"
+        class="sidebar-tab"
+      >
+        GATEWAYS
+      </button>
+      <button
+        :class="{ active: sidebarTab === 'locations' }"
+        @click="sidebarTab = 'locations'"
+        class="sidebar-tab"
+      >
+        LOCATIONS
+      </button>
+    </div>
+
+    <!-- Product Types Panel -->
+    <div v-if="sidebarTab === 'products'" class="sidebar-content">
+      <h4 class="sidebar-title">[ PRODUCT_TYPES ]</h4>
+      <div class="product-list">
+        <div
+          v-for="pt in shopConfig.productTypes"
+          :key="pt"
+          class="product-item"
+          :class="{ active: selectedProductType === pt }"
+          @click="selectedProductType = pt"
+        >
+          <div class="product-header">
+            <span class="product-icon">{{ getProductIcon(pt) }}</span>
+            <span class="product-name">{{ pt }}</span>
+          </div>
+          <div v-if="selectedProductType === pt" class="product-config">
+            <div class="config-row">
+              <label>Provider</label>
+              <select
+                v-model="currentRule.provider"
+                class="flat-select-sm"
+              >
+                <option v-for="provider in shopConfig.providers" :key="provider" :value="provider">
+                  {{ provider }}
+                </option>
+              </select>
+            </div>
+
+            <div class="config-row">
+              <label>Gateways</label>
+              <div class="gateway-checkboxes">
+                <label
+                  v-for="gw in allGateways"
+                  :key="gw"
+                  class="checkbox-item"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="currentRule.gateways.includes(gw)"
+                    @change="toggleGateway(gw)"
+                  >
+                  {{ gw }}
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <label>Brazil Only</label>
+              <div class="gateway-checkboxes">
+                <label
+                  v-for="gw in allGateways"
+                  :key="gw"
+                  class="checkbox-item"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="currentRule.location_overrides?.brazil?.includes(gw)"
+                    @change="toggleLocationGateway('brazil', gw)"
+                  >
+                  {{ gw }}
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <label>International Only</label>
+              <div class="gateway-checkboxes">
+                <label
+                  v-for="gw in allGateways"
+                  :key="gw"
+                  class="checkbox-item"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="currentRule.location_overrides?.international?.includes(gw)"
+                    @change="toggleLocationGateway('international', gw)"
+                  >
+                  {{ gw }}
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <label>Active</label>
+              <input
+                type="checkbox"
+                v-model="currentRule.is_active"
+                class="flat-checkbox"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gateways Panel -->
+    <div v-if="sidebarTab === 'gateways'" class="sidebar-content">
+      <h4 class="sidebar-title">[ GATEWAYS ]</h4>
+      <div class="gateway-list">
+        <div
+          v-for="gw in shopConfig.gateways"
+          :key="gw.id"
+          class="gateway-item"
+          :class="{ enabled: gw.enabled }"
+        >
+          <div class="gateway-header">
+            <span class="gateway-name">{{ gw.gateway }}</span>
+            <button
+              @click="shopConfig.toggleGateway(gw.gateway)"
+              class="toggle-btn"
+              :class="{ active: gw.enabled }"
+            >
+              {{ gw.enabled ? 'ON' : 'OFF' }}
+            </button>
+          </div>
+          <div class="gateway-details">
+            <span class="gateway-provider">Provider: {{ gw.provider }}</span>
+            <span class="gateway-location">Location: {{ gw.location_restriction }}</span>
+            <div class="gateway-methods">
+              <span
+                v-for="method in gw.supported_methods"
+                :key="method"
+                class="method-tag"
+              >
+                {{ method }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Rules Panel -->
+    <div v-if="sidebarTab === 'locations'" class="sidebar-content">
+      <h4 class="sidebar-title">[ LOCATION_RULES ]</h4>
+      <div class="location-rules">
+        <div class="location-rule brazil">
+          <h3>BRASIL</h3>
+          <ul>
+            <li>MercadoPago (pix, card, boleto)</li>
+            <li>AbacatePay (pix, card, boleto)</li>
+            <li>PixBricks (pix)</li>
+            <li>UmaPenca (if provider = umapenca)</li>
+          </ul>
+        </div>
+        <div class="location-rule international">
+          <h3>INTERNATIONAL</h3>
+          <ul>
+            <li>MercadoPago (pix, card, boleto)</li>
+            <li>AbacatePay (pix, card, boleto)</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -404,8 +636,12 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Network, DataSet } from 'vis-network/standalone'
 import { useInfraOrchestratorStore } from '../stores/infraOrchestrator'
+import { useShopConfigStore } from '../stores/shopConfig'
+import { useNetworkStore } from '../stores/network'
 
 const infraStore = useInfraOrchestratorStore()
+const shopConfig = useShopConfigStore()
+const networkStore = useNetworkStore()
 
 const activeTab = ref('functions')
 const showGraph = ref(false)
@@ -414,6 +650,13 @@ const logStatusFilter = ref('')
 const logOperationFilter = ref('')
 const otelHours = ref(24)
 
+// Graph view mode
+const graphView = ref('unified')
+const sidebarTab = ref('products')
+const selectedProductType = ref('tshirt')
+const saving = ref(false)
+const allGateways = ['mercadopago', 'abacatepay', 'pix_bricks', 'umapenca_native', 'paypal']
+
 const connectionsGraphRef = ref(null)
 const geoMapRef = ref(null)
 const orchestratorGraphRef = ref(null)
@@ -421,6 +664,8 @@ const orchestratorGraphRef = ref(null)
 let connectionsNetwork = null
 let geoMapNetwork = null
 let orchestratorNetwork = null
+let nodesDataSet = null
+let edgesDataSet = null
 
 const tabs = computed(() => [
   { id: 'functions', label: 'EDGE_FUNCTIONS', badge: infraStore.functionStatusCounts.total },
@@ -707,10 +952,328 @@ function initOrchestratorGraph() {
   })
 }
 
+// ============================================
+// Shop Configurator Functions
+// ============================================
+const currentRule = computed(() => {
+  let rule = shopConfig.productRules.find(r => r.product_type === selectedProductType.value)
+  if (!rule) {
+    rule = {
+      id: `rule_${selectedProductType.value}`,
+      product_type: selectedProductType.value,
+      provider: 'custom',
+      gateways: [],
+      location_overrides: {
+        brazil: [],
+        international: [],
+      },
+      priority: shopConfig.productRules.length + 1,
+      is_active: true,
+    }
+    shopConfig.productRules.push(rule)
+  }
+  return rule
+})
+
+function getProductIcon(productType) {
+  const icons = {
+    tshirt: 'T',
+    mug: 'M',
+    smug: 'S',
+    book: 'B',
+    accessory: 'A',
+    art: 'R',
+    digital: 'D',
+  }
+  return icons[productType] || '?'
+}
+
+function toggleGateway(gw) {
+  const rule = currentRule.value
+  const idx = rule.gateways.indexOf(gw)
+  if (idx >= 0) {
+    rule.gateways.splice(idx, 1)
+  } else {
+    rule.gateways.push(gw)
+  }
+}
+
+function toggleLocationGateway(location, gw) {
+  const rule = currentRule.value
+  if (!rule.location_overrides) {
+    rule.location_overrides = { brazil: [], international: [] }
+  }
+  if (!rule.location_overrides[location]) {
+    rule.location_overrides[location] = []
+  }
+  const idx = rule.location_overrides[location].indexOf(gw)
+  if (idx >= 0) {
+    rule.location_overrides[location].splice(idx, 1)
+  } else {
+    rule.location_overrides[location].push(gw)
+  }
+}
+
+function applyLocationRules() {
+  shopConfig.applyLocationRules()
+}
+
+async function saveAllConfig() {
+  saving.value = true
+  try {
+    await shopConfig.saveConfig({
+      payment_gateways: shopConfig.gateways,
+      product_payment_rules: shopConfig.productRules,
+    })
+  } catch (err) {
+    console.error('Error saving config:', err)
+  } finally {
+    saving.value = false
+  }
+}
+
+// ============================================
+// Unified Graph Visualization
+// ============================================
+const NODE_COLORS = {
+  orchestrator: { color: '#8B5CF6', shape: 'box', size: 40 },
+  edge_function: { color: '#00E5FF', shape: 'ellipse', size: 25 },
+  user_session: { color: '#00FF41', shape: 'dot', size: 15 },
+  geolocation: { color: '#FFB800', shape: 'diamond', size: 20 },
+  product_type: { color: '#A855F7', shape: 'box', size: 30 },
+  provider: { color: '#06B6D4', shape: 'diamond', size: 25 },
+  payment_gateway: { color: '#22C55E', shape: 'ellipse', size: 20 },
+  location_rule: { color: '#F59E0B', shape: 'triangle', size: 25 },
+  payment_method: { color: '#FF3347', shape: 'dot', size: 12 },
+  store: { color: '#7B2CBF', shape: 'dot', size: 35 },
+  order: { color: '#FF6B6B', shape: 'dot', size: 20 },
+  customer: { color: '#FFE66D', shape: 'dot', size: 25 },
+}
+
+function formatNodes(nodes) {
+  return nodes.map(node => {
+    const config = NODE_COLORS[node.type] || NODE_COLORS.product_type
+    return {
+      id: node.id,
+      label: node.label,
+      ...config,
+      borderWidth: 2,
+      opacity: node.enabled !== false ? 1 : 0.3,
+      font: { size: 9, face: 'JetBrains Mono, monospace', color: '#e0e0e0' },
+    }
+  })
+}
+
+function formatEdges(edges) {
+  return edges.map(edge => ({
+    from: edge.from,
+    to: edge.to,
+    label: edge.label,
+    arrows: 'to',
+    width: edge.enabled !== false ? 1.5 : 0.5,
+    color: {
+      color: edge.enabled !== false ? '#404050' : '#202030',
+    },
+    dashes: edge.enabled === false,
+    font: { align: 'top', size: 8, color: '#606070', face: 'JetBrains Mono, monospace' },
+    smooth: { type: 'continuous', roundness: 0.2 },
+  }))
+}
+
+function buildUnifiedGraph() {
+  const nodes = []
+  const edges = []
+
+  // Add infrastructure nodes from infraStore
+  if (graphView.value === 'unified' || graphView.value === 'infrastructure') {
+    // Orchestrator nodes
+    for (const node of infraStore.orchestratorNodes) {
+      nodes.push({
+        id: `infra_${node.id}`,
+        label: node.label,
+        type: node.type,
+        enabled: node.enabled,
+      })
+    }
+    for (const edge of infraStore.orchestratorEdges) {
+      edges.push({
+        from: `infra_${edge.from}`,
+        to: `infra_${edge.to}`,
+        label: edge.label,
+        enabled: edge.enabled,
+      })
+    }
+
+    // Edge function nodes from connections graph
+    const functions = infraStore.edgeFunctions
+    nodes.push({
+      id: 'db_supabase',
+      label: 'SUPABASE\nPostgreSQL',
+      type: 'edge_function',
+      enabled: true,
+    })
+
+    for (const fn of functions) {
+      const fnColor = fn.status === 'active' ? '#00FF41' : fn.status === 'error' ? '#FF3347' : fn.status === 'degraded' ? '#FFB800' : '#606070'
+      nodes.push({
+        id: `fn_${fn.function_name}`,
+        label: fn.function_name,
+        type: 'edge_function',
+        enabled: fn.status !== 'inactive',
+      })
+    }
+  }
+
+  // Add shop config nodes (product types, providers, gateways)
+  if (graphView.value === 'unified' || graphView.value === 'shop') {
+    const shopGraph = shopConfig.visualGraph
+    for (const node of shopGraph.nodes) {
+      nodes.push({
+        id: `shop_${node.id}`,
+        label: node.label,
+        type: node.type,
+        enabled: node.enabled,
+      })
+    }
+    for (const edge of shopGraph.edges) {
+      edges.push({
+        from: `shop_${edge.from}`,
+        to: `shop_${edge.to}`,
+        label: edge.label,
+        enabled: edge.enabled,
+      })
+    }
+  }
+
+  // Add network nodes (stores, orders)
+  if (graphView.value === 'unified') {
+    for (const node of networkStore.nodes) {
+      nodes.push({
+        id: `net_${node.id}`,
+        label: node.label,
+        type: node.type,
+        enabled: true,
+      })
+    }
+    for (const edge of networkStore.edges) {
+      edges.push({
+        from: `net_${edge.from}`,
+        to: `net_${edge.to}`,
+        label: edge.label || '',
+        enabled: true,
+      })
+    }
+
+    // Connect infrastructure to shop services
+    if (functions?.length > 0) {
+      // Connect admin-auth to shop config
+      edges.push({
+        from: 'fn_admin-auth',
+        to: 'shop_provider_umapenca',
+        label: 'auth',
+        enabled: true,
+      })
+    }
+
+    // Connect network stores to payment gateways
+    for (const store of networkStore.storeNodes) {
+      for (const gateway of networkStore.gatewayNodes) {
+        edges.push({
+          from: `net_${store.id}`,
+          to: `shop_gw_${gateway.provider || gateway.id}`,
+          label: 'uses',
+          enabled: true,
+        })
+      }
+    }
+  }
+
+  return { nodes, edges }
+}
+
+function initUnifiedGraph() {
+  if (!orchestratorGraphRef.value) return
+
+  const graph = buildUnifiedGraph()
+
+  if (nodesDataSet && edgesDataSet) {
+    nodesDataSet.clear()
+    edgesDataSet.clear()
+  } else {
+    nodesDataSet = new DataSet(formatNodes(graph.nodes))
+    edgesDataSet = new DataSet(formatEdges(graph.edges))
+  }
+
+  nodesDataSet.add(formatNodes(graph.nodes))
+  edgesDataSet.add(formatEdges(graph.edges))
+
+  const options = {
+    physics: {
+      enabled: true,
+      solver: 'forceAtlas2Based',
+      forceAtlas2Based: {
+        gravitationalConstant: -50,
+        centralGravity: 0.01,
+        springLength: 120,
+        springConstant: 0.05,
+        damping: 0.4,
+      },
+      stabilization: { enabled: true, iterations: 100, fit: true },
+    },
+    interaction: { hover: true, tooltipDelay: 100, dragNodes: true, dragView: true, zoomView: true },
+    nodes: {
+      borderWidth: 2,
+      font: { size: 10, face: 'JetBrains Mono, monospace', color: '#e0e0e0' },
+      shadow: false,
+    },
+    edges: {
+      hoverWidth: 0.5,
+      selectionWidth: 2,
+      smooth: { enabled: true, type: 'continuous', roundness: 0.2 },
+      font: { align: 'top', size: 8, color: '#606070', face: 'JetBrains Mono, monospace' },
+    },
+    autoResize: true,
+  }
+
+  if (orchestratorNetwork) {
+    orchestratorNetwork.setData({ nodes: nodesDataSet, edges: edgesDataSet })
+  } else {
+    orchestratorNetwork = new Network(orchestratorGraphRef.value, { nodes: nodesDataSet, edges: edgesDataSet }, options)
+
+    orchestratorNetwork.on('click', (params) => {
+      if (params.nodes.length > 0) {
+        const nodeId = params.nodes[0]
+        // Handle shop config node clicks
+        if (nodeId.startsWith('shop_')) {
+          shopConfig.selectNode(nodeId.replace('shop_', ''))
+        }
+        // Handle infra node clicks
+        if (nodeId.startsWith('infra_')) {
+          const infraNode = infraStore.orchestratorNodes.find(n => n.id === nodeId.replace('infra_', ''))
+          if (infraNode) infraStore.selectOrchestratorNode(infraNode)
+        }
+      }
+    })
+  }
+}
+
+function updateGraph() {
+  if (!nodesDataSet || !edgesDataSet) return
+  const graph = buildUnifiedGraph()
+  nodesDataSet.clear()
+  edgesDataSet.clear()
+  nodesDataSet.add(formatNodes(graph.nodes))
+  edgesDataSet.add(formatEdges(graph.edges))
+}
+
 async function refreshAll() {
-  await infraStore.refreshAll()
+  await Promise.all([
+    infraStore.refreshAll(),
+    shopConfig.fetchConfig(),
+    networkStore.buildGraph(),
+  ])
   setTimeout(() => {
-    if (activeTab.value === 'graph') initOrchestratorGraph()
+    if (activeTab.value === 'graph') initUnifiedGraph()
     if (activeTab.value === 'connections') initConnectionsGraph()
     if (activeTab.value === 'users') initGeoMap()
   }, 500)
@@ -721,8 +1284,13 @@ watch(activeTab, (newTab) => {
   setTimeout(() => {
     if (newTab === 'connections') initConnectionsGraph()
     if (newTab === 'users') initGeoMap()
-    if (newTab === 'graph') initOrchestratorGraph()
+    if (newTab === 'graph') initUnifiedGraph()
   }, 100)
+})
+
+// Watch graph view changes
+watch(graphView, () => {
+  if (activeTab.value === 'graph') initUnifiedGraph()
 })
 
 // Watch data changes to update graphs
@@ -735,11 +1303,26 @@ watch(() => infraStore.mapData, () => {
 }, { deep: true })
 
 watch(() => infraStore.orchestratorNodes, () => {
-  if (activeTab.value === 'graph') initOrchestratorGraph()
+  if (activeTab.value === 'graph' && graphView.value === 'infrastructure') initUnifiedGraph()
+}, { deep: true })
+
+watch(() => shopConfig.gateways, () => {
+  if (activeTab.value === 'graph') updateGraph()
+}, { deep: true })
+
+watch(() => shopConfig.productRules, () => {
+  if (activeTab.value === 'graph') updateGraph()
+}, { deep: true })
+
+watch(() => networkStore.nodes, () => {
+  if (activeTab.value === 'graph' && graphView.value === 'unified') updateGraph()
 }, { deep: true })
 
 onMounted(async () => {
-  await infraStore.refreshAll()
+  await Promise.all([
+    infraStore.refreshAll(),
+    shopConfig.fetchConfig(),
+  ])
   setTimeout(() => {
     initConnectionsGraph()
   }, 300)
@@ -870,11 +1453,11 @@ onUnmounted(() => {
 .tab-btn:hover {
   background: var(--bg-hover);
   border-color: var(--purple);
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .tab-btn.active {
-  background: var(--purple);
+  background: var(--gold);
   border-color: var(--purple);
   color: white;
 }
@@ -886,7 +1469,7 @@ onUnmounted(() => {
 }
 
 .tab-btn.active .tab-badge {
-  background: var(--purple-dark);
+  background: var(--gold-dark);
 }
 
 /* Panel Layout */
@@ -918,7 +1501,7 @@ onUnmounted(() => {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: var(--purple);
+  color: var(--gold);
   margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
   border-bottom: var(--border);
@@ -945,7 +1528,7 @@ onUnmounted(() => {
 
 .function-item.active {
   border-color: var(--purple);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(234, 179, 8, 0.1);
 }
 
 .function-item.fn-active { border-left: 3px solid var(--green); }
@@ -1081,7 +1664,7 @@ onUnmounted(() => {
 .section-title {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--info);
   margin-bottom: var(--space-3);
 }
 
@@ -1122,7 +1705,7 @@ onUnmounted(() => {
 
 .result-json {
   font-size: 0.65rem;
-  color: var(--green);
+  color: var(--success);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 300px;
@@ -1282,7 +1865,7 @@ onUnmounted(() => {
 .user-geo {
   margin-top: var(--space-1);
   font-size: 0.6rem;
-  color: var(--cyan);
+  color: var(--info);
 }
 
 .geo-icon { margin-right: var(--space-1); }
@@ -1318,7 +1901,7 @@ onUnmounted(() => {
 .card-title {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--info);
   margin-bottom: var(--space-3);
   padding-bottom: var(--space-2);
   border-bottom: var(--border);
@@ -1364,11 +1947,11 @@ onUnmounted(() => {
 
 .service-error-rate {
   font-size: 0.6rem;
-  color: var(--green);
+  color: var(--success);
 }
 
 .service-error-rate.high {
-  color: var(--red);
+  color: var(--danger);
 }
 
 .service-stats {
@@ -1404,12 +1987,12 @@ onUnmounted(() => {
 }
 
 .error-message {
-  color: var(--red);
+  color: var(--danger);
   max-width: 200px;
 }
 
 .slow-duration {
-  color: var(--yellow);
+  color: var(--warning);
   font-weight: 700;
 }
 
@@ -1429,7 +2012,7 @@ onUnmounted(() => {
 .btn-flat:hover {
   background: var(--bg-hover);
   border-color: var(--purple);
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .btn-flat:disabled {
@@ -1439,7 +2022,7 @@ onUnmounted(() => {
 
 .btn-primary {
   padding: var(--space-2) var(--space-4);
-  background: var(--purple);
+  background: var(--gold);
   border: none;
   color: white;
   font-family: var(--font-mono);
@@ -1451,7 +2034,7 @@ onUnmounted(() => {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--purple-light);
+  background: var(--gold-light);
 }
 
 .btn-primary:disabled {
@@ -1469,6 +2052,377 @@ onUnmounted(() => {
   letter-spacing: 1px;
 }
 
+/* Graph Controls Bar */
+.graph-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--bg-surface);
+  border: var(--border);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.graph-toggles {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.graph-toggle-btn {
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-elevated);
+  border: var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.graph-toggle-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--purple);
+  color: var(--gold);
+}
+
+.graph-toggle-btn.active {
+  background: var(--gold);
+  border-color: var(--purple);
+  color: white;
+}
+
+.graph-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Unified Graph Panel */
+.graph-panel.unified-graph {
+  padding: var(--space-3);
+}
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border);
+  justify-content: center;
+}
+
+.legend-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.legend-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+/* Shop Config Sidebar */
+.shop-config-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 320px;
+  height: 100vh;
+  background: var(--bg-surface);
+  border-left: var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-tabs {
+  display: flex;
+  border-bottom: var(--border);
+}
+
+.sidebar-tab {
+  flex: 1;
+  padding: var(--space-2) var(--space-1);
+  background: var(--bg-elevated);
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sidebar-tab:hover {
+  background: var(--bg-hover);
+  color: var(--gold);
+}
+
+.sidebar-tab.active {
+  background: var(--bg-base);
+  border-bottom-color: var(--purple);
+  color: var(--gold);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.sidebar-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border);
+}
+
+/* Product List in Sidebar */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.product-item {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-elevated);
+  border: var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.product-item:hover {
+  border-color: var(--purple);
+}
+
+.product-item.active {
+  border-color: var(--purple);
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.product-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--gold);
+  color: white;
+  font-family: var(--font-mono);
+}
+
+.product-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.product-config {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.config-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.config-row label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.flat-select-sm {
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-base);
+  border: var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.flat-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--purple);
+}
+
+.gateway-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+/* Gateway List in Sidebar */
+.gateway-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gateway-item {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-elevated);
+  border: var(--border);
+  opacity: 0.5;
+  transition: all 0.15s ease;
+}
+
+.gateway-item.enabled {
+  opacity: 1;
+  border-color: var(--green);
+}
+
+.gateway-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.gateway-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.toggle-btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: var(--bg-base);
+  border: var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg-base);
+}
+
+.gateway-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.gateway-provider,
+.gateway-location {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.gateway-methods {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.method-tag {
+  padding: var(--space-1);
+  font-size: 0.55rem;
+  font-family: var(--font-mono);
+  background: var(--bg-base);
+  border: var(--border);
+  color: var(--info);
+}
+
+/* Location Rules in Sidebar */
+.location-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.location-rule {
+  padding: var(--space-3);
+  border: var(--border);
+}
+
+.location-rule.brazil {
+  border-color: var(--green);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.location-rule.international {
+  border-color: #3B82F6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.location-rule h3 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  margin: 0 0 var(--space-2) 0;
+}
+
+.location-rule.brazil h3 {
+  color: var(--success);
+}
+
+.location-rule.international h3 {
+  color: #3B82F6;
+}
+
+.location-rule ul {
+  margin: 0;
+  padding-left: var(--space-4);
+  list-style: none;
+}
+
+.location-rule li {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .panel-layout {
@@ -1481,6 +2435,10 @@ onUnmounted(() => {
 
   .telemetry-grid {
     grid-template-columns: 1fr;
+  }
+
+  .shop-config-sidebar {
+    width: 280px;
   }
 }
 
@@ -1533,6 +2491,29 @@ onUnmounted(() => {
 
   .log-filters {
     flex-wrap: wrap;
+  }
+
+  .graph-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .graph-toggles, .graph-actions {
+    width: 100%;
+  }
+
+  .graph-toggle-btn {
+    flex: 1;
+  }
+
+  .shop-config-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: var(--border);
+    margin-top: var(--space-4);
+    box-shadow: none;
   }
 }
 </style>

@@ -135,10 +135,12 @@ export const useNetworkStore = defineStore('network', () => {
         const data = result.data as unknown as { nodes: NetworkNode[]; edges: NetworkEdge[] }
         nodes.value = data.nodes || []
         edges.value = data.edges || []
+        isConnected.value = true
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Erro ao construir grafo'
       console.error('buildGraph error:', err)
+      isConnected.value = false
     } finally {
       loading.value = false
     }

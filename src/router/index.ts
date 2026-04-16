@@ -20,6 +20,7 @@ const NetworkGraph = () => import('../views/NetworkGraph.vue')
 const SalesDashboard = () => import('../views/SalesDashboard.vue')
 const ShopConfigurator = () => import('../views/ShopConfigurator.vue')
 const VisualOrchestrator = () => import('../views/VisualOrchestrator.vue')
+const MercadoPagoConfig = () => import('../views/MercadoPagoConfig.vue')
 const ConfigView = () => import('../views/ConfigView.vue')
 const AboutView = () => import('../views/AboutView.vue')
 const NotFoundView = () => import('../views/NotFoundView.vue')
@@ -151,6 +152,12 @@ const routes: RouteRecordRaw[] = [
         name: 'config',
         component: ConfigView,
         meta: { requiresAuth: true, title: 'BhumiAdm - Configurations' }
+      },
+      {
+        path: 'mercadopago',
+        name: 'mercadopagoConfig',
+        component: MercadoPagoConfig,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Mercado Pago Configuration' }
       }
     ]
   },

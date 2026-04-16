@@ -3,7 +3,7 @@
     <!-- Page Header -->
     <div class="page-header animate-slideDown">
       <div>
-        <h2 class="page-title">&gt; DASHBOARD &amp; M&Eacute;TRICAS</h2>
+        <h2 class="page-title">> DASHBOARD & MÉTRICAS</h2>
         <p class="page-subtitle">ACOMPANHE O DESEMPENHO DA SUA LOJA</p>
       </div>
       <div class="page-controls">
@@ -13,7 +13,7 @@
           <option value="90">90 DIAS</option>
         </select>
         <button class="btn btn-secondary" @click="refreshData" :disabled="store.loading">
-          <span :class="{ 'animate-spin': store.loading }">&#x27F3;</span>
+          <span :class="{ 'animate-spin': store.loading }">⟳</span>
           <span>ATUALIZAR</span>
         </button>
       </div>
@@ -22,7 +22,7 @@
     <!-- Loading -->
     <div v-if="store.loading" class="loading-box animate-fadeIn">
       <div class="loading-block"></div>
-      <p>CARREGANDO M&Eacute;TRICAS...</p>
+      <p>CARREGANDO MÉTRICAS...</p>
     </div>
 
     <!-- Content -->
@@ -31,61 +31,73 @@
       <div class="stats-grid animate-slideUp">
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box purple">&#x1F6D2;</div>
-            <span class="stat-badge badge-purple">+12%</span>
+            <div class="stat-box gold">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+</div>
+            <span class="stat-badge badge-gold">+12%</span>
           </div>
-          <div class="stat-value text-purple">{{ store.stats.totalOrders }}</div>
+          <div class="stat-value text-gold">{{ store.stats.totalOrders }}</div>
           <div class="stat-label">TOTAL DE PEDIDOS</div>
           <div class="stat-bar"><div class="bar-fill purple" style="width: 75%"></div></div>
         </div>
 
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box yellow">&#x23F3;</div>
-            <span class="stat-badge badge-yellow">PENDENTES</span>
+            <div class="stat-box yellow">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+</div>
+            <span class="stat-badge badge-warning">PENDENTES</span>
           </div>
-          <div class="stat-value text-yellow">{{ store.stats.pendingOrders }}</div>
+          <div class="stat-value text-warning">{{ store.stats.pendingOrders }}</div>
           <div class="stat-label">PEDIDOS PENDENTES</div>
           <div class="stat-bar"><div class="bar-fill yellow" style="width: 30%"></div></div>
         </div>
 
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box green">&#x1F4B0;</div>
-            <span class="stat-badge badge-green">RECEITA</span>
+            <div class="stat-box green">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+</div>
+            <span class="stat-badge badge-success">RECEITA</span>
           </div>
-          <div class="stat-value text-green">R$ {{ store.stats.totalRevenue.toFixed(2) }}</div>
+          <div class="stat-value text-success">R$ {{ store.stats.totalRevenue.toFixed(2) }}</div>
           <div class="stat-label">RECEITA TOTAL</div>
           <div class="stat-bar"><div class="bar-fill green" style="width: 85%"></div></div>
         </div>
 
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box cyan">&#x1F4E6;</div>
-            <span class="stat-badge badge-cyan">{{ store.stats.activeProducts }} ATIVOS</span>
+            <div class="stat-box cyan">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+</div>
+            <span class="stat-badge badge-info">{{ store.stats.activeProducts }} ATIVOS</span>
           </div>
-          <div class="stat-value text-cyan">{{ store.stats.activeProducts }}</div>
+          <div class="stat-value text-info">{{ store.stats.activeProducts }}</div>
           <div class="stat-label">PRODUTOS ATIVOS</div>
           <div class="stat-bar"><div class="bar-fill cyan" style="width: 65%"></div></div>
         </div>
 
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box red">&#x26A0;</div>
-            <span class="stat-badge badge-red">ATEN&Ccedil;&Atilde;O</span>
+            <div class="stat-box red">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+</div>
+            <span class="stat-badge badge-danger">ATENÇÃO</span>
           </div>
-          <div class="stat-value text-red">{{ store.stats.lowStockProducts }}</div>
+          <div class="stat-value text-danger">{{ store.stats.lowStockProducts }}</div>
           <div class="stat-label">ESTOQUE BAIXO</div>
           <div class="stat-bar"><div class="bar-fill red" :style="{ width: Math.min(store.stats.lowStockProducts * 10, 100) + '%' }"></div></div>
         </div>
 
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-box blue">&#x1F4CA;</div>
-            <span class="stat-badge badge-blue">M&Eacute;DIA</span>
+            <div class="stat-box blue">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+</div>
+            <span class="stat-badge badge-info">MÉDIA</span>
           </div>
-          <div class="stat-value" style="color: var(--blue)">R$ {{ store.stats.averageOrderValue.toFixed(2) }}</div>
-          <div class="stat-label">TICKET M&Eacute;DIO</div>
+          <div class="stat-value" style="color: var(--info)">R$ {{ store.stats.averageOrderValue.toFixed(2) }}</div>
+          <div class="stat-label">TICKET MÉDIO</div>
           <div class="stat-bar"><div class="bar-fill blue" style="width: 55%"></div></div>
         </div>
       </div>
@@ -96,7 +108,7 @@
         <div class="chart-card">
           <div class="card-header">
             <h3>[ RECEITA POR DIA ]</h3>
-            <span class="badge badge-green">{{ store.revenueByDay.length }} DIAS</span>
+            <span class="badge badge-success">{{ store.revenueByDay.length }} DIAS</span>
           </div>
           <div class="card-body">
             <div v-if="store.revenueByDay.length === 0" class="empty">SEM DADOS</div>
@@ -210,15 +222,15 @@ function getStatusLabel(status) {
 
 function getStatusBadge(status) {
   const badges = {
-    pending: 'badge-yellow',
-    paid: 'badge-green',
-    processing: 'badge-blue',
-    shipped: 'badge-purple',
-    delivered: 'badge-green',
-    cancelled: 'badge-red',
-    refunded: 'badge-purple'
+    pending: 'badge-warning',
+    paid: 'badge-success',
+    processing: 'badge-info',
+    shipped: 'badge-gold',
+    delivered: 'badge-success',
+    cancelled: 'badge-danger',
+    refunded: 'badge-gold'
   }
-  return badges[status] || 'badge-purple'
+  return badges[status] || 'badge-gold'
 }
 
 function getBarHeight(revenue) {
@@ -286,7 +298,7 @@ onMounted(async () => {
 .page-title {
   font-size: 24px;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
   letter-spacing: 1px;
   margin-bottom: var(--space-1);
 }
@@ -327,7 +339,7 @@ onMounted(async () => {
   width: 48px;
   height: 48px;
   border: var(--border);
-  border-top-color: var(--purple);
+  border-top-color: var(--gold);
   animation: spin 1s linear infinite;
 }
 
@@ -355,12 +367,12 @@ onMounted(async () => {
   height: 2px;
 }
 
-.stat-card:nth-child(1)::before { background: var(--purple); }
-.stat-card:nth-child(2)::before { background: var(--yellow); }
-.stat-card:nth-child(3)::before { background: var(--green); }
-.stat-card:nth-child(4)::before { background: var(--cyan); }
-.stat-card:nth-child(5)::before { background: var(--red); }
-.stat-card:nth-child(6)::before { background: var(--blue); }
+.stat-card:nth-child(1)::before { background: var(--gold); }
+.stat-card:nth-child(2)::before { background: var(--warning); }
+.stat-card:nth-child(3)::before { background: var(--success); }
+.stat-card:nth-child(4)::before { background: var(--info); }
+.stat-card:nth-child(5)::before { background: var(--danger); }
+.stat-card:nth-child(6)::before { background: var(--info); }
 
 .stat-top {
   display: flex;
@@ -379,12 +391,12 @@ onMounted(async () => {
   border: var(--border);
 }
 
-.stat-box.purple { background: var(--purple-bg); }
-.stat-box.yellow { background: var(--yellow-bg); }
-.stat-box.green { background: var(--green-bg); }
-.stat-box.cyan { background: var(--cyan-bg); }
-.stat-box.red { background: var(--red-bg); }
-.stat-box.blue { background: var(--blue-bg); }
+.stat-box.purple { background: var(--gold-bg); }
+.stat-box.yellow { background: var(--warning-bg); }
+.stat-box.green { background: var(--success-bg); }
+.stat-box.cyan { background: var(--info-bg); }
+.stat-box.red { background: var(--danger-bg); }
+.stat-box.blue { background: var(--info-bg); }
 
 .stat-value {
   font-size: 32px;
@@ -411,12 +423,12 @@ onMounted(async () => {
   transition: width 0.5s ease;
 }
 
-.bar-fill.purple { background: var(--purple); }
-.bar-fill.yellow { background: var(--yellow); }
-.bar-fill.green { background: var(--green); }
-.bar-fill.cyan { background: var(--cyan); }
-.bar-fill.red { background: var(--red); }
-.bar-fill.blue { background: var(--blue); }
+.bar-fill.purple { background: var(--gold); }
+.bar-fill.yellow { background: var(--warning); }
+.bar-fill.green { background: var(--success); }
+.bar-fill.cyan { background: var(--info); }
+.bar-fill.red { background: var(--danger); }
+.bar-fill.blue { background: var(--info); }
 
 /* Charts Grid */
 .charts-grid {
@@ -479,13 +491,13 @@ onMounted(async () => {
 .bar {
   width: 100%;
   height: 100%;
-  background: var(--purple);
+  background: var(--gold);
   position: relative;
   transition: height 0.3s ease;
 }
 
 .bar:hover {
-  background: var(--purple-light);
+  background: var(--gold-light);
 }
 
 .bar:hover .bar-tooltip {
@@ -503,7 +515,7 @@ onMounted(async () => {
   padding: var(--space-2) var(--space-3);
   opacity: 0;
   pointer-events: none;
-  transition: all var(--transition);
+  transition: all var(--transition-base);
   z-index: 10;
   white-space: nowrap;
   display: flex;
@@ -514,7 +526,7 @@ onMounted(async () => {
 .tooltip-val {
   font-size: 12px;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
 }
 
 .tooltip-date {
@@ -559,14 +571,14 @@ onMounted(async () => {
 
 .status-bar {
   height: 100%;
-  background: var(--purple);
+  background: var(--gold);
   transition: width 0.5s ease;
 }
 
 .status-count {
   font-size: 12px;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
   width: 40px;
   text-align: right;
   flex-shrink: 0;
@@ -588,12 +600,12 @@ onMounted(async () => {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: var(--purple);
+  color: var(--gold);
   text-decoration: none;
 }
 
 .card-link:hover {
-  color: var(--purple-light);
+  color: var(--gold-light);
   text-decoration: underline;
 }
 
@@ -623,7 +635,7 @@ onMounted(async () => {
 }
 
 .product-row:hover {
-  background: var(--purple-bg);
+  background: var(--gold-bg);
 }
 
 .product-rank {
@@ -639,7 +651,7 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.rank-1 { background: var(--purple); color: white; border-color: var(--purple); }
+.rank-1 { background: var(--gold); color: white; border-color: var(--gold); }
 .rank-2 { background: var(--bg-elevated); border-color: var(--text-muted); }
 .rank-3 { background: var(--bg-elevated); border-color: var(--text-muted); }
 
@@ -670,7 +682,7 @@ onMounted(async () => {
 .product-rev {
   font-size: 11px;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
   flex-shrink: 0;
 }
 
@@ -690,7 +702,7 @@ onMounted(async () => {
 }
 
 .order-row:hover {
-  background: var(--purple-bg);
+  background: var(--gold-bg);
 }
 
 .order-avatar {
@@ -699,7 +711,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--purple);
+  background: var(--gold);
   color: white;
   font-size: 11px;
   font-weight: 700;

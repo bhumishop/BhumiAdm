@@ -7,9 +7,11 @@
       </div>
       <div class="header-actions">
         <button @click="openNewWebhookModal" class="btn-flat">
-          + WEBHOOK
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          WEBHOOK
         </button>
         <button @click="refreshData" class="btn-flat">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           REFRESH
         </button>
       </div>
@@ -17,10 +19,19 @@
 
     <div class="tabs">
       <button
+        :class="['tab-btn', { active: activeTab === 'gateways' }]"
+        @click="activeTab = 'gateways'"
+      >
+        <span class="tab-indicator"></span>
+        <svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        GATEWAYS
+      </button>
+      <button
         :class="['tab-btn', { active: activeTab === 'webhooks' }]"
         @click="activeTab = 'webhooks'"
       >
         <span class="tab-indicator"></span>
+        <svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
         WEBHOOKS
       </button>
       <button
@@ -28,6 +39,7 @@
         @click="activeTab = 'sync'"
       >
         <span class="tab-indicator"></span>
+        <svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         SYNC
       </button>
       <button
@@ -35,6 +47,7 @@
         @click="activeTab = 'mappings'"
       >
         <span class="tab-indicator"></span>
+        <svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         MAPPINGS
       </button>
     </div>
@@ -42,6 +55,51 @@
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
       <span class="loading-text">LOADING...</span>
+    </div>
+
+    <div v-if="activeTab === 'gateways'" class="gateways-section">
+      <div class="gateways-grid">
+        <div v-for="gateway in paymentGateways" :key="gateway.id" class="gateway-card" :class="{ active: gateway.enabled }">
+          <div class="gateway-header">
+            <div class="gateway-logo">
+              <span class="gateway-icon">
+                <svg v-if="gateway.id === 'mercadopago'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <svg v-else-if="gateway.id === 'abacatepay'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg v-else-if="gateway.id === 'pix'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <svg v-else viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span>
+              <h3>{{ gateway.name }}</h3>
+            </div>
+            <span :class="['status-badge', gateway.enabled ? 'active' : 'inactive']">
+              {{ gateway.enabled ? 'ATIVO' : 'INATIVO' }}
+            </span>
+          </div>
+          <div class="gateway-details">
+            <div class="detail-row">
+              <span class="detail-label">PROVEDOR</span>
+              <span class="detail-value mono">{{ gateway.provider }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">TRANSAÇÕES</span>
+              <span class="detail-value">{{ gateway.transactions || 0 }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">RECEITA</span>
+              <span class="detail-value text-success">R$ {{ gateway.revenue?.toFixed(2) || '0.00' }}</span>
+            </div>
+            <div class="detail-row" v-if="gateway.description">
+              <span class="detail-label">DESCRIÇÃO</span>
+              <span class="detail-value">{{ gateway.description }}</span>
+            </div>
+          </div>
+          <div class="gateway-actions">
+            <button @click="toggleGateway(gateway)" class="btn-action-toggle">
+              {{ gateway.enabled ? 'DESATIVAR' : 'ATIVAR' }}
+            </button>
+            <button @click="configureGateway(gateway)" class="btn-action">CONFIGURAR</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-if="activeTab === 'webhooks'" class="webhooks-section">
@@ -53,8 +111,14 @@
               <h3 class="webhook-url">{{ webhook.url }}</h3>
             </div>
             <div class="webhook-actions">
-              <button @click="editWebhook(webhook)" class="btn-action">EDIT</button>
-              <button @click="deleteWebhookConfirm(webhook.id)" class="btn-action-delete">DELETE</button>
+              <button @click="editWebhook(webhook)" class="btn-action">
+                <svg class="btn-icon-sm" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                EDIT
+              </button>
+              <button @click="deleteWebhookConfirm(webhook.id)" class="btn-action-delete">
+                <svg class="btn-icon-sm" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                DELETE
+              </button>
             </div>
           </div>
           <div class="webhook-details">
@@ -75,6 +139,7 @@
           </div>
         </div>
         <div v-if="webhooks.length === 0" class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <p>NO_WEBHOOKS_CONFIGURED</p>
         </div>
       </div>
@@ -92,6 +157,7 @@
           </option>
         </select>
         <button @click="triggerSync" class="btn-primary">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           START_SYNC
         </button>
       </div>
@@ -120,6 +186,9 @@
                 </td>
                 <td class="date-cell">{{ formatDateTime(log.started_at) }}</td>
                 <td class="date-cell">{{ formatDateTime(log.finished_at) }}</td>
+              </tr>
+              <tr v-if="syncLogs.length === 0">
+                <td colspan="5" class="empty-cell">NO_SYNC_LOGS</td>
               </tr>
             </tbody>
           </table>
@@ -156,6 +225,9 @@
                 </button>
               </td>
             </tr>
+            <tr v-if="productMappings.length === 0">
+              <td colspan="5" class="empty-cell">NO_MAPPINGS</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -168,7 +240,9 @@
             <span class="modal-label">{{ editingWebhook ? 'EDIT_WEBHOOK' : 'NEW_WEBHOOK' }}</span>
             <h2>{{ editingWebhook ? 'UPDATE_WEBHOOK' : 'ADD_WEBHOOK' }}</h2>
           </div>
-          <button @click="closeWebhookModal" class="close-btn">X</button>
+          <button @click="closeWebhookModal" class="close-btn">
+            <svg class="close-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <form @submit.prevent="saveWebhook" class="modal-form">
@@ -195,6 +269,7 @@
           <div class="form-group checkbox-group">
             <label>
               <input type="checkbox" v-model="webhookForm.is_active">
+              <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               ACTIVE
             </label>
           </div>
@@ -219,7 +294,7 @@ import { useIntegrationsStore } from '../stores/integrations'
 
 const integrationsStore = useIntegrationsStore()
 
-const activeTab = ref('webhooks')
+const activeTab = ref('gateways')
 const showWebhookModal = ref(false)
 const editingWebhook = ref(null)
 const syncSource = ref('uma_penca')
@@ -231,6 +306,47 @@ const syncLogs = computed(() => integrationsStore.syncLogs)
 const productMappings = computed(() => integrationsStore.productMappings)
 const loading = computed(() => integrationsStore.loading)
 const syncTypes = computed(() => integrationsStore.syncTypes)
+
+const paymentGateways = ref([
+  {
+    id: 'mercadopago',
+    name: 'Mercado Pago',
+    provider: 'mercadopago',
+    icon: '💳',
+    enabled: true,
+    description: 'Gateway de pagamento principal',
+    transactions: 0,
+    revenue: 0,
+    config: {
+      accessToken: '',
+      publicKey: ''
+    }
+  },
+  {
+    id: 'abacatepay',
+    name: 'Abacate Pay',
+    provider: 'abacatepay',
+    icon: '🥑',
+    enabled: true,
+    description: 'Gateway alternativo',
+    transactions: 0,
+    revenue: 0,
+    config: {
+      apiKey: ''
+    }
+  },
+  {
+    id: 'pix',
+    name: 'PIX',
+    provider: 'pix',
+    icon: '💰',
+    enabled: true,
+    description: 'Pagamento instantâneo',
+    transactions: 0,
+    revenue: 0,
+    config: {}
+  }
+])
 
 const webhookForm = ref({
   url: '',
@@ -339,6 +455,14 @@ async function refreshData() {
   await integrationsStore.fetchProductMappings()
 }
 
+function toggleGateway(gateway) {
+  gateway.enabled = !gateway.enabled
+}
+
+function configureGateway(gateway) {
+  alert(`Configuração do ${gateway.name} em breve...`)
+}
+
 onMounted(async () => {
   await refreshData()
 })
@@ -348,6 +472,7 @@ onMounted(async () => {
 .integrations-view {
   padding: var(--space-6);
   min-height: 100vh;
+  background: var(--bg-base);
 }
 
 .page-header {
@@ -376,11 +501,22 @@ onMounted(async () => {
   letter-spacing: -1px;
 }
 
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-icon {
+  vertical-align: middle;
+  margin-right: var(--space-1);
+}
+
+/* Tabs */
 .tabs {
   display: flex;
   gap: var(--space-2);
   margin-bottom: var(--space-6);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   padding-bottom: var(--space-2);
 }
 
@@ -402,16 +538,20 @@ onMounted(async () => {
   position: relative;
 }
 
+.tab-icon {
+  opacity: 0.6;
+}
+
 .tab-indicator {
   width: 0;
   height: 2px;
-  background: var(--purple);
+  background: var(--gold);
   transition: width 0.15s ease;
 }
 
 .tab-btn.active {
-  color: var(--purple);
-  border-bottom-color: var(--purple);
+  color: var(--gold);
+  border-bottom-color: var(--gold);
 }
 
 .tab-btn.active .tab-indicator {
@@ -425,6 +565,7 @@ onMounted(async () => {
   color: var(--text-primary);
 }
 
+/* Loading */
 .loading-state {
   text-align: center;
   padding: var(--space-16);
@@ -433,8 +574,9 @@ onMounted(async () => {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--purple);
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
   margin: 0 auto var(--space-4);
 }
 
@@ -443,6 +585,91 @@ onMounted(async () => {
   font-size: 0.875rem;
   color: var(--text-muted);
   letter-spacing: 2px;
+}
+
+/* Gateways */
+.gateways-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+
+.gateway-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: var(--space-5);
+  transition: all 0.15s ease;
+}
+
+.gateway-card.active {
+  border-color: var(--success);
+}
+
+.gateway-card:hover {
+  border-color: var(--gold);
+}
+
+.gateway-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+  gap: var(--space-3);
+}
+
+.gateway-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.gateway-icon {
+  display: flex;
+  align-items: center;
+  color: var(--gold);
+}
+
+.gateway-logo h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.status-badge {
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.status-badge.active {
+  background: var(--success);
+  color: var(--bg-base);
+}
+
+.status-badge.inactive {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+
+.gateway-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.gateway-actions {
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
 }
 
 /* Webhooks */
@@ -454,14 +681,14 @@ onMounted(async () => {
 
 .webhook-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   padding: var(--space-4);
   transition: border-color 0.15s ease;
 }
 
 .webhook-card:hover {
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .webhook-header {
@@ -485,7 +712,7 @@ onMounted(async () => {
 .webhook-url {
   font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: var(--cyan);
+  color: var(--info);
   word-break: break-all;
   margin: 0;
 }
@@ -507,7 +734,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .detail-row:last-child {
@@ -543,7 +770,7 @@ onMounted(async () => {
 .flat-select {
   padding: var(--space-2) var(--space-3);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -554,23 +781,23 @@ onMounted(async () => {
 
 .flat-select:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .section-title {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 2px;
   color: var(--text-muted);
   margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 /* Tables */
 .table-wrapper {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   background: var(--bg-surface);
   overflow-x: auto;
 }
@@ -584,7 +811,7 @@ onMounted(async () => {
   padding: var(--space-3) var(--space-4);
   text-align: left;
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
@@ -594,7 +821,7 @@ onMounted(async () => {
 
 .flat-table td {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   color: var(--text-primary);
 }
 
@@ -613,6 +840,15 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
+.empty-cell {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
 /* Status Tags */
 .status-tag {
   padding: var(--space-1) var(--space-2);
@@ -627,7 +863,7 @@ onMounted(async () => {
 .status-tag.active,
 .status-tag.success,
 .status-tag.completed {
-  background: var(--green);
+  background: var(--success);
   color: var(--bg-base);
 }
 
@@ -639,62 +875,122 @@ onMounted(async () => {
 
 .status-tag.pending,
 .status-tag.warning {
-  background: var(--yellow);
+  background: var(--warning);
   color: var(--bg-base);
 }
 
 .status-tag.failed,
 .status-tag.error,
 .status-tag.cancelled {
-  background: var(--red);
-  color: white;
+  background: var(--danger);
+  color: var(--bg-base);
 }
 
 .status-tag.running,
 .status-tag.info,
 .status-tag.processing {
-  background: var(--cyan);
+  background: var(--info);
   color: var(--bg-base);
 }
 
 /* Buttons */
+.btn-flat {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-flat:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-primary {
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 0;
+  color: var(--bg-base);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
 .btn-action,
 .btn-action-delete,
 .btn-action-toggle {
   padding: var(--space-1) var(--space-2);
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .btn-action:hover {
-  background: var(--purple);
-  color: white;
-  border-color: var(--purple);
+  background: var(--gold);
+  color: var(--bg-base);
+  border-color: var(--gold);
 }
 
 .btn-action-delete:hover {
-  background: var(--red);
-  color: white;
-  border-color: var(--red);
+  background: var(--danger);
+  color: var(--bg-base);
+  border-color: var(--danger);
 }
 
 .btn-action-toggle:hover {
-  background: var(--green);
+  background: var(--success);
   color: var(--bg-base);
-  border-color: var(--green);
+  border-color: var(--success);
+}
+
+.btn-icon-sm {
+  vertical-align: middle;
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
   padding: var(--space-16);
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.empty-icon {
+  color: var(--text-muted);
+  opacity: 0.4;
 }
 
 .empty-state p {
@@ -719,7 +1015,7 @@ onMounted(async () => {
 
 .flat-modal {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   width: 100%;
   max-width: 600px;
@@ -735,7 +1031,7 @@ onMounted(async () => {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--purple);
+  background: var(--gold);
 }
 
 .modal-header {
@@ -743,7 +1039,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: flex-start;
   padding: var(--space-6);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-label {
@@ -766,19 +1062,26 @@ onMounted(async () => {
 .close-btn {
   padding: var(--space-1) var(--space-2);
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
-  background: var(--red);
-  color: white;
-  border-color: var(--red);
+  background: var(--danger);
+  color: var(--bg-base);
+  border-color: var(--danger);
+}
+
+.close-icon {
+  display: block;
 }
 
 .modal-form {
@@ -804,7 +1107,7 @@ onMounted(async () => {
 .form-group textarea {
   width: 100%;
   background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 0;
   color: var(--text-primary);
   padding: var(--space-2) var(--space-3);
@@ -815,7 +1118,7 @@ onMounted(async () => {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .form-group input::placeholder,
@@ -830,9 +1133,14 @@ onMounted(async () => {
   gap: var(--space-2);
 }
 
+.check-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
 .checkbox-group input[type="checkbox"] {
   width: auto;
-  accent-color: var(--purple);
+  accent-color: var(--gold);
 }
 
 .modal-actions {
@@ -881,6 +1189,7 @@ onMounted(async () => {
   .btn-action-delete {
     flex: 1;
     text-align: center;
+    justify-content: center;
   }
 
   .flat-modal {

@@ -85,17 +85,23 @@ serve(async (req) => {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      // Get low stock products
+      // Get product counts
       const { data: allProducts } = await supabase
         .from('products')
-        .select('id, name, stock_quantity, low_stock_threshold')
-        .eq('is_active', true)
+        .select('id, name, stock_quantity, low_stock_threshold, is_active, is_archived')
         .eq('is_archived', false)
-        .limit(100)
+        .limit(1000)
 
+      const totalProducts = (allProducts || []).length
+      const activeProducts = (allProducts || []).filter(p => p.is_active === true).length
       const lowStock = (allProducts || [])
-        .filter(p => p.stock_quantity <= (p.low_stock_threshold || 0))
+        .filter(p => p.is_active === true && p.stock_quantity <= (p.low_stock_threshold || 0))
         .slice(0, 10)
+
+      // Get customer count
+      const { count: totalCustomers } = await supabase
+        .from('customers')
+        .select('*', { count: 'exact', head: true })
 
       // Get collection summary
       const { data: collections } = await supabase
@@ -110,11 +116,23 @@ serve(async (req) => {
         .order('started_at', { ascending: false })
         .limit(5)
 
+      // Get top products
+      const { data: topProducts } = await supabase
+        .from('product_analytics')
+        .select('product_id, count, event_type')
+        .eq('event_type', 'purchase')
+        .order('count', { ascending: false })
+        .limit(10)
+
       return new Response(
         JSON.stringify({
           orderStats: orderStats?.[0] || {},
           recentOrders,
+          totalProducts,
+          activeProducts,
           lowStock,
+          totalCustomers: totalCustomers || 0,
+          topProducts: topProducts || [],
           collections,
           syncStatus,
         }),

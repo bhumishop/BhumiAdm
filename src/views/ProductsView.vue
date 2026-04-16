@@ -37,7 +37,11 @@
             class="product-img"
             @error="handleImageError($event, product.image)"
           >
-          <div v-else class="placeholder-image">{{ getCategoryInitial(product.category) }}</div>
+          <div v-else class="placeholder-image">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+          </div>
           <span class="product-badge">{{ getCategoryName(product.category) }}</span>
         </div>
         <div class="product-info">
@@ -46,6 +50,14 @@
           <div class="product-footer">
             <span class="product-price">R$ {{ product.price.toFixed(2).replace('.', ',') }}</span>
             <span class="product-stock" :class="product.stock">
+              <svg v-if="product.stock === 'print-on-demand'" class="stock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8" rx="1"/>
+              </svg>
+              <svg v-else class="stock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
               {{ product.stock === 'print-on-demand' ? 'ON DEMAND' : 'IN STOCK' }}
             </span>
           </div>
@@ -56,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '../stores/products'
 import { isLikelyBrokenCdnUrl } from '../utils/githubCdn'
@@ -68,8 +80,20 @@ const activeCategory = ref('todos')
 const categories = computed(() => productStore.categories)
 const brokenImages = ref(new Set())
 
+onMounted(async () => {
+  if (productStore.products.length === 0) {
+    await Promise.all([
+      productStore.fetchProducts(),
+      productStore.fetchCategories()
+    ])
+  }
+})
+
 const filteredProducts = computed(() => {
-  return productStore.getProductsByCategory(activeCategory.value)
+  if (activeCategory.value === 'todos') return productStore.filteredProducts
+  return productStore.filteredProducts.filter(p =>
+    p.category ? p.category.toLowerCase() === activeCategory.value.toLowerCase() : false
+  )
 })
 
 function hasValidImage(product) {
@@ -117,6 +141,7 @@ watch(() => route.query.categoria, (newCategory) => {
 .products-page {
   padding: var(--space-6);
   min-height: 100vh;
+  background: var(--bg-base);
 }
 
 .page-header {
@@ -124,13 +149,14 @@ watch(() => route.query.categoria, (newCategory) => {
 }
 
 .page-label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--text-muted);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-transform: uppercase;
   display: block;
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
 }
 
 .page-title {
@@ -138,7 +164,8 @@ watch(() => route.query.categoria, (newCategory) => {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
 }
 
 .filters {
@@ -151,39 +178,46 @@ watch(() => route.query.categoria, (newCategory) => {
 .filter-btn {
   padding: var(--space-2) var(--space-4);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .filter-btn:hover {
-  border-color: var(--purple);
-  color: var(--purple);
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-bg);
 }
 
 .filter-btn.active {
-  background: var(--purple);
-  border-color: var(--purple);
-  color: white;
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+  font-weight: 600;
 }
 
 .empty-state {
   text-align: center;
   padding: var(--space-16);
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
 }
 
 .empty-state p {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 2px;
+  text-transform: uppercase;
   margin: 0;
 }
 
@@ -196,20 +230,23 @@ watch(() => route.query.categoria, (newCategory) => {
 .product-card {
   text-decoration: none;
   color: inherit;
-  border: 1px solid var(--border-color);
-  background: var(--bg-surface);
-  transition: all 0.15s ease;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: all var(--transition-base);
   display: block;
 }
 
 .product-card:hover {
-  border-color: var(--purple);
+  border-color: var(--gold-border);
   background: var(--bg-elevated);
   transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.08);
 }
 
 .product-card:hover .product-name {
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .product-image {
@@ -220,35 +257,48 @@ watch(() => route.query.categoria, (newCategory) => {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .product-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.03);
 }
 
 .placeholder-image {
-  font-family: var(--font-mono);
-  font-size: 4rem;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-icon {
+  width: 64px;
+  height: 64px;
   color: var(--text-muted);
-  opacity: 0.3;
+  opacity: 0.2;
 }
 
 .product-badge {
   position: absolute;
   top: var(--space-2);
   right: var(--space-2);
-  background: var(--purple);
-  color: white;
+  background: var(--gold);
+  color: #000;
   padding: var(--space-1) var(--space-2);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 1px;
-  border-radius: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
 }
 
 .product-info {
@@ -257,15 +307,18 @@ watch(() => route.query.categoria, (newCategory) => {
 
 .product-name {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: var(--space-2);
   color: var(--text-primary);
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast);
+  line-height: 1.3;
 }
 
 .product-description {
+  font-family: var(--font-sans);
   font-size: 0.85rem;
+  font-weight: 400;
   color: var(--text-secondary);
   margin-bottom: var(--space-4);
   display: -webkit-box;
@@ -280,29 +333,40 @@ watch(() => route.query.categoria, (newCategory) => {
   justify-content: space-between;
   align-items: center;
   padding-top: var(--space-3);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-light);
 }
 
 .product-price {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
+  letter-spacing: -0.3px;
 }
 
 .product-stock {
-  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stock-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .product-stock.print-on-demand {
-  color: var(--purple);
+  color: var(--gold);
 }
 
 .product-stock.estoque {
-  color: var(--green);
+  color: var(--success);
 }
 
 /* Responsive */

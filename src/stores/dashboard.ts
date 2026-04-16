@@ -53,15 +53,15 @@ export const useDashboardStore = defineStore('dashboard', () => {
           totalOrders: orderStats?.total_orders || 0,
           pendingOrders: orderStats?.pending_orders || 0,
           totalRevenue: orderStats?.gross_revenue || 0,
-          totalProducts: 0,
-          activeProducts: 0,
+          totalProducts: (data.totalProducts as number) || 0,
+          activeProducts: (data.activeProducts as number) || 0,
           lowStockProducts: (data.lowStock as unknown[])?.length || 0,
-          totalCustomers: 0,
+          totalCustomers: (data.totalCustomers as number) || 0,
           averageOrderValue: orderStats?.average_order_value || 0
         }
 
         recentOrders.value = (data.recentOrders as Record<string, unknown>[]) || []
-        topProducts.value = []
+        topProducts.value = (data.topProducts as Record<string, unknown>[]) || []
 
         if (orderStats) {
           ordersByStatus.value = []

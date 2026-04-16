@@ -10,11 +10,30 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+        'Access-Control-Max-Age': '86400',
+      },
+    })
+  }
+
   const url = new URL(req.url)
   const method = req.method
   const pathParts = url.pathname.split('/').filter(Boolean)
   // Strip function name from path
   const path = pathParts.length >= 1 ? pathParts.slice(1) : []
+
+  // Add CORS headers to all responses
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+  }
 
   try {
     // ============================================
@@ -48,7 +67,7 @@ serve(async (req) => {
             .single()
 
           return new Response(JSON.stringify({ data: updated.data, action: 'updated' }), {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           })
         }
       }
@@ -69,7 +88,7 @@ serve(async (req) => {
       const result = await supabase.from('user_sessions').insert(newSession).select().single()
 
       return new Response(JSON.stringify({ data: result.data, action: 'created' }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -88,7 +107,7 @@ serve(async (req) => {
           .single()
 
         return new Response(JSON.stringify({ data: result.data }), {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
       }
 
@@ -101,7 +120,7 @@ serve(async (req) => {
         .single()
 
       return new Response(JSON.stringify({ data: result.data }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -124,7 +143,7 @@ serve(async (req) => {
 
       const result = await query
       return new Response(JSON.stringify({ data: result.data || [] }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -142,7 +161,7 @@ serve(async (req) => {
           active_sessions: activeResult.count || 0,
           total_sessions: totalResult.count || 0,
         }
-      }), { headers: { 'Content-Type': 'application/json' } })
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -170,7 +189,7 @@ serve(async (req) => {
       const result = await supabase.from('user_geolocations').insert(geoEntry).select().single()
 
       return new Response(JSON.stringify({ data: result.data }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -193,7 +212,7 @@ serve(async (req) => {
 
       const result = await query
       return new Response(JSON.stringify({ data: result.data || [] }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -210,7 +229,7 @@ serve(async (req) => {
         .limit(200)
 
       return new Response(JSON.stringify({ data: geolocations.data || [] }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -245,15 +264,15 @@ serve(async (req) => {
       }
 
       return new Response(JSON.stringify({ data: usersWithGeo }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
     // Method not allowed
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 })
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
   } catch (error) {
     console.error('user-tracker error:', error)
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })

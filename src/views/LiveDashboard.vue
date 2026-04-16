@@ -3,16 +3,16 @@
     <!-- Header -->
     <div class="dashboard-header">
       <div class="header-left">
-        <h2 class="page-title">&gt; DASHBOARD AO VIVO</h2>
+        <h2 class="page-title">Dashboard</h2>
         <div class="live-indicator" :class="{ active: networkStore.isConnected }">
           <span class="live-dot"></span>
-          <span>{{ networkStore.isConnected ? 'LIVE' : 'OFFLINE' }}</span>
+          <span>{{ networkStore.isConnected ? 'Online' : 'Offline' }}</span>
         </div>
       </div>
       <div class="header-right">
         <button @click="refreshAll" :disabled="loading" class="btn btn-secondary">
-          <span :class="{ 'animate-spin': loading }">&#x27F3;</span>
-          <span>{{ loading ? 'ATUALIZANDO...' : 'ATUALIZAR' }}</span>
+          <svg :class="{ 'animate-spin': loading }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span>{{ loading ? 'Atualizando...' : 'Atualizar' }}</span>
         </button>
       </div>
     </div>
@@ -20,11 +20,13 @@
     <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card" v-for="kpi in kpiCards" :key="kpi.label">
-        <div class="kpi-top" :class="kpi.colorClass">
-          <div class="kpi-icon">{{ kpi.icon }}</div>
+        <div class="kpi-top">
+          <div class="kpi-icon">
+            <component :is="kpi.icon" />
+          </div>
           <span class="kpi-trend-badge" :class="kpi.trendClass">{{ kpi.trend }}</span>
         </div>
-        <div class="kpi-value" :class="kpi.colorClass">{{ kpi.value }}</div>
+        <div class="kpi-value">{{ kpi.value }}</div>
         <div class="kpi-label">{{ kpi.label }}</div>
       </div>
     </div>
@@ -34,57 +36,57 @@
       <!-- Store Activity -->
       <div class="dashboard-card">
         <div class="card-header">
-          <h3>[ ATIVIDADE DAS LOJAS ]</h3>
+          <h3>Atividade das Lojas</h3>
         </div>
         <div class="card-body">
           <div v-for="store in networkStore.storeNodes" :key="store.id" class="store-row">
             <div class="store-info">
               <span class="store-name">{{ store.label }}</span>
-              <span class="store-meta">{{ store.order_count }} PEDIDOS // R$ {{ store.revenue?.toFixed(2) || '0.00' }}</span>
+              <span class="store-meta">{{ store.order_count }} pedidos &middot; R$ {{ store.revenue?.toFixed(2) || '0.00' }}</span>
             </div>
-            <span class="store-badge" :class="`badge-${store.sync_status}`">
-              {{ store.sync_status === 'active' ? 'ATIVO' : 'INATIVO' }}
+            <span class="store-badge" :class="store.sync_status === 'active' ? 'badge-success' : 'badge-warning'">
+              {{ store.sync_status === 'active' ? 'Ativo' : 'Inativo' }}
             </span>
           </div>
-          <div v-if="networkStore.storeNodes.length === 0" class="empty">NENHUMA LOJA CONECTADA</div>
+          <div v-if="networkStore.storeNodes.length === 0" class="empty">Nenhuma loja conectada</div>
         </div>
       </div>
 
       <!-- Gateway Status -->
       <div class="dashboard-card">
         <div class="card-header">
-          <h3>[ GATEWAYS DE PAGAMENTO ]</h3>
+          <h3>Gateways de Pagamento</h3>
         </div>
         <div class="card-body">
           <div v-for="gateway in networkStore.gatewayNodes" :key="gateway.id" class="gateway-row">
             <div class="gateway-info">
               <span class="gateway-name">{{ gateway.label }}</span>
-              <span class="gateway-meta">{{ gateway.transaction_count }} TRANS. // R$ {{ gateway.total_revenue?.toFixed(2) || '0.00' }}</span>
+              <span class="gateway-meta">{{ gateway.transaction_count }} trans. &middot; R$ {{ gateway.total_revenue?.toFixed(2) || '0.00' }}</span>
             </div>
-            <span class="gateway-badge" :class="`badge-${gateway.status}`">
-              {{ gateway.status === 'active' ? 'ATIVO' : 'INATIVO' }}
+            <span class="gateway-badge" :class="gateway.status === 'active' ? 'badge-success' : 'badge-warning'">
+              {{ gateway.status === 'active' ? 'Ativo' : 'Inativo' }}
             </span>
           </div>
-          <div v-if="networkStore.gatewayNodes.length === 0" class="empty">NENHUM GATEWAY</div>
+          <div v-if="networkStore.gatewayNodes.length === 0" class="empty">Nenhum gateway</div>
         </div>
       </div>
 
       <!-- Recent Orders -->
       <div class="dashboard-card full-width">
         <div class="card-header">
-          <h3>[ FLUXO DE PEDIDOS ]</h3>
-          <router-link to="/pedidos" class="card-link">VER TODOS &rarr;</router-link>
+          <h3>Fluxo de Pedidos</h3>
+          <router-link to="/admin/pedidos" class="card-link">Ver todos &rarr;</router-link>
         </div>
         <div class="card-body">
           <div class="orders-table">
             <div class="orders-head">
               <div>ID</div>
-              <div>CLIENTE</div>
-              <div>LOJA</div>
-              <div>GATEWAY</div>
-              <div>TOTAL</div>
-              <div>STATUS</div>
-              <div>TEMPO</div>
+              <div>Cliente</div>
+              <div>Loja</div>
+              <div>Gateway</div>
+              <div>Total</div>
+              <div>Status</div>
+              <div>Tempo</div>
             </div>
             <div class="orders-body">
               <div v-for="order in networkStore.orderNodes.slice(0, 15)" :key="order.id" class="order-row" :class="`order-${order.status}`">
@@ -98,7 +100,7 @@
                 </div>
                 <div class="col-time">{{ formatTimeAgo(order.created_at) }}</div>
               </div>
-              <div v-if="networkStore.orderNodes.length === 0" class="empty-row">NENHUM PEDIDO RECENTE</div>
+              <div v-if="networkStore.orderNodes.length === 0" class="empty-row">Nenhum pedido recente</div>
             </div>
           </div>
         </div>
@@ -107,8 +109,8 @@
       <!-- Live Activity Feed -->
       <div class="dashboard-card full-width">
         <div class="card-header">
-          <h3>[ FEED EM TEMPO REAL ]</h3>
-          <button @click="clearEvents" class="btn btn-ghost btn-sm">LIMPAR</button>
+          <h3>Feed em Tempo Real</h3>
+          <button @click="clearEvents" class="btn btn-ghost btn-sm">Limpar</button>
         </div>
         <div class="card-body">
           <div class="activity-feed">
@@ -120,7 +122,7 @@
               </div>
             </div>
             <div v-if="networkStore.recentEvents.length === 0" class="empty-wait">
-              <span>AGUARDANDO ATIVIDADES</span>
+              <span>Aguardando atividades</span>
               <span class="dots animate-pulse">...</span>
             </div>
           </div>
@@ -139,15 +141,23 @@ const networkStore = useNetworkStore()
 const dashboardStore = useDashboardStore()
 const loading = ref(false)
 
+// SVG icon components for KPI cards
+const CartIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>' }
+const DollarIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' }
+const StoreIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' }
+const CreditIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>' }
+const PackageIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>' }
+const UsersIcon = { template: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
+
 const kpiCards = computed(() => {
   const s = dashboardStore.stats
   return [
-    { icon: '&#x1F6D2;', label: 'TOTAL DE PEDIDOS', value: s.totalOrders || networkStore.nodeCounts.order || 0, trend: `${s.pendingOrders || 0} PENDENTES`, trendClass: 'trend-yellow', colorClass: 'text-purple' },
-    { icon: '&#x1F4B0;', label: 'RECEITA TOTAL', value: `R$ ${(s.totalRevenue || 0).toFixed(2)}`, trend: `M&Eacute;DIA: R$ ${(s.averageOrderValue || 0).toFixed(2)}`, trendClass: 'trend-green', colorClass: 'text-green' },
-    { icon: '&#x1F3EA;', label: 'LOJAS CONECTADAS', value: networkStore.nodeCounts.store || 0, trend: `${networkStore.nodeCounts.product || 0} PRODUTOS`, trendClass: 'trend-green', colorClass: 'text-purple' },
-    { icon: '&#x1F4B3;', label: 'GATEWAYS ATIVOS', value: networkStore.nodeCounts.gateway || 0, trend: `${networkStore.connectionCount} CONEX&Otilde;ES`, trendClass: 'trend-green', colorClass: 'text-green' },
-    { icon: '&#x1F4E6;', label: 'PRODUTOS ATIVOS', value: s.activeProducts || networkStore.nodeCounts.product || 0, trend: `${s.lowStockProducts || 0} ESTOQUE BAIXO`, trendClass: s.lowStockProducts > 5 ? 'trend-red' : 'trend-yellow', colorClass: 'text-cyan' },
-    { icon: '&#x1F465;', label: 'CLIENTES', value: s.totalCustomers || 0, trend: 'EM BREVE', trendClass: 'trend-purple', colorClass: 'text-purple' }
+    { icon: CartIcon, label: 'Total de Pedidos', value: s.totalOrders || networkStore.nodeCounts.order || 0, trend: `${s.pendingOrders || 0} pendentes`, trendClass: 'trend-warning', colorClass: 'text-gold' },
+    { icon: DollarIcon, label: 'Receita Total', value: `R$ ${(s.totalRevenue || 0).toFixed(2)}`, trend: `Média: R$ ${(s.averageOrderValue || 0).toFixed(2)}`, trendClass: 'trend-success', colorClass: 'text-success' },
+    { icon: StoreIcon, label: 'Lojas Conectadas', value: networkStore.nodeCounts.store || 0, trend: `${networkStore.nodeCounts.product || 0} produtos`, trendClass: 'trend-success', colorClass: 'text-gold' },
+    { icon: CreditIcon, label: 'Gateways Ativos', value: networkStore.nodeCounts.gateway || 0, trend: `${networkStore.connectionCount} conexões`, trendClass: 'trend-success', colorClass: 'text-success' },
+    { icon: PackageIcon, label: 'Produtos Ativos', value: s.activeProducts || networkStore.nodeCounts.product || 0, trend: `${s.lowStockProducts || 0} estoque baixo`, trendClass: s.lowStockProducts > 5 ? 'trend-danger' : 'trend-warning', colorClass: 'text-info' },
+    { icon: UsersIcon, label: 'Clientes', value: s.totalCustomers || 0, trend: 'Em breve', trendClass: 'trend-muted', colorClass: 'text-gold' }
   ]
 })
 
@@ -172,35 +182,35 @@ function clearEvents() {
 }
 
 function getStatusLabel(status) {
-  const labels = { pending: 'PENDENTE', processing: 'PROCESSANDO', shipped: 'ENVIADO', delivered: 'ENTREGUE', cancelled: 'CANCELADO' }
+  const labels = { pending: 'Pendente', processing: 'Processando', shipped: 'Enviado', delivered: 'Entregue', cancelled: 'Cancelado' }
   return labels[status] || status.toUpperCase()
 }
 
 function getStatusBadge(status) {
-  const badges = { pending: 'badge-yellow', processing: 'badge-cyan', shipped: 'badge-purple', delivered: 'badge-green', cancelled: 'badge-red' }
-  return badges[status] || 'badge-purple'
+  const badges = { pending: 'badge-warning', processing: 'badge-info', shipped: 'badge-gold', delivered: 'badge-success', cancelled: 'badge-danger' }
+  return badges[status] || 'badge-gold'
 }
 
 function getEventIcon(eventType) {
-  const icons = { INSERT: '+', UPDATE: '~', DELETE: 'x' }
+  const icons = { INSERT: '+', UPDATE: '~', DELETE: '&times;' }
   return icons[eventType] || '?'
 }
 
 function getEventText(event) {
-  const names = { orders: 'PEDIDO', webhook_events: 'WEBHOOK', third_party_sync_log: 'SYNC' }
+  const names = { orders: 'Pedido', webhook_events: 'Webhook', third_party_sync_log: 'Sync' }
   const name = names[event.table] || event.table
-  if (event.table === 'orders') return `${event.eventType === 'INSERT' ? 'NOVO' : 'ATUALIZADO'} ${name} - R$ ${event.record?.total || 0}`
-  if (event.table === 'third_party_sync_log') return `SYNC ${event.record?.source || ''} - ${event.record?.status || ''}`
-  return `${name} // ${event.eventType}`
+  if (event.table === 'orders') return `${event.eventType === 'INSERT' ? 'Novo' : 'Atualizado'} ${name} &middot; R$ ${event.record?.total || 0}`
+  if (event.table === 'third_party_sync_log') return `Sync ${event.record?.source || ''} &middot; ${event.record?.status || ''}`
+  return `${name} &middot; ${event.eventType}`
 }
 
 function formatTimeAgo(timestamp) {
   if (!timestamp) return 'N/A'
   const diff = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000)
-  if (diff < 60) return `${diff}S`
-  if (diff < 3600) return `${Math.floor(diff / 60)}M`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}H`
-  return `${Math.floor(diff / 86400)}D`
+  if (diff < 60) return `${diff}s`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+  return `${Math.floor(diff / 86400)}d`
 }
 
 function formatTimestamp(timestamp) {
@@ -210,7 +220,7 @@ function formatTimestamp(timestamp) {
 
 onMounted(async () => {
   await refreshAll()
-  networkStore.subscribeToRealtime()
+  await networkStore.buildGraph()
 })
 
 onUnmounted(async () => {
@@ -220,11 +230,11 @@ onUnmounted(async () => {
 
 <style scoped>
 .live-dashboard {
-  max-width: 1440px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-/* Header */
+/* ===== HEADER ===== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -241,11 +251,13 @@ onUnmounted(async () => {
 }
 
 .page-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--green);
-  letter-spacing: 1px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
   margin: 0;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
 }
 
 .live-indicator {
@@ -253,37 +265,37 @@ onUnmounted(async () => {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
-  background: var(--red-bg);
-  border: 1px solid var(--red);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
 }
 
 .live-indicator.active {
-  background: var(--green-bg);
-  border-color: var(--green);
+  background: var(--success-bg);
+  border-color: var(--success-border);
 }
 
 .live-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: currentColor;
-  animation: pulse 2s infinite;
+  border-radius: 50%;
+  animation: pulse-soft 2s ease-in-out infinite;
 }
+
+.live-indicator { color: var(--danger); }
+.live-indicator.active { color: var(--success); }
 
 .live-indicator span:last-child {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--red);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
-.live-indicator.active span:last-child {
-  color: var(--green);
-}
-
-/* KPI Grid */
+/* ===== KPI GRID ===== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
   margin-bottom: var(--space-8);
 }
@@ -291,9 +303,11 @@ onUnmounted(async () => {
 .kpi-card {
   background: var(--bg-surface);
   border: var(--border);
+  border-radius: var(--radius-md);
   padding: var(--space-5);
   position: relative;
-  transition: all var(--transition);
+  transition: all var(--transition-base);
+  overflow: hidden;
 }
 
 .kpi-card::before {
@@ -301,19 +315,14 @@ onUnmounted(async () => {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 2px;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
 }
 
-.kpi-card:nth-child(1)::before { background: var(--purple); }
-.kpi-card:nth-child(2)::before { background: var(--green); }
-.kpi-card:nth-child(3)::before { background: var(--purple); }
-.kpi-card:nth-child(4)::before { background: var(--green); }
-.kpi-card:nth-child(5)::before { background: var(--cyan); }
-.kpi-card:nth-child(6)::before { background: var(--purple); }
-
 .kpi-card:hover {
-  border-color: var(--purple);
+  border-color: var(--gold-border);
+  background: var(--bg-elevated);
 }
 
 .kpi-top {
@@ -324,46 +333,57 @@ onUnmounted(async () => {
 }
 
 .kpi-icon {
-  font-size: 24px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kpi-trend-badge {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: var(--space-1) var(--space-2);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid;
 }
 
-.trend-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
-.trend-yellow { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow); }
-.trend-red { background: var(--red-bg); color: var(--red); border-color: var(--red); }
-.trend-purple { background: var(--purple-bg); color: var(--purple); border-color: var(--purple); }
+.trend-success { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.trend-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+.trend-danger { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.trend-muted { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border); }
 
 .kpi-value {
-  font-size: 28px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
   margin-bottom: var(--space-2);
   line-height: 1;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  color: var(--text-primary);
 }
 
 .kpi-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* Dashboard Grid */
+/* ===== DASHBOARD GRID ===== */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-4);
 }
 
 .dashboard-card {
   background: var(--bg-surface);
   border: var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
 .dashboard-card.full-width {
@@ -379,23 +399,24 @@ onUnmounted(async () => {
 }
 
 .card-header h3 {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .card-link {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--purple);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
   text-decoration: none;
+  transition: color var(--transition-base);
 }
 
 .card-link:hover {
-  color: var(--purple-light);
+  color: var(--gold-light);
 }
 
 .card-body {
@@ -404,19 +425,21 @@ onUnmounted(async () => {
   overflow-y: auto;
 }
 
-/* Store & Gateway Rows */
+/* ===== STORE & GATEWAY ROWS ===== */
 .store-row, .gateway-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--space-3);
-  border: var(--border-light);
+  border: var(--border);
+  border-radius: var(--radius);
   margin-bottom: var(--space-2);
-  transition: background var(--transition);
+  transition: all var(--transition-base);
 }
 
 .store-row:hover, .gateway-row:hover {
-  background: var(--purple-bg);
+  background: var(--gold-bg);
+  border-color: var(--gold-border);
 }
 
 .store-info, .gateway-info {
@@ -426,50 +449,45 @@ onUnmounted(async () => {
 }
 
 .store-name, .gateway-name {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: 0.5px;
 }
 
 .store-meta, .gateway-meta {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
 .store-badge, .gateway-badge {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
 }
 
-.badge-active { background: var(--green-bg); color: var(--green); border-color: var(--green); }
-.badge-inactive { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow); }
-.badge-error { background: var(--red-bg); color: var(--red); border-color: var(--red); }
-
-/* Orders Table */
+/* ===== ORDERS TABLE ===== */
 .orders-table {
   border: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .orders-head {
   display: grid;
-  grid-template-columns: 70px 1fr 90px 90px 90px 90px 70px;
+  grid-template-columns: 60px 1fr 80px 80px 80px 90px 60px;
   background: var(--bg-elevated);
   border-bottom: var(--border);
 }
 
 .orders-head > div {
-  padding: var(--space-2) var(--space-3);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  padding: var(--space-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  border-right: var(--border-light);
 }
 
 .orders-body {
@@ -479,9 +497,9 @@ onUnmounted(async () => {
 
 .order-row {
   display: grid;
-  grid-template-columns: 70px 1fr 90px 90px 90px 90px 70px;
+  grid-template-columns: 60px 1fr 80px 80px 80px 90px 60px;
   border-bottom: var(--border-light);
-  transition: background var(--transition);
+  transition: background var(--transition-fast);
 }
 
 .order-row:last-child {
@@ -489,60 +507,62 @@ onUnmounted(async () => {
 }
 
 .order-row:hover {
-  background: var(--purple-bg);
+  background: var(--bg-hover);
 }
 
 .order-row > div {
-  padding: var(--space-2) var(--space-3);
-  font-size: 11px;
-  border-right: var(--border-light);
+  padding: var(--space-3);
+  font-size: 13px;
 }
 
 .col-id {
-  font-weight: 700;
-  color: var(--purple);
+  font-weight: 600;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 12px;
 }
 
 .col-customer {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
 .col-store, .col-gateway {
-  color: var(--text-secondary);
-  font-weight: 600;
+  color: var(--text-tertiary);
 }
 
 .col-total {
-  font-weight: 700;
-  color: var(--green);
+  font-weight: 600;
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-size: 12px;
 }
 
 .col-time {
   color: var(--text-muted);
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
-.order-pending { border-left: 3px solid var(--yellow); }
-.order-processing { border-left: 3px solid var(--cyan); }
-.order-shipped { border-left: 3px solid var(--purple); }
-.order-delivered { border-left: 3px solid var(--green); }
-.order-cancelled { border-left: 3px solid var(--red); opacity: 0.6; }
+.order-pending { border-left: 2px solid var(--warning); }
+.order-processing { border-left: 2px solid var(--info); }
+.order-shipped { border-left: 2px solid var(--gold); }
+.order-delivered { border-left: 2px solid var(--success); }
+.order-cancelled { border-left: 2px solid var(--danger); opacity: 0.5; }
 
 .empty-row, .empty {
   text-align: center;
   padding: var(--space-8);
   color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
-/* Activity Feed */
+/* ===== ACTIVITY FEED ===== */
 .activity-feed {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .activity-row {
@@ -550,20 +570,23 @@ onUnmounted(async () => {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
-  border-left: 3px solid;
-  transition: background var(--transition);
+  border-radius: var(--radius);
+  border-left: 2px solid;
+  transition: background var(--transition-fast);
 }
 
-.event-insert { background: var(--bg-surface); border-color: var(--green); }
-.event-update { background: var(--bg-surface); border-color: var(--cyan); }
-.event-delete { background: var(--bg-surface); border-color: var(--red); }
+.event-insert { background: var(--success-bg); border-color: var(--success); }
+.event-update { background: var(--info-bg); border-color: var(--info); }
+.event-delete { background: var(--danger-bg); border-color: var(--danger); }
 
 .activity-icon {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   width: 20px;
   text-align: center;
   flex-shrink: 0;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
 }
 
 .activity-content {
@@ -574,40 +597,40 @@ onUnmounted(async () => {
 }
 
 .activity-text {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .activity-time {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--text-muted);
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
 }
 
 .empty-wait {
   text-align: center;
   padding: var(--space-8);
   color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .dots {
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
   .orders-head, .order-row {
-    grid-template-columns: 60px 1fr 80px 80px 80px;
+    grid-template-columns: 50px 1fr 70px 70px 70px;
   }
 
   .col-store, .col-time {
@@ -634,7 +657,7 @@ onUnmounted(async () => {
   }
 
   .orders-head, .order-row {
-    grid-template-columns: 50px 1fr 70px 70px;
+    grid-template-columns: 40px 1fr 60px 60px;
   }
 
   .col-gateway {

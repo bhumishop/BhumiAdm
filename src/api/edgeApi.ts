@@ -31,6 +31,7 @@ import type {
   WebhookEvent,
   BulkAction,
 } from '../types'
+import router from '../router'
 
 // Get SUPABASE_URL from Vite env variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
@@ -86,7 +87,11 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
   if (response.status === 401) {
     localStorage.removeItem('bhumi_admin_token')
     localStorage.removeItem('bhumi_admin')
-    window.location.href = import.meta.env.BASE_URL + 'login'
+    localStorage.removeItem('bhumi_admin_timestamp')
+    // Use Vue Router navigation instead of hard redirect to avoid 404 on GitHub Pages
+    router.push({ name: 'login' }).catch(() => {
+      window.location.href = import.meta.env.BASE_URL + 'login'
+    })
     throw new Error('Unauthorized')
   }
 

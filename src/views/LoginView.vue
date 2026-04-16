@@ -1,60 +1,64 @@
 <template>
   <div class="login-page">
-    <!-- Grid Background -->
+    <!-- Background -->
     <div class="login-bg">
-      <div class="bg-grid"></div>
-      <div class="bg-line top"></div>
-      <div class="bg-line right"></div>
-      <div class="bg-line bottom"></div>
-      <div class="bg-line left"></div>
+      <div class="bg-orb orb-top"></div>
+      <div class="bg-orb orb-bottom"></div>
+      <div class="bg-grain"></div>
     </div>
 
-    <!-- Login Box -->
-    <div class="login-box animate-slideUp">
-      <!-- Header -->
-      <div class="login-header">
-        <div class="logo-icon">&#x262F;</div>
-        <h1>BHUMI<span class="text-purple">SHOP</span></h1>
-        <p class="login-subtitle">PAINEL DE ADMINISTRA&Ccedil;&Atilde;O</p>
-        <div class="header-line"></div>
-      </div>
-
-      <!-- Form -->
-      <div class="login-form">
-        <p class="form-label">&gt; FA&Ccedil;A LOGIN PARA CONTINUAR</p>
-
-        <div id="google-signin-button" class="google-button"></div>
-
-        <div v-if="adminStore.error" class="error-box animate-fadeIn">
-          <span class="error-icon">[!]</span>
-          <span>{{ adminStore.error }}</span>
+    <!-- Login Card -->
+    <div class="login-container">
+      <div class="login-card">
+        <!-- Logo -->
+        <div class="login-header">
+          <div class="login-logo">
+            <span class="logo-mark"></span>
+          </div>
+          <h1>Bhumi<span class="logo-accent">Adm</span></h1>
+          <p class="login-subtitle">Painel de Administra&ccedil;&atilde;o</p>
         </div>
 
-        <button v-if="!googleLoaded" class="btn btn-primary btn-lg btn-block" disabled>
-          <span class="animate-pulse">CARREGANDO...</span>
-        </button>
-      </div>
+        <!-- Divider -->
+        <hr class="login-divider">
 
-      <!-- Features -->
-      <div class="features-box">
-        <div class="feature-item">
-          <span class="feature-dot green"></span>
-          <span>DASHBOARD EM TEMPO REAL</span>
+        <!-- Form -->
+        <div class="login-form">
+          <p class="form-prompt">Fa&ccedil;a login para continuar</p>
+
+          <div id="google-signin-button" class="google-button"></div>
+
+          <div v-if="adminStore.error" class="error-box">
+            <span class="error-mark"></span>
+            <span>{{ adminStore.error }}</span>
+          </div>
+
+          <div v-if="!googleLoaded" class="loading-placeholder">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+          </div>
         </div>
-        <div class="feature-item">
-          <span class="feature-dot purple"></span>
-          <span>GEST&Atilde;O DE VENDAS</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-dot red"></span>
-          <span>CAT&Aacute;LOGO INTEGRADO</span>
+
+        <!-- Features -->
+        <div class="login-features">
+          <div class="feature">
+            <span class="feature-indicator"></span>
+            <span>Dashboard em tempo real</span>
+          </div>
+          <div class="feature">
+            <span class="feature-indicator gold"></span>
+            <span>Gest&atilde;o de vendas</span>
+          </div>
+          <div class="feature">
+            <span class="feature-indicator rose"></span>
+            <span>Cat&aacute;logo integrado</span>
+          </div>
         </div>
       </div>
 
       <!-- Footer -->
-      <div class="login-footer">
-        <p>&copy; 2026 BHUMISHOP // TODOS OS DIREITOS RESERVADOS</p>
-      </div>
+      <p class="login-footer">&copy; 2026 Bhumisparsha School</p>
     </div>
   </div>
 </template>
@@ -70,13 +74,12 @@ const adminStore = useAdminAuthStore()
 
 const googleLoaded = ref(false)
 let googleButtonRetries = 0
-const GOOGLE_BUTTON_MAX_RETRIES = 20 // 10 seconds max
+const GOOGLE_BUTTON_MAX_RETRIES = 20
 
 async function handleSignIn() {
   try {
     await adminStore.signInWithGoogle()
     const redirect = route.query.redirect || '/admin'
-    // Prevent open redirect attacks - only allow relative paths
     if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
       router.push(redirect)
     } else {
@@ -105,7 +108,6 @@ function renderGoogleButton() {
     return
   }
 
-  // Initialize Google OAuth - callback receives ID token, sends to admin-auth/login
   google.accounts.id.initialize({
     client_id: clientId,
     callback: async (response) => {
@@ -160,7 +162,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Background */
+/* ===== BACKGROUND ===== */
 .login-bg {
   position: fixed;
   inset: 0;
@@ -168,128 +170,141 @@ onMounted(async () => {
   background: var(--bg-base);
 }
 
-.bg-grid {
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.08;
+}
+
+.orb-top {
+  width: 600px;
+  height: 600px;
+  top: -20%;
+  right: -10%;
+  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+  animation: breathe 12s ease-in-out infinite;
+}
+
+.orb-bottom {
+  width: 500px;
+  height: 500px;
+  bottom: -15%;
+  left: -10%;
+  background: radial-gradient(circle, var(--rose) 0%, transparent 70%);
+  animation: breathe 14s ease-in-out infinite 3s;
+}
+
+.bg-grain {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(#1A1A25 1px, transparent 1px),
-    linear-gradient(90deg, #1A1A25 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   opacity: 0.3;
 }
 
-.bg-line {
-  position: absolute;
-  background: var(--purple);
-  opacity: 0.2;
-}
-
-.bg-line.top {
-  top: 0;
-  left: 20%;
-  width: 2px;
-  height: 100vh;
-}
-
-.bg-line.right {
-  top: 30%;
-  right: 0;
-  width: 100vw;
-  height: 2px;
-}
-
-.bg-line.bottom {
-  bottom: 0;
-  right: 25%;
-  width: 2px;
-  height: 100vh;
-}
-
-.bg-line.left {
-  bottom: 25%;
-  left: 0;
-  width: 100vw;
-  height: 2px;
-}
-
-/* Login Box */
-.login-box {
+/* ===== CONTAINER ===== */
+.login-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* ===== CARD ===== */
+.login-card {
   background: var(--bg-surface);
   border: var(--border);
-  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10);
   position: relative;
+  overflow: hidden;
 }
 
-.login-box::before {
+.login-card::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  height: 2px;
-  background: var(--purple);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-border), transparent);
 }
 
-.login-box::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: -2px;
-  width: 60px;
-  height: 2px;
-  background: var(--green);
-}
-
-/* Header */
+/* ===== HEADER ===== */
 .login-header {
   text-align: center;
   margin-bottom: var(--space-8);
 }
 
-.logo-icon {
-  font-size: 48px;
-  color: var(--green);
-  margin-bottom: var(--space-4);
+.login-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-6);
+}
+
+.logo-mark {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
   display: block;
+  position: relative;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.logo-mark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: var(--gold);
+  border-radius: 50%;
 }
 
 .login-header h1 {
   font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: 2px;
+  letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+
+.logo-accent {
+  color: var(--gold);
+  font-variation-settings: "SOFT" 50, "WONK" 1;
 }
 
 .login-subtitle {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.header-line {
-  width: 80px;
-  height: 2px;
-  background: var(--purple);
-  margin: var(--space-6) auto 0;
+/* ===== DIVIDER ===== */
+.login-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin-bottom: var(--space-8);
 }
 
-/* Form */
+/* ===== FORM ===== */
 .login-form {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
-.form-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: var(--green);
-  margin-bottom: var(--space-6);
+.form-prompt {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
   text-align: center;
+  margin-bottom: var(--space-6);
 }
 
 .google-button {
@@ -299,8 +314,8 @@ onMounted(async () => {
 }
 
 :deep(.nsm7Bb-HzV7m-LgbsSe) {
-  border-radius: var(--radius) !important;
-  font-family: var(--font-mono) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-sans) !important;
 }
 
 .error-box {
@@ -308,79 +323,99 @@ onMounted(async () => {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--red-bg);
-  border: var(--border-red);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--red);
-  letter-spacing: 0.5px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: var(--space-4);
 }
 
-.error-icon {
-  font-family: var(--font-mono);
-  font-weight: 700;
+.error-mark {
+  width: 6px;
+  height: 6px;
+  background: var(--danger);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.btn-block {
-  width: 100%;
-}
-
-/* Features */
-.features-box {
+.loading-placeholder {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
   padding: var(--space-4);
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse-soft 1.2s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===== FEATURES ===== */
+.login-features {
+  padding: var(--space-5);
   background: var(--bg-elevated);
   border: var(--border);
-  margin-bottom: var(--space-6);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.feature-item {
+.feature {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
 }
 
-.feature-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius);
+.feature-indicator {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.feature-dot.green { background: var(--green); }
-.feature-dot.purple { background: var(--purple); }
-.feature-dot.red { background: var(--red); }
+.feature-indicator.gold { background: var(--gold); }
+.feature-indicator.rose { background: var(--rose); }
 
-/* Footer */
+/* ===== FOOTER ===== */
 .login-footer {
   text-align: center;
-}
-
-.login-footer p {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  margin-top: var(--space-6);
+  font-size: 11px;
   color: var(--text-muted);
+  letter-spacing: 0.04em;
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
-  .login-box {
-    padding: var(--space-6);
-  }
-
-  .logo-icon {
-    font-size: 36px;
+  .login-card {
+    padding: var(--space-8);
   }
 
   .login-header h1 {
     font-size: 24px;
+  }
+
+  .logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-mark::after {
+    width: 10px;
+    height: 10px;
   }
 }
 </style>

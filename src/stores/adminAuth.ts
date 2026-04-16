@@ -159,19 +159,21 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
 
   /**
    * Initialize - check for existing session
+   * Restores admin from localStorage if session is still valid.
+   * Does NOT call verifySession() on init to avoid unnecessary 401s.
+   * Individual API calls will handle 401 and redirect to login.
    */
   async function initialize(): Promise<void> {
     const saved = localStorage.getItem(ADMIN_KEY)
-    if (saved && isSessionValid()) {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (saved && token && isSessionValid()) {
       try {
         admin.value = JSON.parse(saved) as AdminUser
-
-        const valid = await verifySession()
-        if (!valid) {
-          signOut()
-        }
       } catch {
-        signOut()
+        // Corrupted data, just clear it
+        localStorage.removeItem(ADMIN_KEY)
+        localStorage.removeItem(TOKEN_KEY)
+        localStorage.removeItem(TIMESTAMP_KEY)
       }
     }
   }

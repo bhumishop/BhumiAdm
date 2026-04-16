@@ -16,22 +16,22 @@
       <div class="stat-card">
         <span class="stat-label">TOTAL</span>
         <span class="stat-value">{{ paymentStats.total }}</span>
-        <div class="stat-bar" style="background: var(--purple);"></div>
+        <div class="stat-bar" style="background: var(--gold);"></div>
       </div>
       <div class="stat-card">
         <span class="stat-label">PENDING</span>
         <span class="stat-value">{{ paymentStats.pending }}</span>
-        <div class="stat-bar" style="background: var(--yellow);"></div>
+        <div class="stat-bar" style="background: var(--warning);"></div>
       </div>
       <div class="stat-card">
         <span class="stat-label">PAID</span>
         <span class="stat-value">{{ paymentStats.paid }}</span>
-        <div class="stat-bar" style="background: var(--green);"></div>
+        <div class="stat-bar" style="background: var(--success);"></div>
       </div>
       <div class="stat-card">
         <span class="stat-label">REVENUE</span>
         <span class="stat-value revenue">R$ {{ paymentStats.totalRevenue.toFixed(2).replace('.', ',') }}</span>
-        <div class="stat-bar" style="background: var(--cyan);"></div>
+        <div class="stat-bar" style="background: var(--info);"></div>
       </div>
     </div>
 
@@ -91,23 +91,23 @@
               </span>
             </td>
             <td>
-              <span :class="['status-tag', getPaymentStatusColor(payment.payment_status)]">
+              <span :class="['badge', getPaymentStatusBadgeClass(payment.payment_status)]">
                 {{ getPaymentStatusName(payment.payment_status) }}
               </span>
             </td>
             <td class="amount-cell">R$ {{ payment.total?.toFixed(2).replace('.', ',') }}</td>
             <td class="date-cell">{{ formatDate(payment.created_at) }}</td>
             <td class="actions-cell">
-              <button @click="viewPayment(payment)" class="btn-action">VIEW</button>
+              <button @click="viewPayment(payment)" class="btn-icon">VIEW</button>
               <button
                 v-if="payment.payment_status === 'pending'"
                 @click="checkPixStatus(payment.payment_reference)"
-                class="btn-action-check"
+                class="btn-icon-check"
               >CHECK_PIX</button>
               <button
                 v-if="payment.payment_status !== 'paid'"
                 @click="markAsPaid(payment.id)"
-                class="btn-action-paid"
+                class="btn-icon-paid"
               >MARK_PAID</button>
             </td>
           </tr>
@@ -122,7 +122,7 @@
             <span class="modal-label">PAYMENT_DETAILS</span>
             <h2>{{ selectedPayment.order_number || `#${selectedPayment.id}` }}</h2>
           </div>
-          <button @click="closePaymentModal" class="close-btn">X</button>
+          <button @click="closePaymentModal" class="close-btn">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -141,7 +141,7 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">STATUS</span>
-              <span :class="['status-tag', getPaymentStatusColor(selectedPayment.payment_status)]">
+              <span :class="['badge', getPaymentStatusBadgeClass(selectedPayment.payment_status)]">
                 {{ getPaymentStatusName(selectedPayment.payment_status) }}
               </span>
             </div>
@@ -272,8 +272,19 @@ function getPaymentStatusName(status) {
   return paymentStore.getPaymentStatusName(status)
 }
 
-function getPaymentStatusColor(status) {
-  return paymentStore.getPaymentStatusColor(status)
+function getPaymentStatusBadgeClass(status) {
+  const classes = {
+    pending: 'badge-warning',
+    paid: 'badge-success',
+    completed: 'badge-success',
+    failed: 'badge-danger',
+    error: 'badge-danger',
+    cancelled: 'badge-danger',
+    refunded: 'badge-info',
+    processing: 'badge-info',
+    neutral: 'badge-gold'
+  }
+  return classes[status] || 'badge-gold'
 }
 
 function closePaymentModal() {
@@ -286,16 +297,24 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* ============================================
+   LUXURY AMOLED DESIGN SYSTEM - Payments View
+   ============================================ */
+
 .payments-view {
   padding: var(--space-6);
   min-height: 100vh;
+  background: var(--bg-base);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
 }
 
+/* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
   flex-wrap: wrap;
   gap: var(--space-4);
 }
@@ -305,6 +324,7 @@ onMounted(async () => {
   font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 2px;
+  text-transform: uppercase;
   display: block;
   margin-bottom: var(--space-1);
 }
@@ -315,8 +335,54 @@ onMounted(async () => {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -1px;
+  margin: 0;
 }
 
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn-flat {
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-flat:hover {
+  background: var(--bg-hover);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-primary {
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--gold);
+  color: var(--bg-base);
+}
+
+/* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -326,8 +392,8 @@ onMounted(async () => {
 
 .stat-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: var(--space-4);
   position: relative;
   overflow: hidden;
@@ -340,12 +406,12 @@ onMounted(async () => {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--purple);
+  background: var(--gold);
 }
 
-.stat-card:nth-child(2)::before { background: var(--yellow); }
-.stat-card:nth-child(3)::before { background: var(--green); }
-.stat-card:nth-child(4)::before { background: var(--cyan); }
+.stat-card:nth-child(2)::before { background: var(--warning); }
+.stat-card:nth-child(3)::before { background: var(--success); }
+.stat-card:nth-child(4)::before { background: var(--info); }
 
 .stat-label {
   font-family: var(--font-mono);
@@ -366,9 +432,10 @@ onMounted(async () => {
 }
 
 .stat-value.revenue {
-  color: var(--cyan);
+  color: var(--info);
 }
 
+/* Filters */
 .filters {
   display: flex;
   gap: var(--space-2);
@@ -379,18 +446,19 @@ onMounted(async () => {
 .flat-select {
   padding: var(--space-2) var(--space-3);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 1px;
   cursor: pointer;
+  transition: var(--transition-fast);
 }
 
 .flat-select:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .flat-input {
@@ -398,23 +466,25 @@ onMounted(async () => {
   min-width: 250px;
   padding: var(--space-2) var(--space-3);
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   letter-spacing: 1px;
+  transition: var(--transition-fast);
 }
 
 .flat-input:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
 .flat-input::placeholder {
   color: var(--text-muted);
 }
 
+/* State Messages */
 .loading-state {
   text-align: center;
   padding: var(--space-16);
@@ -423,9 +493,15 @@ onMounted(async () => {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--purple);
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
   margin: 0 auto var(--space-4);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .loading-text {
@@ -438,7 +514,8 @@ onMounted(async () => {
 .empty-state {
   text-align: center;
   padding: var(--space-16);
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius);
 }
 
 .empty-state p {
@@ -449,8 +526,10 @@ onMounted(async () => {
   margin: 0;
 }
 
+/* Table */
 .table-wrapper {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   background: var(--bg-surface);
   overflow-x: auto;
 }
@@ -464,9 +543,9 @@ onMounted(async () => {
   padding: var(--space-3) var(--space-4);
   text-align: left;
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: var(--text-muted);
@@ -474,25 +553,30 @@ onMounted(async () => {
 
 .flat-table td {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
+.flat-table tbody tr {
+  transition: var(--transition-fast);
+}
+
 .flat-table tbody tr:hover {
-  background: var(--bg-elevated);
+  background: var(--bg-hover);
 }
 
 .order-id {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--purple);
+  color: var(--gold);
   font-size: 0.875rem;
 }
 
 .customer-name {
   display: block;
   font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
 
@@ -505,61 +589,61 @@ onMounted(async () => {
 .method-tag {
   padding: var(--space-1) var(--space-2);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 1px;
   color: var(--text-secondary);
 }
 
-.status-tag {
+/* Status Badges */
+.badge {
+  display: inline-block;
   padding: var(--space-1) var(--space-2);
-  border-radius: 0;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 1px;
-  display: inline-block;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
 }
 
-.status-tag.pending,
-.status-tag.warning {
-  background: var(--yellow);
-  color: var(--bg-base);
+.badge-gold {
+  background: var(--gold-bg);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
 }
 
-.status-tag.paid,
-.status-tag.success,
-.status-tag.completed {
-  background: var(--green);
-  color: var(--bg-base);
+.badge-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
 }
 
-.status-tag.failed,
-.status-tag.error,
-.status-tag.cancelled {
-  background: var(--red);
-  color: white;
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
 }
 
-.status-tag.refunded,
-.status-tag.info {
-  background: var(--cyan);
-  color: var(--bg-base);
+.badge-info {
+  background: var(--info-bg);
+  color: var(--info);
+  border: 1px solid var(--info-border);
 }
 
-.status-tag.processing,
-.status-tag.neutral {
-  background: var(--purple);
-  color: white;
+.badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
 }
 
 .amount-cell {
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 1rem;
-  color: var(--green);
+  color: var(--success);
 }
 
 .date-cell {
@@ -568,42 +652,56 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
+/* Actions */
 .actions-cell {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.btn-action,
-.btn-action-check,
-.btn-action-paid {
+.btn-icon,
+.btn-icon-check,
+.btn-icon-paid {
   padding: var(--space-1) var(--space-2);
   background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
-.btn-action:hover {
-  background: var(--purple);
-  color: white;
-  border-color: var(--purple);
+.btn-icon {
+  color: var(--info);
 }
 
-.btn-action-check:hover {
-  background: var(--cyan);
+.btn-icon:hover {
+  background: var(--info);
   color: var(--bg-base);
-  border-color: var(--cyan);
+  border-color: var(--info);
 }
 
-.btn-action-paid:hover {
-  background: var(--green);
+.btn-icon-check {
+  color: var(--info);
+}
+
+.btn-icon-check:hover {
+  background: var(--info);
   color: var(--bg-base);
-  border-color: var(--green);
+  border-color: var(--info);
+}
+
+.btn-icon-paid {
+  color: var(--success);
+}
+
+.btn-icon-paid:hover {
+  background: var(--success);
+  color: var(--bg-base);
+  border-color: var(--success);
 }
 
 /* Modal */
@@ -620,8 +718,8 @@ onMounted(async () => {
 
 .flat-modal {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   width: 100%;
   max-width: 700px;
   max-height: 90vh;
@@ -636,7 +734,7 @@ onMounted(async () => {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--purple);
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
 }
 
 .modal-header {
@@ -644,7 +742,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: flex-start;
   padding: var(--space-6);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-label {
@@ -667,19 +765,20 @@ onMounted(async () => {
 .close-btn {
   padding: var(--space-1) var(--space-2);
   background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .close-btn:hover {
-  background: var(--red);
-  color: white;
-  border-color: var(--red);
+  background: var(--danger);
+  color: var(--bg-base);
+  border-color: var(--danger);
 }
 
 .modal-body {
@@ -696,12 +795,13 @@ onMounted(async () => {
 .detail-item {
   padding: var(--space-3);
   background: var(--bg-elevated);
-  border-left: 2px solid var(--border-color);
+  border-left: 2px solid var(--border);
+  border-radius: var(--radius-sm);
 }
 
 .detail-item.highlight {
-  border-left-color: var(--green);
-  background: rgba(34, 197, 94, 0.05);
+  border-left-color: var(--success);
+  background: var(--success-bg);
 }
 
 .detail-label {
@@ -723,7 +823,7 @@ onMounted(async () => {
   font-family: var(--font-mono);
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
 }
 
 .detail-value.mono {
@@ -737,7 +837,9 @@ onMounted(async () => {
   justify-content: flex-end;
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1024px) {
   .details-grid {
     grid-template-columns: 1fr;
@@ -786,6 +888,7 @@ onMounted(async () => {
 
   .actions-cell {
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .flat-modal {

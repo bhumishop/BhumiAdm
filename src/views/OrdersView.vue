@@ -58,7 +58,7 @@
               <td class="total-cell">R$ {{ formatPrice(order.total) }}</td>
               <td class="payment-cell">{{ getPaymentMethodLabel(order.payment_method) }}</td>
               <td class="status-cell">
-                <span :class="['flat-badge', order.status]">
+                <span :class="['badge', getStatusBadgeClass(order.status)]">
                   {{ getStatusLabel(order.status) }}
                 </span>
               </td>
@@ -92,7 +92,7 @@
             <span class="modal-label">ORDER_DETAILS</span>
             <h2>{{ selectedOrder.order_number }}</h2>
           </div>
-          <button class="close-btn" @click="selectedOrder = null">X</button>
+          <button class="close-btn" @click="selectedOrder = null">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -159,7 +159,7 @@
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
                   <div class="timeline-header">
-                    <span :class="['flat-badge', 'small', item.status]">{{ getStatusLabel(item.status) }}</span>
+                    <span :class="['badge', 'badge-sm', getStatusBadgeClass(item.status)]">{{ getStatusLabel(item.status) }}</span>
                     <span class="timeline-date">{{ formatDate(item.created_at) }}</span>
                   </div>
                   <p class="timeline-desc">{{ item.description }}</p>
@@ -222,6 +222,18 @@ function getStatusLabel(status) {
     cancelled: 'CANCELLED'
   }
   return labels[status] || status.toUpperCase()
+}
+
+function getStatusBadgeClass(status) {
+  const classes = {
+    pending: 'badge-warning',
+    processing: 'badge-info',
+    paid: 'badge-success',
+    shipped: 'badge-info',
+    delivered: 'badge-success',
+    cancelled: 'badge-danger'
+  }
+  return classes[status] || 'badge-gold'
 }
 
 function openOrderDetails(order) {
@@ -302,7 +314,7 @@ function exportPDF() {
     body: tableData,
     startY: 42,
     styles: { fontSize: 8, font: 'Courier' },
-    headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold' }
+    headStyles: { fillColor: [212, 175, 55], textColor: 0, fontStyle: 'bold' }
   })
 
   doc.save(`bhumi-orders-${new Date().toISOString().split('T')[0]}.pdf`)
@@ -310,11 +322,19 @@ function exportPDF() {
 </script>
 
 <style scoped>
+/* ============================================
+   LUXURY AMOLED DESIGN SYSTEM - Orders View
+   ============================================ */
+
 .orders-page {
   padding: var(--space-6);
   min-height: 100vh;
+  background: var(--bg-base);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
 }
 
+/* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -340,6 +360,7 @@ function exportPDF() {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -1px;
+  margin: 0;
 }
 
 .header-actions {
@@ -348,25 +369,45 @@ function exportPDF() {
   flex-wrap: wrap;
 }
 
+/* Buttons */
 .btn-flat {
   padding: var(--space-2) var(--space-4);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .btn-flat:hover {
   background: var(--bg-hover);
-  border-color: var(--purple);
-  color: var(--purple);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
+.btn-primary {
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--gold);
+  color: var(--bg-base);
+}
+
+/* State Messages */
 .loading-state,
 .error-state,
 .empty-state {
@@ -377,9 +418,15 @@ function exportPDF() {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--purple);
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
   margin: 0 auto var(--space-4);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .loading-text {
@@ -390,15 +437,16 @@ function exportPDF() {
 }
 
 .error-state {
-  border: 1px solid var(--red);
-  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
   padding: var(--space-8);
+  border-radius: var(--radius);
 }
 
 .error-code {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--red);
+  color: var(--danger);
   letter-spacing: 2px;
   display: block;
   margin-bottom: var(--space-2);
@@ -410,8 +458,9 @@ function exportPDF() {
 }
 
 .empty-state {
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border-light);
   padding: var(--space-12);
+  border-radius: var(--radius);
 }
 
 .empty-state p {
@@ -422,8 +471,10 @@ function exportPDF() {
   margin: 0;
 }
 
+/* Table */
 .orders-table-wrapper {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   background: var(--bg-surface);
   overflow: hidden;
 }
@@ -437,7 +488,7 @@ function exportPDF() {
   padding: var(--space-3) var(--space-4);
   text-align: left;
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
@@ -447,23 +498,23 @@ function exportPDF() {
 
 .flat-table td {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
 .order-row {
-  transition: background 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .order-row:hover {
-  background: var(--bg-elevated);
+  background: var(--bg-hover);
 }
 
 .order-id {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--purple);
+  color: var(--gold);
   font-size: 0.875rem;
 }
 
@@ -489,7 +540,7 @@ function exportPDF() {
 .total-cell {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--green);
+  color: var(--success);
   font-size: 1rem;
 }
 
@@ -499,6 +550,54 @@ function exportPDF() {
   color: var(--text-secondary);
 }
 
+/* Status Badges */
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.badge-sm {
+  font-size: 0.65rem;
+  padding: var(--space-0\.5) var(--space-1);
+}
+
+.badge-gold {
+  background: var(--gold-bg);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
+}
+
+.badge-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.badge-info {
+  background: var(--info-bg);
+  color: var(--info);
+  border: 1px solid var(--info-border);
+}
+
+.badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+/* Actions */
 .actions-cell {
   display: flex;
   gap: var(--space-2);
@@ -508,38 +607,40 @@ function exportPDF() {
 .btn-icon {
   padding: var(--space-1) var(--space-3);
   background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
-  color: var(--cyan);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--info);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .btn-icon:hover {
-  background: var(--cyan);
+  background: var(--info);
   color: var(--bg-base);
-  border-color: var(--cyan);
+  border-color: var(--info);
 }
 
 .flat-select {
   padding: var(--space-1) var(--space-2);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   cursor: pointer;
+  transition: var(--transition-fast);
 }
 
 .flat-select:focus {
   outline: none;
-  border-color: var(--purple);
+  border-color: var(--gold);
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -553,8 +654,8 @@ function exportPDF() {
 
 .flat-modal {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   width: 100%;
   max-width: 900px;
   max-height: 90vh;
@@ -569,7 +670,7 @@ function exportPDF() {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--purple);
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
 }
 
 .modal-header {
@@ -577,7 +678,7 @@ function exportPDF() {
   justify-content: space-between;
   align-items: flex-start;
   padding: var(--space-6);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-label {
@@ -600,19 +701,20 @@ function exportPDF() {
 .close-btn {
   padding: var(--space-1) var(--space-2);
   background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .close-btn:hover {
-  background: var(--red);
-  color: white;
-  border-color: var(--red);
+  background: var(--danger);
+  color: var(--bg-base);
+  border-color: var(--danger);
 }
 
 .modal-body {
@@ -628,14 +730,14 @@ function exportPDF() {
 }
 
 .section-title {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  margin-bottom: var(--space-4);
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-4);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .info-grid {
@@ -647,12 +749,13 @@ function exportPDF() {
 .info-item {
   padding: var(--space-3);
   background: var(--bg-elevated);
-  border-left: 2px solid var(--purple);
+  border-left: 2px solid var(--gold);
+  border-radius: var(--radius-sm);
 }
 
-.info-item:nth-child(2) { border-left-color: var(--green); }
-.info-item:nth-child(3) { border-left-color: var(--cyan); }
-.info-item:nth-child(4) { border-left-color: var(--yellow); }
+.info-item:nth-child(2) { border-left-color: var(--success); }
+.info-item:nth-child(3) { border-left-color: var(--info); }
+.info-item:nth-child(4) { border-left-color: var(--warning); }
 
 .info-label {
   display: block;
@@ -669,6 +772,7 @@ function exportPDF() {
   color: var(--text-primary);
 }
 
+/* Items Table */
 .items-table {
   width: 100%;
   border-collapse: collapse;
@@ -678,7 +782,7 @@ function exportPDF() {
   padding: var(--space-3) var(--space-2);
   text-align: left;
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
@@ -688,7 +792,7 @@ function exportPDF() {
 
 .items-table td {
   padding: var(--space-3) var(--space-2);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-light);
   font-size: 0.85rem;
   color: var(--text-primary);
 }
@@ -698,12 +802,17 @@ function exportPDF() {
   font-family: var(--font-mono);
   font-weight: 700;
   color: var(--text-primary);
-  border-top: 2px solid var(--border-color);
+  border-top: 2px solid var(--border);
 }
 
 .total-value {
-  color: var(--green);
+  color: var(--success);
   font-size: 1.1rem;
+}
+
+/* Status Timeline */
+.status-timeline {
+  position: relative;
 }
 
 .timeline-item {
@@ -719,14 +828,16 @@ function exportPDF() {
 .timeline-marker {
   position: absolute;
   left: 0;
-  top: 4px;
-  width: 8px;
-  height: 8px;
-  background: var(--purple);
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  border: 2px solid var(--gold-light);
 }
 
-.timeline-item:nth-child(2) .timeline-marker { background: var(--cyan); }
-.timeline-item:nth-child(3) .timeline-marker { background: var(--green); }
+.timeline-item:nth-child(2) .timeline-marker { background: var(--info); border-color: var(--info-border); }
+.timeline-item:nth-child(3) .timeline-marker { background: var(--success); border-color: var(--success-border); }
 
 .timeline-header {
   display: flex;
@@ -748,7 +859,9 @@ function exportPDF() {
   margin-left: var(--space-6);
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1024px) {
   .info-grid {
     grid-template-columns: 1fr;

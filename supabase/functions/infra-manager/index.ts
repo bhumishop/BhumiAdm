@@ -10,11 +10,30 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+        'Access-Control-Max-Age': '86400',
+      },
+    })
+  }
+
   const url = new URL(req.url)
   const method = req.method
   const pathParts = url.pathname.split('/').filter(Boolean)
   // Strip function name from path (e.g. ['infra-manager', 'functions'] -> ['functions'])
   const path = pathParts.length >= 1 ? pathParts.slice(1) : []
+
+  // Add CORS headers to all responses
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+  }
 
   try {
     // ============================================
@@ -53,7 +72,7 @@ serve(async (req) => {
           sessions: sessions.data || [],
           recent_operations: operations.data || [],
         }
-      }), { headers: { 'Content-Type': 'application/json' } })
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -61,7 +80,7 @@ serve(async (req) => {
     // ============================================
     if (method === 'GET' && path[0] === 'functions') {
       const functions = await supabase.from('edge_function_status').select('*').order('function_name')
-      return new Response(JSON.stringify({ data: functions.data || [] }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: functions.data || [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -69,7 +88,7 @@ serve(async (req) => {
     // ============================================
     if (method === 'GET' && path[0] === 'functions' && path[1]) {
       const fn = await supabase.from('edge_function_status').select('*').eq('function_name', path[1]).single()
-      return new Response(JSON.stringify({ data: fn.data }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: fn.data }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -84,7 +103,7 @@ serve(async (req) => {
       }
 
       const result = await supabase.from('edge_function_status').update(updates).eq('function_name', path[1]).select().single()
-      return new Response(JSON.stringify({ data: result.data }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: result.data }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -101,7 +120,7 @@ serve(async (req) => {
       if (operation) query = query.eq('operation', operation)
 
       const result = await query
-      return new Response(JSON.stringify({ data: result.data || [] }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: result.data || [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -125,7 +144,7 @@ serve(async (req) => {
       }
 
       const result = await supabase.from('operation_logs').insert(logEntry).select().single()
-      return new Response(JSON.stringify({ data: result.data }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: result.data }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // ============================================
@@ -189,7 +208,7 @@ serve(async (req) => {
             duration_ms: duration,
             response: responseData,
           }
-        }), { headers: { 'Content-Type': 'application/json' } })
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       } catch (error) {
         const duration = Date.now() - startTime
 
@@ -206,7 +225,7 @@ serve(async (req) => {
         return new Response(JSON.stringify({
           error: `Failed to test function: ${error.message}`,
           duration_ms: duration,
-        }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+        }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       }
     }
 
@@ -306,14 +325,14 @@ serve(async (req) => {
         }
       }
 
-      return new Response(JSON.stringify({ data: { nodes, edges } }), { headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ data: { nodes, edges } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // Method not allowed
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 })
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
   } catch (error) {
     console.error('infra-manager error:', error)
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })

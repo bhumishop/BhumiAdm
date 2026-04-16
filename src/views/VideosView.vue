@@ -28,7 +28,7 @@
       <h2>Nosso Canal</h2>
       <p>Inscreva-se no canal da Bhumisparsha School</p>
       <a href="https://www.youtube.com/@bhumistudio.bhumisparshaschool/playlists" target="_blank" class="btn-primary">
-        📺 Ver no YouTube
+        &#x1F4FA; Ver no YouTube
       </a>
     </section>
   </div>
@@ -132,15 +132,15 @@ const videos = ref([
 .youtube-channel {
   text-align: center;
   padding: 3rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
 .youtube-channel h2 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  color: var(--accent-green);
+  color: var(--success);
 }
 
 .youtube-channel p {

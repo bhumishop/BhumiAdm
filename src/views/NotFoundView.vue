@@ -66,7 +66,7 @@ if (!adminStore.admin) {
 
 .bg-line {
   position: absolute;
-  background: var(--purple, #8B5CF6);
+  background: var(--gold);
   opacity: 0.2;
 }
 
@@ -103,7 +103,7 @@ if (!adminStore.admin) {
   width: 100%;
   max-width: 500px;
   background: var(--bg-surface, #151520);
-  border: 1px solid var(--border-color, #2A2A3A);
+  border: 1px solid var(--border);
   padding: var(--space-10, 40px);
   position: relative;
   text-align: center;
@@ -116,7 +116,7 @@ if (!adminStore.admin) {
   left: -2px;
   right: -2px;
   height: 2px;
-  background: var(--purple, #8B5CF6);
+  background: var(--gold);
 }
 
 .not-found-box::after {
@@ -126,14 +126,14 @@ if (!adminStore.admin) {
   left: -2px;
   width: 60px;
   height: 2px;
-  background: var(--red, #EF4444);
+  background: var(--danger);
 }
 
 .error-code {
   font-family: var(--font-mono, 'Courier New', monospace);
   font-size: 96px;
   font-weight: 700;
-  color: var(--red, #EF4444);
+  color: var(--danger);
   line-height: 1;
   margin-bottom: var(--space-4, 16px);
   letter-spacing: 4px;
@@ -159,7 +159,7 @@ h1 {
 .error-line {
   width: 80px;
   height: 2px;
-  background: var(--purple, #8B5CF6);
+  background: var(--gold);
   margin: 0 auto var(--space-8, 32px);
 }
 
@@ -177,12 +177,12 @@ h1 {
 }
 
 .btn-primary {
-  background: var(--purple, #8B5CF6);
+  background: var(--gold);
   color: white;
 }
 
 .btn-primary:hover {
-  background: var(--purple-hover, #7C3AED);
+  background: var(--gold-hover, var(--gold-light));
   transform: translateY(-1px);
 }
 
