@@ -122,49 +122,26 @@ async function loginWithGoogle(idToken: string): Promise<{ token: string; admin:
     return { error: 'Email não fornecido pelo Google', status: 400 }
   }
 
-  // Check allowed emails
-  const allowedEmails = (Deno.env.get('ADMIN_ALLOWED_EMAILS') || '').split(',').filter(Boolean).map(e => e.trim().toLowerCase())
-  if (allowedEmails.length === 0) {
-    console.error('ADMIN_ALLOWED_EMAILS not configured - denying all access')
-    return { error: 'Acesso negado: configuração inválida', status: 500 }
-  }
-  if (!allowedEmails.includes(email)) {
-    return { error: 'Acesso negado: conta nao autorizada', status: 403 }
-  }
-
-  // Look up or create admin in admin_users table
-  const { data: existingAdmin } = await supabase
+  // Look up admin in admin_users table - only existing admins can login
+  const { data: existingAdmin, error: lookupError } = await supabase
     .from('admin_users')
     .select('admin_uuid, google_sub, email, name, role')
     .eq('email', email)
     .single()
 
-  let adminRecord: Record<string, unknown>
-
-  if (!existingAdmin) {
-    // Create new admin
-    const { data: newAdmin, error: insertError } = await supabase
-      .from('admin_users')
-      .insert({ google_sub: googleSub, email, name, last_login: new Date().toISOString() })
-      .select('admin_uuid, google_sub, email, name, role')
-      .single()
-
-    if (insertError || !newAdmin) {
-      console.error('Failed to create admin user:', insertError)
-      return { error: 'Erro ao criar registro de admin', status: 500 }
-    }
-    adminRecord = newAdmin
-  } else {
-    // Update existing admin
-    const { data: updatedAdmin } = await supabase
-      .from('admin_users')
-      .update({ last_login: new Date().toISOString(), name, google_sub: googleSub })
-      .eq('email', email)
-      .select('admin_uuid, google_sub, email, name, role')
-      .single()
-
-    adminRecord = updatedAdmin || existingAdmin
+  if (lookupError || !existingAdmin) {
+    return { error: 'Acesso negado: conta nao encontrada', status: 403 }
   }
+
+  // Update existing admin
+  const { data: updatedAdmin } = await supabase
+    .from('admin_users')
+    .update({ last_login: new Date().toISOString(), name, google_sub: googleSub })
+    .eq('email', email)
+    .select('admin_uuid, google_sub, email, name, role')
+    .single()
+
+  const adminRecord = updatedAdmin || existingAdmin
 
   // Generate session token
   const sessionToken = await generateSessionToken({
