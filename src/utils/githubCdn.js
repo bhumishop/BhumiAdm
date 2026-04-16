@@ -6,8 +6,8 @@
 // CI/CD workflows (Python scrapers) upload directly using the GitHub token from workflow secrets
 
 const JSDELIVR_BASE = 'https://cdn.jsdelivr.net/gh'
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://pyidnhtwlxlyuwswaazf.supabase.co'
-const EDGE_FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const EDGE_FUNCTIONS_BASE = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1` : ''
 
 /**
  * Get the admin session token from localStorage
@@ -23,6 +23,10 @@ function getAdminToken() {
  * @returns {Promise<{cdnUrl: string, sha: string}>}
  */
 export async function uploadImageToCdn(file, objectPath) {
+  if (!EDGE_FUNCTIONS_BASE) {
+    throw new Error('Supabase not configured. Set VITE_SUPABASE_URL environment variable.')
+  }
+
   const formData = new FormData()
   formData.append('image', file)
   formData.append('path', objectPath)
