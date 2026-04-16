@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAdminAuthStore } from '../stores/adminAuth'
 import type { RouteRecordRaw } from 'vue-router'
 
+const HomeView = () => import('../views/HomeView.vue')
 const AdminView = () => import('../views/AdminView.vue')
 const LoginView = () => import('../views/LoginView.vue')
 const OrdersView = () => import('../views/OrdersView.vue')
@@ -20,14 +21,138 @@ const SalesDashboard = () => import('../views/SalesDashboard.vue')
 const ShopConfigurator = () => import('../views/ShopConfigurator.vue')
 const VisualOrchestrator = () => import('../views/VisualOrchestrator.vue')
 const ConfigView = () => import('../views/ConfigView.vue')
+const AboutView = () => import('../views/AboutView.vue')
 const NotFoundView = () => import('../views/NotFoundView.vue')
 
 const routes: RouteRecordRaw[] = [
+  // Public/Home route - separate from admin layout
   {
     path: '/',
-    name: 'admin',
+    name: 'home',
+    component: HomeView,
+    meta: { requiresAuth: false, title: 'BhumiShop - Home' }
+  },
+  // Admin layout routes - all under /admin prefix
+  {
+    path: '/admin',
     component: AdminView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Dashboard' }
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'admin',
+        component: LiveDashboard,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Dashboard' }
+      },
+      {
+        path: 'dashboard',
+        name: 'liveDashboard',
+        component: LiveDashboard,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Live Dashboard' }
+      },
+      {
+        path: 'rede',
+        name: 'networkGraph',
+        component: NetworkGraph,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Network Graph' }
+      },
+      {
+        path: 'metricas',
+        name: 'metrics',
+        component: MetricsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Metrics' }
+      },
+      {
+        path: 'pedidos',
+        name: 'orders',
+        component: OrdersView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Orders' }
+      },
+      {
+        path: 'produtos',
+        name: 'products',
+        component: ProductsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Products' }
+      },
+      {
+        path: 'produtos/:id',
+        name: 'product-detail',
+        component: ProductsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Product Detail' }
+      },
+      {
+        path: 'colecoes',
+        name: 'collections',
+        component: CollectionsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Collections' }
+      },
+      {
+        path: 'subcolecoes',
+        name: 'subcollections',
+        component: SubcollectionsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Subcollections' }
+      },
+      {
+        path: 'variantes',
+        name: 'variants',
+        component: VariantsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Variants' }
+      },
+      {
+        path: 'pagamentos',
+        name: 'payments',
+        component: PaymentsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Payments' }
+      },
+      {
+        path: 'integracoes',
+        name: 'integrations',
+        component: IntegrationsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Integrations' }
+      },
+      {
+        path: 'usuarios',
+        name: 'userRoles',
+        component: UserRolesView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - User Roles' }
+      },
+      {
+        path: 'envio',
+        name: 'shipping',
+        component: ShippingView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Shipping' }
+      },
+      {
+        path: 'estoque',
+        name: 'inventory',
+        component: ProductsView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Inventory' }
+      },
+      {
+        path: 'vendas',
+        name: 'salesDashboard',
+        component: SalesDashboard,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Sales Dashboard' }
+      },
+      {
+        path: 'configurador',
+        name: 'shopConfigurator',
+        component: ShopConfigurator,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Shop Configurator' }
+      },
+      {
+        path: 'orchestrator',
+        name: 'visualOrchestrator',
+        component: VisualOrchestrator,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Visual Orchestrator' }
+      },
+      {
+        path: 'configuracoes',
+        name: 'config',
+        component: ConfigView,
+        meta: { requiresAuth: true, title: 'BhumiAdm - Configurations' }
+      }
+    ]
   },
   {
     path: '/login',
@@ -36,100 +161,16 @@ const routes: RouteRecordRaw[] = [
     meta: { guest: true, title: 'BhumiAdm - Login' }
   },
   {
-    path: '/pedidos',
-    name: 'orders',
-    component: OrdersView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Orders' }
+    path: '/sobre',
+    name: 'about',
+    component: AboutView,
+    meta: { requiresAuth: false, title: 'BhumiShop - About' }
   },
   {
     path: '/produtos',
-    name: 'products',
+    name: 'public-products',
     component: ProductsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Products' }
-  },
-  {
-    path: '/colecoes',
-    name: 'collections',
-    component: CollectionsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Collections' }
-  },
-  {
-    path: '/subcolecoes',
-    name: 'subcollections',
-    component: SubcollectionsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Subcollections' }
-  },
-  {
-    path: '/variantes',
-    name: 'variants',
-    component: VariantsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Variants' }
-  },
-  {
-    path: '/pagamentos',
-    name: 'payments',
-    component: PaymentsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Payments' }
-  },
-  {
-    path: '/integracoes',
-    name: 'integrations',
-    component: IntegrationsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Integrations' }
-  },
-  {
-    path: '/usuarios',
-    name: 'userRoles',
-    component: UserRolesView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - User Roles' }
-  },
-  {
-    path: '/envio',
-    name: 'shipping',
-    component: ShippingView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Shipping' }
-  },
-  {
-    path: '/metricas',
-    name: 'metrics',
-    component: MetricsView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Metrics' }
-  },
-  {
-    path: '/dashboard',
-    name: 'liveDashboard',
-    component: LiveDashboard,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Live Dashboard' }
-  },
-  {
-    path: '/rede',
-    name: 'networkGraph',
-    component: NetworkGraph,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Network Graph' }
-  },
-  {
-    path: '/vendas',
-    name: 'salesDashboard',
-    component: SalesDashboard,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Sales Dashboard' }
-  },
-  {
-    path: '/configurador',
-    name: 'shopConfigurator',
-    component: ShopConfigurator,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Shop Configurator' }
-  },
-  {
-    path: '/orchestrator',
-    name: 'visualOrchestrator',
-    component: VisualOrchestrator,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Visual Orchestrator' }
-  },
-  {
-    path: '/configuracoes',
-    name: 'config',
-    component: ConfigView,
-    meta: { requiresAuth: true, title: 'BhumiAdm - Configurations' }
+    meta: { requiresAuth: false, title: 'BhumiShop - Produtos' }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -149,6 +190,7 @@ const router = createRouter({
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth' }
     }
+    // Always scroll to top on route change for multi-page routing
     return { top: 0 }
   }
 })
@@ -156,7 +198,14 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const adminStore = useAdminAuthStore()
 
-  if (!adminStore.admin) {
+  // Skip auth check for public routes
+  const isPublicRoute = ['home', 'about', 'login', 'not-found', 'public-products'].includes(to.name as string)
+  // Redirect unknown root-level routes to admin login
+  if (!isPublicRoute && !to.path.startsWith('/admin') && to.name !== 'not-found') {
+    return { name: 'not-found' }
+  }
+
+  if (!isPublicRoute && !adminStore.admin) {
     await adminStore.initialize()
   }
 

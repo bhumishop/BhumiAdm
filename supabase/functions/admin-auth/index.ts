@@ -2,8 +2,8 @@
  * Supabase Edge Function: admin-auth
  *
  * Server-side admin authentication and authorization.
- * Validates Google OAuth tokens and checks admin UUIDs stored as secrets.
- * Returns a short-lived session token for subsequent API calls.
+ * Validates Google OAuth tokens and checks admin emails against allowlist.
+ * Uses UUID as the primary admin identifier for session management.
  *
  * Endpoints:
  *   POST /admin-auth - Validate Google token and get session
@@ -18,7 +18,7 @@ import { createRemoteJWKSet, jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const ADMIN_GOOGLE_SUBS = Deno.env.get('ADMIN_GOOGLE_SUBS') || '' // Comma-separated Google sub values
+const ADMIN_ALLOWED_EMAILS = Deno.env.get('ADMIN_ALLOWED_EMAILS') || '' // Comma-separated allowed admin emails
 const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY // For session tokens
 const SESSION_TTL = parseInt(Deno.env.get('SESSION_TTL') || '14400', 10) // 4 hours default (reduced from 24h)
 
@@ -78,11 +78,11 @@ const googleJWKS = createRemoteJWKSet(
   new URL('https://www.googleapis.com/oauth2/v3/certs')
 )
 
-function corsHeaders(origin?: string) {
+function corsHeaders(origin?: string): Record<string, string> {
   const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').filter(Boolean)
   const allowOrigin = allowedOrigins.includes(origin || '') ? origin : (allowedOrigins[0] || '*')
   return {
-    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Origin': allowOrigin ?? '*',
     'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
     'Access-Control-Allow-Methods': 'POST, GET, DELETE, OPTIONS',
     'Access-Control-Max-Age': '86400',
@@ -96,9 +96,9 @@ async function generateSessionToken(admin: Record<string, unknown>): Promise<str
   const { SignJWT } = await import('https://esm.sh/jose@5.2.0')
 
   const token = await new SignJWT({
-    admin_id: admin.google_sub,
+    admin_uuid: admin.admin_uuid,
     email: admin.email,
-    role: 'admin',
+    role: admin.role || 'admin',
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -127,15 +127,15 @@ async function verifySessionToken(token: string): Promise<Record<string, unknown
 }
 
 /**
- * Check if Google sub is in admin allowlist
+ * Check if email is in admin allowlist
  */
-function isAdminSub(googleSub: string): boolean {
-  const allowedSubs = ADMIN_GOOGLE_SUBS.split(',').filter(Boolean)
-  if (allowedSubs.length === 0) {
-    console.error('ADMIN_GOOGLE_SUBS not configured - denying all access')
+function isAllowedEmail(email: string): boolean {
+  const allowedEmails = ADMIN_ALLOWED_EMAILS.split(',').filter(Boolean).map(e => e.trim().toLowerCase())
+  if (allowedEmails.length === 0) {
+    console.error('ADMIN_ALLOWED_EMAILS not configured - denying all access')
     return false // Deny by default - never allow unconfigured access
   }
-  return allowedSubs.includes(googleSub)
+  return allowedEmails.includes(email.toLowerCase())
 }
 
 /**
@@ -203,7 +203,7 @@ serve(async (req) => {
           )
         }
         return new Response(
-          JSON.stringify({ valid: true, admin: { google_sub: admin.admin_id, email: admin.email, role: admin.role } }),
+          JSON.stringify({ valid: true, admin: { admin_uuid: admin.admin_uuid, email: admin.email, role: admin.role, name: admin.name, nome: admin.name } }),
           { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
         )
       }
@@ -241,42 +241,93 @@ serve(async (req) => {
       }
 
       const googleSub = googlePayload.sub as string
-      const email = googlePayload.email as string
+      const email = (googlePayload.email as string)?.toLowerCase()
       const name = googlePayload.name as string
 
-      // Check if user is admin
-      if (!isAdminSub(googleSub)) {
+      if (!email) {
+        return new Response(
+          JSON.stringify({ error: 'Email não fornecido pelo Google' }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      // Check if user email is allowed
+      if (!isAllowedEmail(email)) {
         return new Response(
           JSON.stringify({ error: 'Acesso negado: conta nao autorizada' }),
           { status: 403, headers: { ...cors, 'Content-Type': 'application/json' } }
         )
       }
 
-      // Upsert admin in database
-      const { error: upsertError } = await supabase
+      // Look up or create admin user by email (UUID-based identification)
+      const { data: existingAdmin, error: lookupError } = await supabase
         .from('admin_users')
-        .upsert({
-          google_sub: googleSub,
-          email,
-          name,
-          last_login: new Date().toISOString(),
-        }, { onConflict: 'google_sub' })
+        .select('admin_uuid, google_sub, email, name, role')
+        .eq('email', email)
+        .single()
 
-      if (upsertError) {
-        console.error('Failed to upsert admin user:', upsertError)
+      let adminRecord: Record<string, unknown>
+
+      if (lookupError || !existingAdmin) {
+        // First login for this email - create new admin record with UUID
+        const { data: newAdmin, error: insertError } = await supabase
+          .from('admin_users')
+          .insert({
+            google_sub: googleSub,
+            email,
+            name,
+            last_login: new Date().toISOString(),
+          })
+          .select('admin_uuid, google_sub, email, name, role')
+          .single()
+
+        if (insertError || !newAdmin) {
+          console.error('Failed to create admin user:', insertError)
+          return new Response(
+            JSON.stringify({ error: 'Erro ao criar registro de admin' }),
+            { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
+          )
+        }
+        adminRecord = newAdmin
+      } else {
+        // Existing admin - update last_login and ensure google_sub is current
+        const { data: updatedAdmin, error: updateError } = await supabase
+          .from('admin_users')
+          .update({
+            last_login: new Date().toISOString(),
+            name,
+            google_sub: googleSub, // Update in case they changed Google account
+          })
+          .eq('email', email)
+          .select('admin_uuid, google_sub, email, name, role')
+          .single()
+
+        if (updateError || !updatedAdmin) {
+          console.error('Failed to update admin user:', updateError)
+          // Still allow login with existing data
+          adminRecord = existingAdmin
+        } else {
+          adminRecord = updatedAdmin
+        }
       }
 
-      // Generate session token
+      // Generate session token with UUID
       const sessionToken = await generateSessionToken({
-        google_sub: googleSub,
-        email,
-        name,
+        admin_uuid: adminRecord.admin_uuid,
+        email: adminRecord.email,
+        role: adminRecord.role || 'admin',
       })
 
       return new Response(
         JSON.stringify({
           token: sessionToken,
-          admin: { google_sub: googleSub, email, name },
+          admin: {
+            admin_uuid: adminRecord.admin_uuid,
+            email: adminRecord.email,
+            name: adminRecord.name,
+            nome: adminRecord.name, // Alias for backwards compatibility
+            role: adminRecord.role || 'admin',
+          },
         }),
         { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } }
       )

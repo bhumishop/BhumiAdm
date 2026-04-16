@@ -7,7 +7,7 @@
     <aside class="sidebar" :class="{ collapsed: sidebarCollapsed, 'mobile-open': mobileSidebarOpen }">
       <!-- Logo -->
       <div class="sidebar-header">
-        <router-link to="/" class="logo">
+        <router-link to="/admin" class="logo">
           <span class="logo-icon">&#x262F;</span>
           <div v-if="!sidebarCollapsed" class="logo-text">
             <span class="logo-name">BHUMI<span class="text-purple">ADMIN</span></span>
@@ -26,18 +26,18 @@
           <span class="nav-section-label">// PRINCIPAL</span>
         </div>
 
-        <router-link to="/dashboard" class="nav-item" active-class="active">
+        <router-link to="/admin/dashboard" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4CA;</span>
           <span v-if="!sidebarCollapsed">DASHBOARD AO VIVO</span>
           <span v-if="!sidebarCollapsed" class="nav-badge badge-green">LIVE</span>
         </router-link>
 
-        <router-link to="/rede" class="nav-item" active-class="active">
+        <router-link to="/admin/rede" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F310;</span>
           <span v-if="!sidebarCollapsed">REDE VISUAL</span>
         </router-link>
 
-        <router-link to="/metricas" class="nav-item" active-class="active">
+        <router-link to="/admin/metricas" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4C8;</span>
           <span v-if="!sidebarCollapsed">M&Eacute;TRICAS</span>
         </router-link>
@@ -47,22 +47,22 @@
           <span class="nav-section-label">// CAT&Aacute;LOGO</span>
         </div>
 
-        <router-link to="/produtos" class="nav-item" active-class="active">
+        <router-link to="/admin/produtos" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4E6;</span>
           <span v-if="!sidebarCollapsed">PRODUTOS</span>
         </router-link>
 
-        <router-link to="/colecoes" class="nav-item" active-class="active">
+        <router-link to="/admin/colecoes" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4DA;</span>
           <span v-if="!sidebarCollapsed">COLE&Ccedil;&Otilde;ES</span>
         </router-link>
 
-        <router-link to="/subcolecoes" class="nav-item" active-class="active">
+        <router-link to="/admin/subcolecoes" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4C2;</span>
           <span v-if="!sidebarCollapsed">SUBCOLE&Ccedil;&Otilde;ES</span>
         </router-link>
 
-        <router-link to="/variantes" class="nav-item" active-class="active">
+        <router-link to="/admin/variantes" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F3A8;</span>
           <span v-if="!sidebarCollapsed">VARIANTES</span>
         </router-link>
@@ -72,23 +72,23 @@
           <span class="nav-section-label">// VENDAS</span>
         </div>
 
-        <router-link to="/pedidos" class="nav-item" active-class="active">
+        <router-link to="/admin/pedidos" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F6D2;</span>
           <span v-if="!sidebarCollapsed">PEDIDOS</span>
         </router-link>
 
-        <router-link to="/pagamentos" class="nav-item" active-class="active">
+        <router-link to="/admin/pagamentos" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4B3;</span>
           <span v-if="!sidebarCollapsed">PAGAMENTOS</span>
         </router-link>
 
-        <router-link to="/vendas" class="nav-item" active-class="active">
+        <router-link to="/admin/vendas" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4CA;</span>
           <span v-if="!sidebarCollapsed">VENDAS</span>
           <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
         </router-link>
 
-        <router-link to="/estoque" class="nav-item" active-class="active">
+        <router-link to="/admin/estoque" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F4CB;</span>
           <span v-if="!sidebarCollapsed">ESTOQUE</span>
         </router-link>
@@ -98,34 +98,34 @@
           <span class="nav-section-label">// SISTEMA</span>
         </div>
 
-        <router-link to="/integracoes" class="nav-item" active-class="active">
+        <router-link to="/admin/integracoes" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F517;</span>
           <span v-if="!sidebarCollapsed">INTEGRA&Ccedil;&Otilde;ES</span>
         </router-link>
 
-        <router-link to="/envio" class="nav-item" active-class="active">
+        <router-link to="/admin/envio" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F69A;</span>
           <span v-if="!sidebarCollapsed">ENVIO</span>
         </router-link>
 
-        <router-link to="/usuarios" class="nav-item" active-class="active">
+        <router-link to="/admin/usuarios" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F465;</span>
           <span v-if="!sidebarCollapsed">USU&Aacute;RIOS</span>
         </router-link>
 
-        <router-link to="/configurador" class="nav-item" active-class="active">
+        <router-link to="/admin/configurador" class="nav-item" active-class="active">
           <span class="nav-icon">&#x2699;</span>
           <span v-if="!sidebarCollapsed">CONFIGURADOR</span>
           <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
         </router-link>
 
-        <router-link to="/orchestrator" class="nav-item" active-class="active">
+        <router-link to="/admin/orchestrator" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F310;</span>
           <span v-if="!sidebarCollapsed">ORCHESTRATOR</span>
           <span v-if="!sidebarCollapsed" class="nav-badge badge-green">NEW</span>
         </router-link>
 
-        <router-link to="/configuracoes" class="nav-item" active-class="active">
+        <router-link to="/admin/configuracoes" class="nav-item" active-class="active">
           <span class="nav-icon">&#x1F527;</span>
           <span v-if="!sidebarCollapsed">CONFIGURA&Ccedil;&Otilde;ES</span>
         </router-link>
@@ -184,12 +184,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAdminStore } from '../stores/adminAuth'
 import { useNetworkStore } from '../stores/network'
 
 const adminStore = useAdminStore()
 const route = useRoute()
+const router = useRouter()
 const networkStore = useNetworkStore()
 
 const sidebarCollapsed = ref(false)
@@ -201,6 +202,7 @@ const routeNames = {
   networkGraph: 'REDE VISUAL',
   orders: 'PEDIDOS',
   products: 'PRODUTOS',
+  'product-detail': 'DETALHE DO PRODUTO',
   collections: 'COLE&Ccedil;&Otilde;ES',
   subcollections: 'SUBCOLE&Ccedil;&Otilde;ES',
   variants: 'VARIANTES',
@@ -222,13 +224,13 @@ const currentRouteName = computed(() => {
 
 function logout() {
   sessionStorage.removeItem('admin-session')
-  window.location.href = '/login'
+  router.push('/login')
 }
 
 onMounted(async () => {
   const isAuth = sessionStorage.getItem('admin-session')
   if (!isAuth) {
-    window.location.href = '/login'
+    router.push('/login')
     return
   }
   await adminStore.initialize()

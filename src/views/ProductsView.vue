@@ -31,11 +31,11 @@
       >
         <div class="product-image">
           <img
-            v-if="hasValidImage(product.image)"
+            v-if="hasValidImage(product)"
             :src="product.image"
             :alt="product.name"
             class="product-img"
-            @error="handleImageError"
+            @error="handleImageError($event, product.image)"
           >
           <div v-else class="placeholder-image">{{ getCategoryInitial(product.category) }}</div>
           <span class="product-badge">{{ getCategoryName(product.category) }}</span>
@@ -59,19 +59,27 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '../stores/products'
+import { isLikelyBrokenCdnUrl } from '../utils/githubCdn'
 
 const route = useRoute()
 const productStore = useProductStore()
 
 const activeCategory = ref('todos')
 const categories = computed(() => productStore.categories)
+const brokenImages = ref(new Set())
 
 const filteredProducts = computed(() => {
   return productStore.getProductsByCategory(activeCategory.value)
 })
 
-function hasValidImage(image) {
-  return image && (image.startsWith('data:') || image.startsWith('http'))
+function hasValidImage(product) {
+  const image = product.image
+  if (!image || !image.startsWith('http')) return false
+  // Check if URL looks broken
+  if (isLikelyBrokenCdnUrl(image)) return false
+  // Check if this image URL is known to be broken
+  if (brokenImages.value.has(image)) return false
+  return true
 }
 
 function getCategoryInitial(categoryId) {
@@ -85,10 +93,16 @@ function getCategoryName(categoryId) {
   return cat ? cat.name.toUpperCase() : categoryId
 }
 
-function handleImageError(event) {
-  event.target.style.display = 'none'
-  if (event.target.nextElementSibling) {
-    event.target.nextElementSibling.style.display = 'flex'
+function handleImageError(event, imageUrl) {
+  // Mark this URL as broken
+  if (imageUrl) {
+    brokenImages.value.add(imageUrl)
+  }
+  const img = event.target
+  img.style.display = 'none'
+  const placeholder = img.nextElementSibling
+  if (placeholder) {
+    placeholder.style.display = 'flex'
   }
 }
 

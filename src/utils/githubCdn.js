@@ -73,7 +73,10 @@ export async function uploadProductImages(productId, files, prefix = 'products')
  * @returns {string} The GitHub CDN URL
  */
 export function transformToCdnUrl(url) {
-  if (!url || !url.includes('supabase')) return url
+  if (!url) return url
+  // If it's a data URL or already a valid external URL, return as-is
+  if (url.startsWith('data:') || url.startsWith('http')) return url
+  if (!url.includes('supabase')) return url
   try {
     const parts = url.split('/storage/v1/object/public/')
     if (parts.length < 2) return url
@@ -85,6 +88,21 @@ export function transformToCdnUrl(url) {
   } catch {
     return url
   }
+}
+
+/**
+ * Check if a URL is likely to fail (invalid CDN URL pattern).
+ * @param {string} url - The URL to check
+ * @returns {boolean} True if the URL looks like it might fail
+ */
+export function isLikelyBrokenCdnUrl(url) {
+  if (!url || !url.startsWith('http')) return false
+  // Check for common CDN URL patterns that might be misconfigured
+  if (url.includes('cdn.jsdelivr.net') && url.includes('@cdn/')) {
+    // URLs with /uiclap/ prefix are typically broken (wrong path structure)
+    if (url.includes('/uiclap/')) return true
+  }
+  return false
 }
 
 /**

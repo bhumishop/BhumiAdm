@@ -3,14 +3,16 @@
 // ============================================
 
 export interface AdminUser {
-  google_sub: string
+  admin_uuid: string
   email: string
-  nome: string
+  name?: string
+  /** @deprecated Use 'name' instead - kept for backwards compatibility */
+  nome?: string
   role?: 'admin' | 'super_admin'
 }
 
 export interface SessionToken {
-  admin_id: string
+  admin_uuid: string
   email: string
   role: string
   iat: number
