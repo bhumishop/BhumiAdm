@@ -7,8 +7,8 @@
         </h1>
         <p class="hero-subtitle">Arte, Conhecimento e Criatividade</p>
         <div class="hero-cta">
-          <router-link to="/produtos" class="btn-primary">
-            Ver Produtos
+          <router-link to="/login" class="btn-primary">
+            Admin Login
           </router-link>
         </div>
       </div>
@@ -18,36 +18,14 @@
     </section>
 
     <section class="categories-preview container">
-      <h2 class="section-title">Categorias</h2>
+      <h2 class="section-title">Administração</h2>
       <div class="categories-grid">
         <router-link 
-          v-for="cat in categories" 
-          :key="cat.id"
-          :to="`/produtos?categoria=${cat.id}`"
+          to="/login"
           class="category-card"
         >
-          <span class="category-icon">{{ cat.icon }}</span>
-          <span class="category-name">{{ cat.name }}</span>
-        </router-link>
-      </div>
-    </section>
-
-    <section class="featured-products container">
-      <h2 class="section-title">Destaques</h2>
-      <div class="products-grid">
-        <router-link 
-          v-for="product in featuredProducts" 
-          :key="product.id"
-          :to="`/produtos/${product.id}`"
-          class="product-card card"
-        >
-          <div class="product-image">
-            <div class="placeholder-image">{{ getCategoryInitial(product.category) }}</div>
-          </div>
-          <div class="product-info">
-            <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-price">R$ {{ product.price.toFixed(2) }}</p>
-          </div>
+          <span class="category-icon">🔐</span>
+          <span class="category-name">Login Admin</span>
         </router-link>
       </div>
     </section>
@@ -86,13 +64,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useProductStore } from '../stores/products'
+import { ref, onMounted } from 'vue'
 
-const productStore = useProductStore()
-
-const categories = computed(() => productStore.categories)
-const featuredProducts = computed(() => productStore.products.slice(0, 4))
+// Static categories for the home page - no API required
+const categories = ref([
+  { id: 'camisetas', name: 'Camisetas', icon: '👕' },
+  { id: 'acessorios', name: 'Acessórios', icon: '🎀' },
+  { id: 'artes', name: 'Artes', icon: '🎨' },
+  { id: 'livros', name: 'Livros', icon: '📚' },
+  { id: 'canecas', name: 'Canecas', icon: '☕' },
+])
 
 function getCategoryInitial(categoryId) {
   if (!categoryId) return 'P'
@@ -100,10 +81,10 @@ function getCategoryInitial(categoryId) {
   return cat ? cat.name.charAt(0).toUpperCase() : categoryId.toString().charAt(0).toUpperCase()
 }
 
-onMounted(async () => {
-  await productStore.fetchCategories()
-  await productStore.fetchProducts()
+onMounted(() => {
+  // No API calls needed - static content only
 })
+</script>
 </script>
 
 <style scoped>
@@ -261,52 +242,11 @@ onMounted(async () => {
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
 }
 
-.featured-products {
-  padding: 4rem 1rem;
-}
-
 .section-title {
   font-size: 2rem;
   text-align: center;
   margin-bottom: 2rem;
   color: var(--accent-green);
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.product-image {
-  height: 200px;
-  background: var(--bg-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.placeholder-image {
-  font-size: 3rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.product-info {
-  padding: 1.5rem;
-}
-
-.product-name {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #00FF41;
-}
-
-.product-price {
-  color: var(--accent-green);
-  font-size: 1.25rem;
-  font-weight: 700;
 }
 
 .about-preview {

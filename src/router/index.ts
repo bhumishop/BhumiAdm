@@ -166,11 +166,10 @@ const routes: RouteRecordRaw[] = [
     component: AboutView,
     meta: { requiresAuth: false, title: 'BhumiShop - About' }
   },
+  // Redirect public products route to login (admin-only access)
   {
     path: '/produtos',
-    name: 'public-products',
-    component: ProductsView,
-    meta: { requiresAuth: false, title: 'BhumiShop - Produtos' }
+    redirect: { name: 'login' }
   },
   {
     path: '/:pathMatch(.*)*',
