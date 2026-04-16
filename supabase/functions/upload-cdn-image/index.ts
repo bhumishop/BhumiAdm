@@ -82,7 +82,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
+      'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
     }})
   }
