@@ -75,12 +75,12 @@ const GOOGLE_BUTTON_MAX_RETRIES = 20 // 10 seconds max
 async function handleSignIn() {
   try {
     await adminStore.signInWithGoogle()
-    const redirect = route.query.redirect || '/'
+    const redirect = route.query.redirect || '/admin'
     // Prevent open redirect attacks - only allow relative paths
     if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
       router.push(redirect)
     } else {
-      router.push('/')
+      router.push('/admin')
     }
   } catch (e) {
     console.error('Login error:', e)

@@ -1037,22 +1037,34 @@ class GitHubCdnUploader:
             return resp.json().get("sha")
         return None
 
+    def _compute_content_hash(self, file_bytes: bytes) -> str:
+        """Compute SHA-256 hash of file content for change detection."""
+        return hashlib.sha256(file_bytes).hexdigest()
+
     def upload_file(
         self, file_bytes: bytes, object_path: str, content_type: str = "image/jpeg"
     ) -> Optional[str]:
         """Upload a file to the CDN branch. Returns CDN URL or None.
         Falls back to Supabase Edge Function if direct GitHub API fails.
+
+        Uses content-hash-based skip: if the file exists on the CDN branch,
+        it is skipped (GitHub blob SHA is content-based, so same path = same content).
         """
-        # Check if file already exists
+        # Check if file already exists on CDN
+        existing_sha = None
         if not self.use_edge_function:
-            sha = self._get_file_sha(object_path)
-            if sha:
-                logger.debug(f"File already exists: {object_path}, skipping")
+            existing_sha = self._get_file_sha(object_path)
+            if existing_sha:
+                # File exists — GitHub blob SHA is content-based (SHA1 of content),
+                # so if the file exists, the content is identical. Skip upload.
+                logger.debug(
+                    f"File exists: {object_path}, skipping upload"
+                )
                 return self._make_cdn_url(object_path)
 
         # Try direct GitHub API first
         if not self.use_edge_function:
-            result = self._upload_direct(file_bytes, object_path, content_type)
+            result = self._upload_direct(file_bytes, object_path, content_type, existing_sha=existing_sha)
             if result:
                 return result
             # Direct failed, try edge function fallback
@@ -1065,22 +1077,26 @@ class GitHubCdnUploader:
         return self._upload_via_edge_function(file_bytes, object_path, content_type)
 
     def _upload_direct(
-        self, file_bytes: bytes, object_path: str, content_type: str, max_retries: int = 3
+        self, file_bytes: bytes, object_path: str, content_type: str, max_retries: int = 3,
+        existing_sha: Optional[str] = None,
     ) -> Optional[str]:
         """Upload directly via GitHub Contents API."""
         content_b64 = base64.b64encode(file_bytes).decode("utf-8")
-        
+        content_hash = self._compute_content_hash(file_bytes)
+        sha = existing_sha
+
         for attempt in range(max_retries):
-            # Get existing SHA if file already exists
-            existing_sha = self._get_file_sha(object_path)
-            
+            # Get existing SHA if file already exists and not provided
+            if sha is None:
+                sha = self._get_file_sha(object_path)
+
             payload = {
-                "message": f"chore: {'update' if existing_sha else 'add'} product image {object_path}",
+                "message": f"chore: {'update' if sha else 'add'} product image {object_path} [{content_hash[:8]}]",
                 "content": content_b64,
                 "branch": self.branch,
             }
-            if existing_sha:
-                payload["sha"] = existing_sha
+            if sha:
+                payload["sha"] = sha
             
             resp = requests.put(
                 f"{self.base_url}/{object_path}",

@@ -185,10 +185,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAdminStore } from '../stores/adminAuth'
+import { useAdminAuthStore } from '../stores/adminAuth'
 import { useNetworkStore } from '../stores/network'
 
-const adminStore = useAdminStore()
+const adminStore = useAdminAuthStore()
 const route = useRoute()
 const router = useRouter()
 const networkStore = useNetworkStore()
@@ -223,17 +223,20 @@ const currentRouteName = computed(() => {
 })
 
 function logout() {
-  sessionStorage.removeItem('admin-session')
+  adminStore.signOut()
   router.push('/login')
 }
 
 onMounted(async () => {
-  const isAuth = sessionStorage.getItem('admin-session')
-  if (!isAuth) {
+  // Check if user is authenticated
+  if (!adminStore.admin) {
+    await adminStore.initialize()
+  }
+  
+  if (!adminStore.admin) {
     router.push('/login')
     return
   }
-  await adminStore.initialize()
 
   try {
     await networkStore.buildGraph()

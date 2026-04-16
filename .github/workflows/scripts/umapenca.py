@@ -191,6 +191,7 @@ class SyncResult:
     updated: int = 0
     failed: int = 0
     images_uploaded: int = 0
+    images_skipped: int = 0
     webp_generated: int = 0
     errors: list = field(default_factory=list)
     duration_seconds: float = 0.0
@@ -682,8 +683,29 @@ class GitHubCdnUploader:
         }
         self._uploaded = 0
         self._webp_generated = 0
+        self._skipped = 0
         self._cdn_dir = Path("cdn_images")
         self._cdn_dir.mkdir(exist_ok=True)
+        # Content hash manifest: tracks {object_path: sha256_hash} for incremental uploads
+        self._hash_manifest_path = self._cdn_dir / ".upload_manifest.json"
+        self._hash_manifest = self._load_hash_manifest()
+
+    def _load_hash_manifest(self) -> dict:
+        """Load the content hash manifest for incremental upload tracking."""
+        if self._hash_manifest_path.exists():
+            try:
+                return json.loads(self._hash_manifest_path.read_text())
+            except (json.JSONDecodeError, Exception):
+                return {}
+        return {}
+
+    def _save_hash_manifest(self):
+        """Save the content hash manifest to disk."""
+        self._hash_manifest_path.write_text(json.dumps(self._hash_manifest, indent=2))
+
+    def _compute_content_hash(self, file_bytes: bytes) -> str:
+        """Compute SHA-256 hash of file content for change detection."""
+        return hashlib.sha256(file_bytes).hexdigest()
 
     @property
     def uploaded(self) -> int:
@@ -692,6 +714,10 @@ class GitHubCdnUploader:
     @property
     def webp_generated(self) -> int:
         return self._webp_generated
+
+    @property
+    def skipped(self) -> int:
+        return self._skipped
 
     def ensure_cdn_branch(self) -> bool:
         """Checkout/create CDN branch locally."""
@@ -778,8 +804,23 @@ class GitHubCdnUploader:
         object_path: str,
         content_type: str = "image/jpeg",
     ) -> Optional[str]:
-        """Save a file locally for later git commit. Returns CDN URL."""
+        """Save a file locally for later git commit. Returns CDN URL.
+
+        Uses content-hash-based skip: if the file was previously uploaded
+        with the same content hash, it is skipped.
+        """
+        content_hash = self._compute_content_hash(file_bytes)
+        existing_hash = self._hash_manifest.get(object_path)
+
+        if existing_hash == content_hash:
+            # File content is identical — skip
+            self._skipped += 1
+            logger.debug(f"Skipping unchanged file: {object_path}")
+            return self._make_cdn_url(object_path)
+
+        # Content changed or new — save and update manifest
         self._save_file_local(file_bytes, object_path)
+        self._hash_manifest[object_path] = content_hash
         self._uploaded += 1
         return self._make_cdn_url(object_path)
 
@@ -843,9 +884,15 @@ class GitHubCdnUploader:
         """Git add, commit, and push all saved images."""
         import subprocess
 
-        if not (self._cdn_dir).exists():
-            logger.info("No images to upload")
+        if self._uploaded == 0:
+            logger.info("No new images to upload (all unchanged)")
+            # Still save manifest if there were skips
+            if self._skipped > 0:
+                self._save_hash_manifest()
             return True
+
+        # Save the hash manifest before committing
+        self._save_hash_manifest()
 
         logger.info(f"Committing and pushing {self._uploaded} images to CDN branch...")
 
@@ -859,9 +906,9 @@ class GitHubCdnUploader:
             capture_output=True, text=True, timeout=10
         )
 
-        # Add all new files
+        # Add all new files (excluding the manifest — it's local-only)
         result = subprocess.run(
-            ["git", "add", "cdn_images/"],
+            ["git", "add", "cdn_images/products/"],
             capture_output=True, text=True, timeout=30
         )
         if result.returncode != 0:
@@ -1312,6 +1359,7 @@ def run(args) -> SyncResult:
             )
         cdn_map = uploader.upload_all(products_to_sync, client, workers=1)
         result.images_uploaded = uploader.uploaded
+        result.images_skipped = uploader.skipped
         result.webp_generated = uploader.webp_generated
 
         # Update product image references to CDN URLs
@@ -1405,6 +1453,8 @@ def run(args) -> SyncResult:
     print(f"  Updated          : {result.updated}")
     print(f"  Failed           : {result.failed}")
     print(f"  Images uploaded  : {result.images_uploaded}")
+    if result.images_skipped > 0:
+        print(f"  Images skipped   : {result.images_skipped}")
     print(f"  WebP generated   : {result.webp_generated}")
     print(f"  Duration         : {result.duration_seconds:.1f}s")
     if result.errors:
