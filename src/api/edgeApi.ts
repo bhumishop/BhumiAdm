@@ -32,11 +32,11 @@ import type {
   BulkAction,
 } from '../types'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-if (!SUPABASE_URL) {
-  throw new Error('VITE_SUPABASE_URL environment variable is required')
-}
-const EDGE_FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`
+// Get SUPABASE_URL from Vite env variables
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+
+// Don't throw on import - fail gracefully when API is actually used
+const EDGE_FUNCTIONS_BASE = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1` : ''
 
 /**
  * Sanitize error messages for display to users
@@ -63,6 +63,13 @@ function getAuthToken(): string | null {
  * Make authenticated request to edge function
  */
 async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  if (!EDGE_FUNCTIONS_BASE) {
+    throw new Error(
+      'VITE_SUPABASE_URL is not configured. ' +
+      'Please set it in your environment variables or GitHub repository settings.'
+    )
+  }
+
   const token = getAuthToken()
 
   const headers: Record<string, string> = {
@@ -714,6 +721,13 @@ export const edgeApi = {
       file: File,
       path: string
     ): Promise<{ cdnUrl: string; sha: string | null; path: string }> {
+      if (!EDGE_FUNCTIONS_BASE) {
+        throw new Error(
+          'VITE_SUPABASE_URL is not configured. ' +
+          'Please set it in your environment variables or GitHub repository settings.'
+        )
+      }
+
       const token = getAuthToken()
       const formData = new FormData()
       formData.append('image', file)
