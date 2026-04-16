@@ -924,7 +924,7 @@ class GitHubCdnUploader:
         # Add all new files (excluding the manifest — it's local-only)
         result = subprocess.run(
             ["git", "add", "cdn_images/products/"],
-            capture_output=True, text=True, timeout=30
+            capture_output=True, text=True, timeout=120
         )
         if result.returncode != 0:
             logger.error(f"git add failed: {result.stderr}")
@@ -942,7 +942,7 @@ class GitHubCdnUploader:
         # Commit
         result = subprocess.run(
             ["git", "commit", "-m", f"chore: add {self._uploaded} product images to CDN"],
-            capture_output=True, text=True, timeout=30
+            capture_output=True, text=True, timeout=120
         )
         if result.returncode != 0:
             logger.error(f"git commit failed: {result.stderr}")
