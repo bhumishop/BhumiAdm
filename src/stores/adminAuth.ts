@@ -43,13 +43,19 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     try {
       const result = await edgeApi.auth.signIn(idToken)
 
+      // Set localStorage synchronously before any state updates
       localStorage.setItem(TOKEN_KEY, result.token)
       localStorage.setItem(ADMIN_KEY, JSON.stringify(result.admin))
       localStorage.setItem(TIMESTAMP_KEY, Date.now().toString())
 
+      // Set admin state
       admin.value = result.admin
       clearProductsCache()
       clearOrdersCache()
+
+      // Force a small delay to ensure localStorage is flushed before navigation
+      await new Promise(r => setTimeout(r, 50))
+
       return result.admin
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erro ao fazer login'

@@ -86,7 +86,7 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
   if (response.status === 401) {
     localStorage.removeItem('bhumi_admin_token')
     localStorage.removeItem('bhumi_admin')
-    window.location.href = '/login'
+    window.location.href = import.meta.env.BASE_URL + 'login'
     throw new Error('Unauthorized')
   }
 
