@@ -852,21 +852,36 @@ class GitHubCdnUploader:
         return result
 
     def upload_product_images(self, product, client) -> dict:
-        """Download and save all images for one product locally."""
+        """Download and save all images for one product locally.
+
+        Checks the hash manifest BEFORE downloading to skip unchanged images.
+        If the object path exists in the manifest, the image was already uploaded
+        and is skipped (saves download time).
+        """
         pid = product.third_party_product_id or product.slug or "unknown"
 
         cdn_urls: list[str] = []
         webp_urls: list[str] = []
 
         for idx, url in enumerate(product.images):
+            content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
+            ext = mimetypes.guess_extension(content_type) or ".jpg"
+            object_path = f"products/{pid}/{idx:03d}_image{ext}"
+
+            # Check manifest BEFORE downloading — skip if already uploaded
+            if object_path in self._hash_manifest:
+                self._skipped += 1
+                logger.debug(f"[{pid}] Skipping unchanged image #{idx}")
+                cdn_urls.append(self._make_cdn_url(object_path))
+                webp_path = object_path.rsplit(".", 1)[0] + ".webp"
+                if webp_path in self._hash_manifest:
+                    webp_urls.append(self._make_cdn_url(webp_path))
+                continue
+
             img_bytes = client.download_bytes(url)
             if not img_bytes:
                 logger.debug(f"[{pid}] Could not download image #{idx}: {url}")
                 continue
-
-            content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
-            ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"products/{pid}/{idx:03d}_image{ext}"
 
             upload_result = self.upload_file_with_webp(
                 img_bytes, object_path, content_type

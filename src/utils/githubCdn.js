@@ -17,14 +17,37 @@ function getAdminToken() {
 }
 
 /**
+ * Check if a file already exists on the GitHub CDN by making a HEAD request.
+ * jsDelivr returns 200 for existing files, 404 for missing ones.
+ * @param {string} cdnUrl - The full jsDelivr CDN URL to check
+ * @returns {Promise<boolean>} True if the file exists on the CDN
+ */
+export async function isFileOnCdn(cdnUrl) {
+  try {
+    const response = await fetch(cdnUrl, { method: 'HEAD' })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+/**
  * Upload an image file to GitHub CDN via the Supabase Edge Function proxy.
+ * Checks if the file already exists on the CDN before uploading.
  * @param {File|Blob} file - The image file to upload
  * @param {string} objectPath - The path within the CDN repo (e.g., 'products/123/001_image.jpg')
- * @returns {Promise<{cdnUrl: string, sha: string}>}
+ * @returns {Promise<{cdnUrl: string, sha: string, skipped: boolean}>}
  */
 export async function uploadImageToCdn(file, objectPath) {
   if (!EDGE_FUNCTIONS_BASE) {
     throw new Error('Supabase not configured. Set VITE_SUPABASE_URL environment variable.')
+  }
+
+  // Check if file already exists on CDN first
+  const cdnUrl = generateCdnUrl(objectPath)
+  const exists = await isFileOnCdn(cdnUrl)
+  if (exists) {
+    return { cdnUrl, skipped: true }
   }
 
   const formData = new FormData()
@@ -50,21 +73,27 @@ export async function uploadImageToCdn(file, objectPath) {
 
 /**
  * Upload multiple product images and return CDN URLs.
+ * Skips files that already exist on the CDN.
  * @param {string} productId - The product ID
  * @param {File[]} files - Array of image files
  * @param {string} prefix - Directory prefix (default: 'products')
- * @returns {Promise<string[]>} Array of CDN URLs
+ * @returns {Promise<{urls: string[], skipped: number}>} Object with URLs and skipped count
  */
 export async function uploadProductImages(productId, files, prefix = 'products') {
-  const uploadPromises = files.map((file, index) => {
+  const results = []
+  let skipped = 0
+
+  for (let index = 0; index < files.length; index++) {
+    const file = files[index]
     const ext = file.name.split('.').pop() || 'jpg'
     const filename = `${String(index).padStart(3, '0')}_image.${ext}`
     const objectPath = `${prefix}/${productId}/${filename}`
-    return uploadImageToCdn(file, objectPath)
-  })
+    const result = await uploadImageToCdn(file, objectPath)
+    results.push(result.cdnUrl)
+    if (result.skipped) skipped++
+  }
 
-  const results = await Promise.all(uploadPromises)
-  return results.map(r => r.cdnUrl)
+  return { urls: results, skipped }
 }
 
 /**

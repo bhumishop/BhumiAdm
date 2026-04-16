@@ -1184,19 +1184,36 @@ class GitHubCdnUploader:
         return f"https://cdn.jsdelivr.net/gh/{self.owner}/{self.repo}@{self.branch}/{object_path}"
 
     def upload_product_images(self, book: ScrapedBook, client: Client) -> dict:
-        """Download and upload all images for a book to GitHub CDN."""
+        """Download and upload all images for a book to GitHub CDN.
+
+        Checks if the file already exists on the CDN BEFORE downloading to save time.
+        """
         pid = book.third_party_product_id or book.slug or "unknown"
         cdn_urls = []
         webp_urls = []
 
         for idx, img_url in enumerate(book.images):
-            img_bytes = client.download_bytes(img_url)
-            if not img_bytes:
-                continue
-
             content_type = mimetypes.guess_type(img_url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
             object_path = f"products/{pid}/{idx:03d}_cover{ext}"
+
+            # Check CDN existence BEFORE downloading
+            if not self.use_edge_function:
+                sha = self._get_file_sha(object_path)
+                if sha:
+                    logger.debug(f"[{pid}] Skipping unchanged image #{idx}")
+                    self.uploaded += 0  # count as processed, not uploaded
+                    cdn_urls.append(self._make_cdn_url(object_path))
+                    # Also check WebP
+                    webp_path = object_path.rsplit(".", 1)[0] + ".webp"
+                    webp_sha = self._get_file_sha(webp_path)
+                    if webp_sha:
+                        webp_urls.append(self._make_cdn_url(webp_path))
+                    continue
+
+            img_bytes = client.download_bytes(img_url)
+            if not img_bytes:
+                continue
 
             upload_result = self.upload_file_with_webp(
                 img_bytes, object_path, content_type

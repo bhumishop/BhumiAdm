@@ -170,12 +170,13 @@ serve(async (req) => {
       )
     }
 
-    console.log(`Successfully uploaded: ${objectPath} -> ${uploadResult.cdnUrl}`)
-    
+    console.log(`Successfully processed: ${objectPath} -> ${uploadResult.cdnUrl}${uploadResult.skipped ? ' (skipped, already exists)' : ''}`)
+
     return new Response(
       JSON.stringify({
         cdnUrl: uploadResult.cdnUrl,
-        path: objectPath
+        path: objectPath,
+        skipped: uploadResult.skipped || false,
       }),
       { 
         status: 200, 
@@ -197,6 +198,8 @@ serve(async (req) => {
 
 /**
  * Upload a file to GitHub via the Contents API.
+ * Uses content-hash-based skip: if the file already exists on the CDN branch,
+ * it is skipped (GitHub blob SHA is content-based, so same file = same content).
  */
 async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, contentType: string, maxRetries: number = 3) {
   if (!GITHUB_TOKEN) {
@@ -210,23 +213,34 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
     'Content-Type': 'application/json',
   }
 
+  // URL-encode the path for GitHub API
+  const encodedPath = objectPath.split('/').map(encodeURIComponent).join('/')
+  
+  // Check if file already exists — GitHub blob SHA is content-based,
+  // so if the file exists at this path, the content is identical.
+  const checkUrl = `${GITHUB_API}/${encodedPath}?ref=${CDN_BRANCH}`
+  const checkResp = await fetch(checkUrl, { headers })
+  
+  let existingSha = null
+  if (checkResp.ok) {
+    const existing = await checkResp.json()
+    existingSha = existing.sha
+    console.log(`File already exists: ${objectPath}, skipping upload`)
+    return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha: existingSha, skipped: true }
+  } else if (checkResp.status !== 404) {
+    console.log(`Check failed with ${checkResp.status}: ${await checkResp.text()}`)
+  }
+
   console.log(`Uploading to GitHub: ${objectPath}, size: ${fileBytes.length} bytes`)
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    // URL-encode the path for GitHub API
-    const encodedPath = objectPath.split('/').map(encodeURIComponent).join('/')
-    
-    // Check if file already exists and get its SHA
-    const checkUrl = `${GITHUB_API}/${encodedPath}?ref=${CDN_BRANCH}`
-    const checkResp = await fetch(checkUrl, { headers })
-    
-    let existingSha = null
-    if (checkResp.ok) {
-      const existing = await checkResp.json()
+    // Re-fetch SHA in case of concurrent updates
+    const recheckResp = await fetch(checkUrl, { headers })
+    if (recheckResp.ok) {
+      const existing = await recheckResp.json()
       existingSha = existing.sha
-      console.log(`File exists: ${objectPath}, sha: ${existingSha}`)
-    } else if (checkResp.status !== 404) {
-      console.log(`Check failed with ${checkResp.status}: ${await checkResp.text()}`)
+      console.log(`File appeared during retry: ${objectPath}, skipping`)
+      return { cdnUrl: `${CDN_BASE}/${objectPath}`, sha: existingSha, skipped: true }
     }
 
     // Encode file as base64 (chunked to avoid stack overflow)
@@ -244,10 +258,9 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
       method: 'PUT',
       headers,
       body: JSON.stringify({
-        message: `chore: ${existingSha ? 'update' : 'add'} product image ${objectPath}`,
+        message: `chore: add product image ${objectPath}`,
         content: contentB64,
         branch: CDN_BRANCH,
-        ...(existingSha ? { sha: existingSha } : {}),
       }),
     })
 
@@ -255,14 +268,14 @@ async function uploadToGitHub(fileBytes: Uint8Array, objectPath: string, content
       const data = await uploadResp.json()
       const cdnUrl = `${CDN_BASE}/${objectPath}`
       console.log(`Uploaded: ${objectPath} -> ${cdnUrl}`)
-      return { cdnUrl, sha: data.content?.sha }
+      return { cdnUrl, sha: data.content?.sha, skipped: false }
     }
 
     const errorText = await uploadResp.text()
     console.error(`GitHub upload failed for ${objectPath}: ${uploadResp.status} ${errorText}`)
     
     if (uploadResp.status === 409 && attempt < maxRetries - 1) {
-      // Conflict: SHA mismatch or concurrent update, retry will re-fetch SHA
+      // Conflict: concurrent update, retry will re-fetch SHA
       console.log(`409 conflict on ${objectPath}, retry ${attempt + 1}/${maxRetries}`)
       continue
     }
