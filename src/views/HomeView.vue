@@ -85,7 +85,6 @@ onMounted(() => {
   // No API calls needed - static content only
 })
 </script>
-</script>
 
 <style scoped>
 .hero {
