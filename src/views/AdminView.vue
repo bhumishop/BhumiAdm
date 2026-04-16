@@ -323,13 +323,9 @@ onMounted(async () => {
     return
   }
 
-  // Only load network data after confirming authentication
-  try {
-    await networkStore.buildGraph()
-    networkStore.subscribeToRealtime()
-  } catch (e) {
-    console.log('Network store init skipped')
-  }
+  // Load network data after confirming authentication
+  await networkStore.buildGraph()
+  networkStore.subscribeToRealtime()
 
   // Load recent searches
   searchStore.loadRecentSearches()

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { edgeApi } from '../api/edgeApi'
+import { supabase } from '../supabase'
 
 type NodeType = 'store' | 'gateway' | 'order' | 'product' | 'customer' | 'sync'
 
@@ -40,7 +41,7 @@ export const useNetworkStore = defineStore('network', () => {
   const edges = ref<NetworkEdge[]>([])
 
   // Real-time state
-  const channels = ref<unknown[]>([])
+  const channels = ref<Array<{ unsubscribe: () => void }>>([])
   const isConnected = ref(false)
   const lastActivity = ref<string | null>(null)
   const liveEvents = ref<LiveEvent[]>([])
@@ -146,40 +147,59 @@ export const useNetworkStore = defineStore('network', () => {
     }
   }
 
-  // Build demo graph for when no Supabase connection
-  function buildDemoGraph() {
-    nodes.value = [
-      { id: 'store_prataprint', label: 'Prataprint', type: 'store', source: 'prataprint', store_name: 'Prataprint Store', order_count: 45, revenue: 5678.90 },
-      { id: 'store_bhumisprint', label: 'Bhumisprint', type: 'store', source: 'bhumisprint', store_name: 'Bhumisprint Store', order_count: 32, revenue: 3456.70 },
-      { id: 'store_uiclap', label: 'UICLAP', type: 'store', source: 'uiclap', store_name: 'UICLAP Books', order_count: 28, revenue: 2890.50 },
-      { id: 'gateway_mercadopago', label: 'MercadoPago', type: 'gateway', provider: 'mercadopago', transaction_count: 55, status: 'active' },
-      { id: 'gateway_pix', label: 'PIX', type: 'gateway', provider: 'pix', transaction_count: 40, status: 'active' },
-      { id: 'gateway_abacatepay', label: 'AbacatePay', type: 'gateway', provider: 'abacatepay', transaction_count: 10, status: 'active' },
-      { id: 'order_1001', label: '#1001 - R$ 159.80', type: 'order', status: 'delivered', total: 159.80, customer_name: 'João Silva' },
-      { id: 'order_1002', label: '#1002 - R$ 49.90', type: 'order', status: 'processing', total: 49.90, customer_name: 'Maria Santos' },
-      { id: 'order_1003', label: '#1003 - R$ 89.90', type: 'order', status: 'pending', total: 89.90, customer_name: 'Pedro Costa' },
-      { id: 'product_1', label: 'Camiseta Om', type: 'product', sales_count: 15, price: 79.90 },
-      { id: 'product_2', label: 'Caneca Zen', type: 'product', sales_count: 12, price: 49.90 },
-      { id: 'product_3', label: 'Livro Yoga', type: 'product', sales_count: 8, price: 89.90 },
-    ]
+  // Subscribe to realtime events from Supabase
+  async function subscribeToRealtime() {
+    // Unsubscribe from existing channels
+    await unsubscribe()
 
-    edges.value = [
-      { from: 'store_prataprint', to: 'gateway_mercadopago', label: '55 vendas', value: 55 },
-      { from: 'store_prataprint', to: 'gateway_pix', label: '40 vendas', value: 40 },
-      { from: 'store_bhumisprint', to: 'gateway_pix', label: '30 vendas', value: 30 },
-      { from: 'store_bhumisprint', to: 'gateway_abacatepay', label: '10 vendas', value: 10 },
-      { from: 'store_uiclap', to: 'gateway_mercadopago', label: '25 vendas', value: 25 },
-      { from: 'store_uiclap', to: 'gateway_pix', label: '15 vendas', value: 15 },
-      { from: 'order_1001', to: 'store_prataprint', label: 'from', arrows: 'to' },
-      { from: 'order_1001', to: 'gateway_mercadopago', label: 'paid via', arrows: 'to' },
-      { from: 'order_1001', to: 'product_1', label: 'contains', arrows: 'to' },
-      { from: 'order_1002', to: 'store_bhumisprint', label: 'from', arrows: 'to' },
-      { from: 'order_1002', to: 'gateway_pix', label: 'paid via', arrows: 'to' },
-      { from: 'order_1002', to: 'product_2', label: 'contains', arrows: 'to' },
-      { from: 'order_1003', to: 'store_uiclap', label: 'from', arrows: 'to' },
-      { from: 'order_1003', to: 'gateway_mercadopago', label: 'pending', arrows: 'to' },
-      { from: 'order_1003', to: 'product_3', label: 'contains', arrows: 'to' },
-    ]
+    if (!supabase) {
+      console.warn('[Network] Supabase not available, realtime disabled')
+      return
+    }
+
+    try {
+      // Subscribe to orders table changes
+      const ordersChannel = supabase
+        .channel('network-orders')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'orders' },
+          (payload) => {
+            handleRealtimeEvent('orders', {
+              eventType: payload.eventType,
+              new: payload.new,
+              old: payload.old
+            })
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            isConnected.value = true
+          }
+        })
+
+      channels.value.push(ordersChannel)
+
+      // Subscribe to third_party_sync_log table changes
+      const syncChannel = supabase
+        .channel('network-sync')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'third_party_sync_log' },
+          (payload) => {
+            handleRealtimeEvent('third_party_sync_log', {
+              eventType: payload.eventType,
+              new: payload.new,
+              old: payload.old
+            })
+          }
+        )
+        .subscribe()
+
+      channels.value.push(syncChannel)
+    } catch (err) {
+      console.error('[Network] Failed to subscribe to realtime:', err)
+    }
   }
 
   // Handle realtime events and update graph
@@ -323,7 +343,7 @@ export const useNetworkStore = defineStore('network', () => {
     orderNodes,
     filteredNodes,
     buildGraph,
-    buildDemoGraph,
+    subscribeToRealtime,
     handleRealtimeEvent,
     unsubscribe,
     refreshOrderNodes,

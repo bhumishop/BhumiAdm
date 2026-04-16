@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Product, Category, ProductFilters } from '../types'
-import { isDemo } from '../supabase'
 import { edgeApi } from '../api/edgeApi'
 import { uploadProductImages, generateCdnUrl } from '../utils/githubCdn'
 
