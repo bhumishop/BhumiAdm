@@ -11,7 +11,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.create-mercadopago-preference]
-verify_jwt = true
+verify_jwt = false
 
 [functions.mercadopago-webhook]
 verify_jwt = false
@@ -20,10 +20,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.create-billing]
-verify_jwt = true
+verify_jwt = false
 
 [functions.check-pix-status]
-verify_jwt = true
+verify_jwt = false
 
 [functions.admin-auth]
 verify_jwt = false
@@ -32,7 +32,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.list-orders]
-verify_jwt = true
+verify_jwt = false
 
 [functions.list-collections]
 verify_jwt = false
@@ -41,13 +41,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.dashboard-metrics]
-verify_jwt = true
+verify_jwt = false
 
 [functions.inventory-management]
-verify_jwt = true
+verify_jwt = false
 
 [functions.manage-integrations]
-verify_jwt = true
+verify_jwt = false
 
 [functions.storefront-products]
 verify_jwt = false
@@ -56,10 +56,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.manage-variants]
-verify_jwt = true
+verify_jwt = false
 
 [functions.manage-users]
-verify_jwt = true
+verify_jwt = false
 
 [functions.track-analytics]
 verify_jwt = false
@@ -68,16 +68,16 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.manage-orders-advanced]
-verify_jwt = true
+verify_jwt = false
 
 [functions.network-graph]
-verify_jwt = true
+verify_jwt = false
 
 [functions.user-roles]
-verify_jwt = true
+verify_jwt = false
 
 [functions.infra-manager]
-verify_jwt = true
+verify_jwt = false
 
 [functions.user-tracker]
 verify_jwt = false
@@ -86,10 +86,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.shop-config]
-verify_jwt = true
+verify_jwt = false
 
 [functions.sales-analytics]
-verify_jwt = true
+verify_jwt = false
 
 [functions.storefront-auth]
 verify_jwt = false
@@ -510,4 +510,4 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
 
 [functions.debug-endpoint]
-verify_jwt = true
+verify_jwt = false
