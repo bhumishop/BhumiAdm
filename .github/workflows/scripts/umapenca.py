@@ -948,33 +948,14 @@ class GitHubCdnUploader:
             logger.error(f"git commit failed: {result.stderr}")
             return False
 
-        # Push with retry - pull/rebase if rejected
+        # Push with force-with-lease for idempotent CDN uploads
         logger.info(f"Pushing to origin/{self.branch}...")
-        for attempt in range(3):
-            result = subprocess.run(
-                ["git", "push", "origin", self.branch],
-                capture_output=True, text=True, timeout=300
-            )
-            if result.returncode == 0:
-                break
-            # If rejected, pull and retry
-            if "rejected" in result.stderr or "non-fast-forward" in result.stderr:
-                logger.warning(f"Push rejected, pulling and retry (attempt {attempt + 1}/3)...")
-                subprocess.run(
-                    ["git", "fetch", "origin", self.branch],
-                    capture_output=True, text=True, timeout=30
-                )
-                subprocess.run(
-                    ["git", "pull", "--rebase", "origin", self.branch],
-                    capture_output=True, text=True, timeout=60
-                )
-                continue
-            else:
-                logger.error(f"git push failed: {result.stderr}")
-                return False
-
+        result = subprocess.run(
+            ["git", "push", "--force-with-lease", "origin", self.branch],
+            capture_output=True, text=True, timeout=300
+        )
         if result.returncode != 0:
-            logger.error(f"git push failed after retries: {result.stderr}")
+            logger.error(f"git push failed: {result.stderr}")
             return False
 
         logger.info(f"Successfully pushed {self._uploaded} images to CDN")

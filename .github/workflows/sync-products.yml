@@ -181,7 +181,7 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update ${{ matrix.store }} products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
-          git push
+          git push --force-with-lease origin ${{ github.ref_name }}
 
   # ── Sync UICLAP books ───────────────────────────────────
   sync-uiclap:
@@ -275,7 +275,7 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update uiclap products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
-          git push
+          git push --force-with-lease origin ${{ github.ref_name }}
 
   # ── Verify all products on site ─────────────────────────
   verify-site:
