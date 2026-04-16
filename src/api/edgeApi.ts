@@ -85,11 +85,15 @@ async function refreshToken(): Promise<string | null> {
   try {
     if (!EDGE_FUNCTIONS_BASE) return null
 
+    const currentToken = getAuthToken()
+    if (!currentToken) return null
+
     const response = await fetch(`${EDGE_FUNCTIONS_BASE}/admin-auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': import.meta.env.VITE_SUPABASE_KEY || '',
+        'Authorization': `Bearer ${currentToken}`,
       },
     })
 
@@ -133,17 +137,20 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
     )
   }
 
+  // Login endpoint doesn't need token attachment
+  const isLoginEndpoint = endpoint === 'admin-auth/login'
+
   let token = getAuthToken()
 
-  // If token is near expiry, try to refresh it
-  if (token && isTokenNearExpiry(token)) {
+  // If token is near expiry, try to refresh it (skip for login)
+  if (token && isTokenNearExpiry(token) && !isLoginEndpoint) {
     token = await refreshToken()
   }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_ANON_KEY,
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(token && !isLoginEndpoint ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(options.headers as Record<string, string> || {}),
   }
 
@@ -153,22 +160,24 @@ async function fetchWithAuth<T = unknown>(endpoint: string, options: RequestInit
   })
 
   if (response.status === 401) {
-    // Try to refresh the token once
-    const newToken = await refreshToken()
-    if (newToken) {
-      // Retry with new token
-      headers['Authorization'] = `Bearer ${newToken}`
-      const retryResponse = await fetch(`${EDGE_FUNCTIONS_BASE}/${endpoint}`, {
-        ...options,
-        headers,
-      })
+    // Try to refresh the token once (skip for login)
+    if (!isLoginEndpoint) {
+      const newToken = await refreshToken()
+      if (newToken) {
+        // Retry with new token
+        headers['Authorization'] = `Bearer ${newToken}`
+        const retryResponse = await fetch(`${EDGE_FUNCTIONS_BASE}/${endpoint}`, {
+          ...options,
+          headers,
+        })
 
-      if (retryResponse.ok) {
-        return retryResponse.json() as Promise<T>
+        if (retryResponse.ok) {
+          return retryResponse.json() as Promise<T>
+        }
       }
     }
 
-    // Refresh failed or retry also failed
+    // Refresh failed or login endpoint
     clearAuthAndRedirect()
     throw new Error('Unauthorized')
   }
