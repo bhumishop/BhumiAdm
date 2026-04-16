@@ -197,10 +197,8 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const adminStore = useAdminAuthStore()
 
-  // Skip auth check for public routes
-  const isPublicRoute = ['home', 'about', 'login', 'not-found'].includes(to.name as string)
-
-  if (!isPublicRoute && !adminStore.admin) {
+  // Only initialize once - if already has admin info, skip
+  if (!adminStore.admin && !adminStore.loading) {
     await adminStore.initialize()
   }
 
@@ -212,13 +210,7 @@ router.beforeEach(async (to) => {
   }
 
   if (isGuest && adminStore.admin) {
-    // If already logged in, redirect to admin dashboard
     return { name: 'admin' }
-  }
-
-  // Redirect root path to login if not authenticated
-  if (to.name === 'home' && !adminStore.admin) {
-    return { name: 'login' }
   }
 })
 
