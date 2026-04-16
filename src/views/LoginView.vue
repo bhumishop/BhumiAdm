@@ -105,14 +105,13 @@ function renderGoogleButton() {
     return
   }
 
-  // Initialize Google OAuth once with a callback that triggers sign-in
+  // Initialize Google OAuth - callback receives ID token, sends to admin-auth/login
   google.accounts.id.initialize({
     client_id: clientId,
     callback: async (response) => {
       if (response.credential) {
-        // Pass the ID token directly to the store for verification
         try {
-          await adminStore.verifyGoogleIdToken(response.credential)
+          await adminStore.loginWithGoogle(response.credential)
           const redirect = route.query.redirect || '/admin'
           if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
             router.push(redirect)

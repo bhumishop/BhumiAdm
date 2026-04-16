@@ -14,11 +14,9 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
-import { jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
@@ -64,25 +62,19 @@ function corsHeaders(origin?: string) {
   }
 }
 
-async function verifyAdmin(req: Request): Promise<{ valid: boolean; admin?: Record<string, unknown> }> {
+async function verifyAdmin(req: Request): Promise<boolean> {
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { valid: false }
-  }
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false
 
-  const token = authHeader.substring(7)
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-auth/verify`, {
+    method: 'POST',
+    headers: { Authorization: authHeader },
+  })
 
-  try {
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(JWT_SECRET),
-      { algorithms: ['HS256'] }
-    )
-    if (payload.role !== 'admin') return { valid: false }
-    return { valid: true, admin: payload as Record<string, unknown> }
-  } catch {
-    return { valid: false }
-  }
+  if (!response.ok) return false
+
+  const result = await response.json()
+  return result.valid === true
 }
 
 serve(async (req) => {
@@ -93,8 +85,7 @@ serve(async (req) => {
     return new Response(null, { status: 204, headers: cors })
   }
 
-  const auth = await verifyAdmin(req)
-  if (!auth?.valid) {
+  if (!await verifyAdmin(req)) {
     return new Response(
       JSON.stringify({ error: 'Unauthorized: admin access required' }),
       { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } }

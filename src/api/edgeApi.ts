@@ -107,28 +107,30 @@ export const edgeApi = {
   // ============================================
   auth: {
     async signIn(googleIdToken: string): Promise<{ token: string; admin: AdminUser }> {
-      return fetchWithAuth('admin-auth', {
+      return fetchWithAuth('admin-auth/login', {
         method: 'POST',
-        body: JSON.stringify({ googleToken: googleIdToken }),
+        body: JSON.stringify({ idToken: googleIdToken }),
       })
     },
 
-    async verify(token: string): Promise<{ valid: boolean; admin: AdminUser }> {
-      return fetchWithAuth('admin-auth', {
+    async verify(): Promise<{ valid: boolean; admin: AdminUser }> {
+      return fetchWithAuth('admin-auth/verify', {
         method: 'POST',
-        body: JSON.stringify({ googleToken: token, action: 'verify' }),
       })
     },
 
-    async refresh(token: string): Promise<{ token: string }> {
-      return fetchWithAuth('admin-auth', {
+    async refresh(): Promise<{ token: string; admin: AdminUser }> {
+      return fetchWithAuth('admin-auth/refresh', {
         method: 'POST',
-        body: JSON.stringify({ googleToken: token, action: 'refresh' }),
       })
     },
 
     async signOut(): Promise<{ message: string }> {
-      return fetchWithAuth('admin-auth', { method: 'DELETE' })
+      return fetchWithAuth('admin-auth/logout', { method: 'DELETE' })
+    },
+
+    async getAdmin(): Promise<{ admin: AdminUser }> {
+      return fetchWithAuth('admin-auth/me')
     },
   },
 

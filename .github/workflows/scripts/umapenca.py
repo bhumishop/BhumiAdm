@@ -1006,8 +1006,9 @@ class GitHubCdnUploader:
         for i, p in _wrap(enumerate(products_with_images), total=total, desc="Saving images"):
             pid = p.third_party_product_id or p.slug
             try:
-                results[pid] = self.upload_product_images(p, client)
-                logger.info(f"  [{i+1}/{total}] Saved images for {p.name}")
+                result = self.upload_product_images(p, client)
+                urls_count = len(result.get("cdn_urls", []))
+                logger.info(f"  [{i+1}/{total}] {p.name}: {urls_count} image(s) processed")
             except Exception as exc:
                 logger.error(f"Save failed for product {pid}: {exc}")
                 results[pid] = {"cdn_urls": [], "webp_urls": []}

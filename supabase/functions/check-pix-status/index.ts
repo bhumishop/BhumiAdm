@@ -1,11 +1,9 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { jwtVerify } from 'https://esm.sh/jose@5.2.0'
 
 const ABACATEPAY_API = 'https://api.abacatepay.com'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const JWT_SECRET = Deno.env.get('JWT_SECRET') || SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
@@ -39,19 +37,26 @@ async function verifyAuth(req: Request): Promise<{ isAdmin: boolean; userId: str
   const authHeader = req.headers.get('Authorization')
   if (!authHeader || !authHeader.startsWith('Bearer ')) return { isAdmin: false, userId: null }
 
+  // First try centralized admin auth
   try {
-    const { payload } = await jwtVerify(
-      authHeader.substring(7),
-      new TextEncoder().encode(JWT_SECRET),
-      { algorithms: ['HS256'] }
-    )
-    return {
-      isAdmin: payload.role === 'admin',
-      userId: payload.sub || null,
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-auth/verify`, {
+      method: 'POST',
+      headers: { Authorization: authHeader },
+    })
+
+    if (response.ok) {
+      const result = await response.json()
+      if (result.valid === true) {
+        return { isAdmin: true, userId: result.admin?.sub || null }
+      }
     }
   } catch {
-    return { isAdmin: false, userId: null }
+    // Admin auth failed, will fall through to return non-admin
   }
+
+  // Not an admin - return non-admin with no userId
+  // (customer-only access would need separate token verification)
+  return { isAdmin: false, userId: null }
 }
 
 function corsHeaders(origin?: string) {

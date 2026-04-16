@@ -33,9 +33,10 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
-   * Verify Google ID token from button click callback
+   * Login with Google OAuth ID token
+   * Sends to admin-auth/login which queries admin_users table
    */
-  async function verifyGoogleIdToken(idToken: string): Promise<AdminUser> {
+  async function loginWithGoogle(idToken: string): Promise<AdminUser> {
     loading.value = true
     error.value = null
 
@@ -47,6 +48,8 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
       localStorage.setItem(TIMESTAMP_KEY, Date.now().toString())
 
       admin.value = result.admin
+      clearProductsCache()
+      clearOrdersCache()
       return result.admin
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erro ao fazer login'
@@ -58,8 +61,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
-   * Sign in with Google OAuth via edge function
-   * This is kept for programmatic sign-in; button click uses verifyGoogleIdToken directly
+   * Sign in with Google - gets ID token from Google SDK then calls loginWithGoogle
    */
   async function signInWithGoogle(): Promise<AdminUser> {
     loading.value = true
@@ -72,37 +74,15 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
           return
         }
 
-        // Use One Tap prompt - don't re-initialize, just prompt
+        // Use One Tap prompt
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Fallback to popup flow
-            window.google.accounts.oauth2
-              .initTokenClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: 'email profile',
-                callback: (resp) => {
-                  if (resp.access_token) {
-                    // With access token, we need to get ID token via another request
-                    // For now, reject and suggest button click flow
-                    reject(new Error('Use the Sign In button directly'))
-                  } else {
-                    reject(new Error('No access token'))
-                  }
-                },
-              })
-              .requestAccessToken()
+            reject(new Error('Google One Tap not displayed'))
           }
         })
       })
 
-      const result = await edgeApi.auth.signIn(idToken)
-
-      localStorage.setItem(TOKEN_KEY, result.token)
-      localStorage.setItem(ADMIN_KEY, JSON.stringify(result.admin))
-      localStorage.setItem(TIMESTAMP_KEY, Date.now().toString())
-
-      admin.value = result.admin
-      return result.admin
+      return loginWithGoogle(idToken)
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erro ao fazer login'
       error.value = message
@@ -113,14 +93,15 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
-   * Verify existing session via edge function
+   * Verify existing session via admin-auth/verify
+   * The admin-auth function queries admin_users table to confirm admin still exists
    */
   async function verifySession(): Promise<boolean> {
     const token = localStorage.getItem(TOKEN_KEY)
     if (!token) return false
 
     try {
-      const result = await edgeApi.auth.verify(token)
+      const result = await edgeApi.auth.verify()
       if (result.valid) {
         admin.value = result.admin
         localStorage.setItem(TIMESTAMP_KEY, Date.now().toString())
@@ -133,16 +114,20 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
-   * Refresh session token
+   * Refresh session token via admin-auth/refresh
    */
   async function refreshSession(): Promise<boolean> {
     const token = localStorage.getItem(TOKEN_KEY)
     if (!token) return false
 
     try {
-      const result = await edgeApi.auth.refresh(token)
+      const result = await edgeApi.auth.refresh()
       if (result.token) {
         localStorage.setItem(TOKEN_KEY, result.token)
+        if (result.admin) {
+          admin.value = result.admin
+          localStorage.setItem(ADMIN_KEY, JSON.stringify(result.admin))
+        }
         return true
       }
       return false
@@ -152,7 +137,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
-   * Sign out via edge function
+   * Sign out
    */
   function signOut(): void {
     admin.value = null
@@ -190,7 +175,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     loading,
     error,
     isAdmin,
-    verifyGoogleIdToken,
+    loginWithGoogle,
     signInWithGoogle,
     verifySession,
     refreshSession,
