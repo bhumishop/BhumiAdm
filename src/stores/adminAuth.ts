@@ -33,7 +33,33 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   }
 
   /**
+   * Verify Google ID token from button click callback
+   */
+  async function verifyGoogleIdToken(idToken: string): Promise<AdminUser> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const result = await edgeApi.auth.signIn(idToken)
+
+      localStorage.setItem(TOKEN_KEY, result.token)
+      localStorage.setItem(ADMIN_KEY, JSON.stringify(result.admin))
+      localStorage.setItem(TIMESTAMP_KEY, Date.now().toString())
+
+      admin.value = result.admin
+      return result.admin
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erro ao fazer login'
+      error.value = message
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
    * Sign in with Google OAuth via edge function
+   * This is kept for programmatic sign-in; button click uses verifyGoogleIdToken directly
    */
   async function signInWithGoogle(): Promise<AdminUser> {
     loading.value = true
@@ -46,33 +72,19 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
           return
         }
 
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response) => {
-            if (response.credential) {
-              resolve(response.credential)
-            } else {
-              reject(new Error('No credential received'))
-            }
-          },
-        })
-
+        // Use One Tap prompt - don't re-initialize, just prompt
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // Fallback to popup flow
             window.google.accounts.oauth2
               .initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
                 scope: 'email profile',
                 callback: (resp) => {
                   if (resp.access_token) {
-                    fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                      headers: { Authorization: `Bearer ${resp.access_token}` },
-                    })
-                      .then(r => r.json())
-                      .then(() => {
-                        reject(new Error('Google One Tap not available, use ID token flow'))
-                      })
-                      .catch(reject)
+                    // With access token, we need to get ID token via another request
+                    // For now, reject and suggest button click flow
+                    reject(new Error('Use the Sign In button directly'))
                   } else {
                     reject(new Error('No access token'))
                   }
@@ -178,6 +190,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     loading,
     error,
     isAdmin,
+    verifyGoogleIdToken,
     signInWithGoogle,
     verifySession,
     refreshSession,

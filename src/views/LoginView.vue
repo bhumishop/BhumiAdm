@@ -105,13 +105,23 @@ function renderGoogleButton() {
     return
   }
 
+  // Initialize Google OAuth once with a callback that triggers sign-in
   google.accounts.id.initialize({
     client_id: clientId,
     callback: async (response) => {
-      try {
-        await handleSignIn()
-      } catch (e) {
-        console.error('Login error:', e)
+      if (response.credential) {
+        // Pass the ID token directly to the store for verification
+        try {
+          await adminStore.verifyGoogleIdToken(response.credential)
+          const redirect = route.query.redirect || '/admin'
+          if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
+            router.push(redirect)
+          } else {
+            router.push('/admin')
+          }
+        } catch (e) {
+          console.error('Login error:', e)
+        }
       }
     },
     auto_select: false,
@@ -122,7 +132,6 @@ function renderGoogleButton() {
     {
       theme: 'outline',
       size: 'large',
-      width: '100%',
       text: 'signin_with',
       shape: 'rectangular',
     }
@@ -134,7 +143,7 @@ function renderGoogleButton() {
 onMounted(async () => {
   await adminStore.initialize()
   if (adminStore.isAdmin) {
-    router.push('/')
+    router.push('/admin')
     return
   }
   renderGoogleButton()
