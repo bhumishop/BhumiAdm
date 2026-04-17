@@ -862,6 +862,10 @@ class GitHubCdnUploader:
     def upload_product_images(self, product, client) -> dict:
         """Download and save all images for one product locally.
 
+        Detects actual image format from downloaded bytes (not URL),
+        normalizes extension to .jpg for consistency. Handles both PNG
+        and JPEG input correctly for WebP conversion.
+
         Checks the hash manifest BEFORE downloading to skip unchanged images.
         If the object path exists in the manifest, the image was already uploaded
         and is skipped (saves download time).
@@ -872,9 +876,7 @@ class GitHubCdnUploader:
         webp_urls: list[str] = []
 
         for idx, url in enumerate(product.images):
-            content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
-            ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"{pid}/{idx:03d}_image{ext}"
+            object_path = f"{pid}/{idx:03d}_image.jpg"
 
             # Check manifest BEFORE downloading — skip if already uploaded
             if object_path in self._hash_manifest:
@@ -891,6 +893,9 @@ class GitHubCdnUploader:
                 logger.debug(f"[{pid}] Could not download image #{idx}: {url}")
                 continue
 
+            # Detect actual image format from bytes and normalize to JPEG
+            img_bytes, content_type = self._normalize_image_format(img_bytes)
+
             upload_result = self.upload_file_with_webp(
                 img_bytes, object_path, content_type
             )
@@ -902,6 +907,33 @@ class GitHubCdnUploader:
         product.cdn_image_urls = cdn_urls
         product.cdn_webp_urls = webp_urls
         return {"cdn_urls": cdn_urls, "webp_urls": webp_urls}
+
+    def _normalize_image_format(self, img_bytes: bytes) -> tuple:
+        """Detect image format from bytes and convert PNG to JPEG.
+
+        Returns (normalized_bytes, content_type). All images are normalized
+        to JPEG for consistent CDN URLs (.jpg extension).
+        """
+        if HAS_PIL:
+            try:
+                img = Image.open(io.BytesIO(img_bytes))
+                if img.mode in ("RGBA", "LA", "P"):
+                    # PNG with transparency - flatten to white background
+                    background = Image.new("RGB", img.size, (255, 255, 255))
+                    if img.mode == "P":
+                        img = img.convert("RGBA")
+                    background.paste(img, mask=img.split()[-1] if img.mode == "RGBA" else None)
+                    img = background
+                elif img.mode != "RGB":
+                    img = img.convert("RGB")
+
+                output = io.BytesIO()
+                img.save(output, format="JPEG", quality=90)
+                return output.getvalue(), "image/jpeg"
+            except Exception as e:
+                logger.warning(f"Failed to normalize image format: {e}")
+                # Fall through - return original as JPEG
+        return img_bytes, "image/jpeg"
 
     def commit_and_push(self) -> bool:
         """Git add, commit, and push all saved images.
