@@ -181,6 +181,7 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update ${{ matrix.store }} products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
+          git fetch origin ${{ github.ref_name }}
           git push --force-with-lease origin ${{ github.ref_name }}
 
       - name: Upload CDN images artifact
@@ -284,6 +285,7 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update uiclap products.json
 
           🤖 Generated with [Qoder](https://qoder.com)"
+          git fetch origin ${{ github.ref_name }}
           git push --force-with-lease origin ${{ github.ref_name }}
 
       - name: Upload CDN images artifact
@@ -395,16 +397,17 @@ jobs:
           fi
 
           # Copy downloaded images to repo
-          mkdir -p products
-          cp -r downloaded-cdn-images/products/* products/ 2>/dev/null || true
+          mkdir -p cdn_images/products
+          cp -r downloaded-cdn-images/products/* cdn_images/products/ 2>/dev/null || true
 
           # Add and commit
-          git add products/
+          git add cdn_images/products/
           git diff --staged --quiet || git commit -m "chore: upload CDN product images
 
           🤖 Generated with [Qoder](https://qoder.com)"
 
           # Push to cdn branch
+          git fetch origin cdn || true
           git push --force-with-lease origin cdn
           echo "Successfully pushed CDN images to cdn branch"
 
