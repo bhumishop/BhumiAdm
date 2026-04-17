@@ -5,7 +5,7 @@
 //
 // CI/CD workflows (Python scrapers) upload directly using the GitHub token from workflow secrets
 
-const JSDELIVR_BASE = 'https://cdn.jsdelivr.net/gh'
+const JSDELIVR_BASE = 'https://raw.githubusercontent.com'
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const EDGE_FUNCTIONS_BASE = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1` : ''
 
@@ -126,10 +126,9 @@ export function transformToCdnUrl(url) {
  */
 export function isLikelyBrokenCdnUrl(url) {
   if (!url || !url.startsWith('http')) return false
-  // Check for common CDN URL patterns that might be misconfigured
-  if (url.includes('cdn.jsdelivr.net') && url.includes('@cdn/')) {
-    // URLs with /uiclap/ prefix are typically broken (wrong path structure)
-    if (url.includes('/uiclap/')) return true
+  // Old jsDelivr URLs that exceeded 50MB limit are now broken
+  if (url.includes('cdn.jsdelivr.net') && url.includes('cdn_images')) {
+    return true
   }
   return false
 }
@@ -144,5 +143,5 @@ export function generateCdnUrl(objectPath, prefix = 'products') {
   const CDN_OWNER = import.meta.env.VITE_GITHUB_OWNER || ''
   const CDN_REPO = import.meta.env.VITE_GITHUB_REPO || ''
   const CDN_BRANCH = import.meta.env.VITE_CDN_BRANCH || 'cdn'
-  return `https://cdn.jsdelivr.net/gh/${CDN_OWNER}/${CDN_REPO}@${CDN_BRANCH}/${objectPath}`
+  return `https://raw.githubusercontent.com/${CDN_OWNER}/${CDN_REPO}/${CDN_BRANCH}/${objectPath}`
 }

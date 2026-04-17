@@ -1192,8 +1192,8 @@ class GitHubCdnUploader:
         return result
 
     def _make_cdn_url(self, object_path: str) -> str:
-        """Generate jsDelivr CDN URL for a file in the CDN branch."""
-        return f"https://cdn.jsdelivr.net/gh/{self.owner}/{self.repo}@{self.branch}/cdn_images/{object_path}"
+        """Generate raw GitHub CDN URL for a file in the CDN branch."""
+        return f"https://raw.githubusercontent.com/{self.owner}/{self.repo}/{self.branch}/cdn_images/{object_path}"
 
     def _save_local(self, file_bytes: bytes, object_path: str) -> Optional[str]:
         """Save file locally in CI for workflow to push later."""

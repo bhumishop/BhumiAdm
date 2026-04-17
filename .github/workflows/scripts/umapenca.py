@@ -795,8 +795,8 @@ class GitHubCdnUploader:
 
     def _make_cdn_url(self, object_path: str) -> str:
         return (
-            f"https://cdn.jsdelivr.net/gh/{self.owner}/{self.repo}"
-            f"@{self.branch}/cdn_images/{object_path}"
+            f"https://raw.githubusercontent.com/{self.owner}/{self.repo}"
+            f"/{self.branch}/cdn_images/{object_path}"
         )
 
     def _save_file_local(self, file_bytes: bytes, object_path: str) -> str:
