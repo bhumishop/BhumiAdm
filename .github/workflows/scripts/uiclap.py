@@ -1192,8 +1192,9 @@ class GitHubCdnUploader:
         return result
 
     def _make_cdn_url(self, object_path: str) -> str:
-        """Generate raw GitHub CDN URL for a file in the CDN branch."""
-        return f"https://raw.githubusercontent.com/{self.owner}/{self.repo}/{self.branch}/cdn_images/{object_path}"
+        """Generate jsDelivr CDN URL for a file in the CDN branch.
+        jsDelivr is faster, more reliable, and has proper caching for production use."""
+        return f"https://cdn.jsdelivr.net/gh/{self.owner}/{self.repo}@{self.branch}/cdn_images/{object_path}"
 
     def _save_local(self, file_bytes: bytes, object_path: str) -> Optional[str]:
         """Save file locally in CI for workflow to push later."""
@@ -1382,7 +1383,7 @@ class SupabaseSync:
         if existing_hash and existing_hash != current_hash:
             return True
 
-        # Check if CDN URLs changed (e.g., jsdelivr -> raw.githubusercontent.com)
+        # Check if CDN URLs changed
         existing_image = existing.get("image", "") or ""
         new_image = book.cdn_image_urls[0] if book.cdn_image_urls else book.image
         if existing_image and new_image and existing_image != new_image:
