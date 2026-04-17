@@ -1384,14 +1384,14 @@ class SupabaseSync:
 
         # Check if CDN URLs changed (e.g., jsdelivr -> raw.githubusercontent.com)
         existing_image = existing.get("image", "") or ""
-        new_image = book.cdn_image_urls[0] if book.cdn_image_urls else book.image_url
+        new_image = book.cdn_image_urls[0] if book.cdn_image_urls else book.image
         if existing_image and new_image and existing_image != new_image:
             logger.info(f"  CDN URL changed for book {book.third_party_product_id}")
             return True
 
         # Check if images array changed
         existing_images = existing.get("images", []) or []
-        new_images = book.cdn_image_urls if book.cdn_image_urls else [book.image_url] if book.image_url else []
+        new_images = book.cdn_image_urls if book.cdn_image_urls else [book.image] if book.image else []
         if len(existing_images) != len(new_images):
             return True
         if existing_images and new_images and existing_images[0:1] != new_images[0:1]:
