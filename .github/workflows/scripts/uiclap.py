@@ -1198,11 +1198,15 @@ class GitHubCdnUploader:
     def _save_local(self, file_bytes: bytes, object_path: str) -> Optional[str]:
         """Save file locally in CI for workflow to push later."""
         try:
-            file_path = Path("cdn_images") / object_path
+            # Ensure the cdn_images directory exists
+            cdn_dir = Path("cdn_images")
+            cdn_dir.mkdir(exist_ok=True)
+
+            file_path = cdn_dir / object_path
             file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_bytes(file_bytes)
             self.uploaded += 1
-            logger.debug(f"Saved locally: {object_path}")
+            logger.info(f"Saved to CDN: {object_path} ({len(file_bytes)} bytes)")
             return self._make_cdn_url(object_path)
         except Exception as e:
             logger.error(f"Failed to save file locally: {e}")
@@ -1221,7 +1225,8 @@ class GitHubCdnUploader:
         for idx, img_url in enumerate(book.images):
             content_type = mimetypes.guess_type(img_url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"{pid}/{idx:03d}_cover{ext}"
+            # Use consistent path format: products/{pid}/{idx}_image{ext}
+            object_path = f"products/{pid}/{idx:03d}_image{ext}"
 
             # In CI, check local filesystem before downloading
             if os.environ.get('GITHUB_ACTIONS'):
@@ -1277,6 +1282,11 @@ class GitHubCdnUploader:
                 logger.error("Failed to ensure CDN branch exists")
                 return {}
 
+        # In CI, ensure cdn_images directory exists upfront
+        if os.environ.get('GITHUB_ACTIONS'):
+            Path("cdn_images").mkdir(exist_ok=True)
+            logger.info("CI mode: cdn_images/ directory ready")
+
         results = {}
 
         def _upload_book(b):
@@ -1288,6 +1298,8 @@ class GitHubCdnUploader:
                 for b in books
                 if b.images
             }
+            if not future_map:
+                logger.warning("No books with images found - nothing to upload")
             iterator = concurrent.futures.as_completed(future_map)
             if HAS_TQDM:
                 iterator = tqdm(
@@ -1295,7 +1307,11 @@ class GitHubCdnUploader:
                 )
             for fut in iterator:
                 pid = future_map[fut]
-                results[pid] = fut.result()
+                try:
+                    results[pid] = fut.result()
+                except Exception as e:
+                    logger.error(f"Upload failed for book {pid}: {e}")
+                    results[pid] = {"cdn_urls": [], "webp_urls": [], "error": str(e)}
         return results
 
 

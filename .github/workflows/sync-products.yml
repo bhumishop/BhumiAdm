@@ -191,7 +191,23 @@ jobs:
           name: cdn-images-${{ matrix.store }}-${{ github.run_id }}
           path: cdn_images/
           retention-days: 7
-          if-no-files-found: ignore
+          if-no-files-found: warn
+
+      - name: Debug CDN images directory
+        if: always() && env.UPLOAD_IMAGES == 'true'
+        run: |
+          echo "=== CDN Images Directory Debug ==="
+          if [ -d "cdn_images" ]; then
+            echo "cdn_images/ directory exists"
+            file_count=$(find cdn_images -type f 2>/dev/null | wc -l)
+            echo "File count: $file_count"
+            if [ "$file_count" -gt 0 ]; then
+              echo "First 10 files:"
+              find cdn_images -type f | head -10
+            fi
+          else
+            echo "cdn_images/ directory does NOT exist"
+          fi
 
   # ── Sync UICLAP books ───────────────────────────────────
   sync-uiclap:
@@ -295,7 +311,23 @@ jobs:
           name: cdn-images-uiclap-${{ github.run_id }}
           path: cdn_images/
           retention-days: 7
-          if-no-files-found: ignore
+          if-no-files-found: warn
+
+      - name: Debug CDN images directory
+        if: always() && env.UPLOAD_IMAGES == 'true'
+        run: |
+          echo "=== CDN Images Directory Debug ==="
+          if [ -d "cdn_images" ]; then
+            echo "cdn_images/ directory exists"
+            file_count=$(find cdn_images -type f 2>/dev/null | wc -l)
+            echo "File count: $file_count"
+            if [ "$file_count" -gt 0 ]; then
+              echo "First 10 files:"
+              find cdn_images -type f | head -10
+            fi
+          else
+            echo "cdn_images/ directory does NOT exist"
+          fi
 
   # ── Verify all products on site ─────────────────────────
   verify-site:
@@ -415,9 +447,6 @@ jobs:
 
           # Add and commit
           git add cdn_images/
-          git diff --staged --quiet || git commit -m "chore: upload CDN product images
-
-          🤖 Generated with [Qoder](https://qoder.com)"
           git diff --staged --quiet || git commit -m "chore: upload CDN product images
 
           🤖 Generated with [Qoder](https://qoder.com)"
