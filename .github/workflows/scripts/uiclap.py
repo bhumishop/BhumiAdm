@@ -1558,6 +1558,80 @@ class SupabaseSync:
             payload = {k: val for k, val in payload.items() if val is not None}
             self._post("product_variants", payload)
 
+    def fix_png_urls(self) -> int:
+        """Find and fix all products with .png image URLs in the database.
+
+        During sync, detect products where images/URLs contain .png extensions
+        and update them to .jpg (since all images are normalized to JPEG on upload).
+
+        Returns the number of products fixed.
+        """
+        try:
+            # Get all UICLAP products
+            rows = self._get(
+                f"products?third_party_source=eq.uiclap"
+                f"&select=id,image,images,metadata"
+            )
+            if not rows:
+                logger.info("No products found to check for .png URLs")
+                return 0
+
+            fixed_count = 0
+            for product in rows:
+                product_id = product.get("id")
+                image = product.get("image", "") or ""
+                images = product.get("images", []) or []
+                metadata = product.get("metadata", {}) or {}
+
+                needs_update = False
+
+                # Fix image field
+                if image and ".png" in image:
+                    new_image = image.replace(".png", ".jpg")
+                    image = new_image
+                    needs_update = True
+
+                # Fix images array
+                new_images = []
+                for img_url in images:
+                    if ".png" in img_url:
+                        new_images.append(img_url.replace(".png", ".jpg"))
+                        needs_update = True
+                    else:
+                        new_images.append(img_url)
+
+                # Fix metadata.image_index
+                image_index = metadata.get("image_index", {})
+                if image_index and "images" in image_index:
+                    for img_entry in image_index["images"]:
+                        if "url" in img_entry and ".png" in img_entry["url"]:
+                            img_entry["url"] = img_entry["url"].replace(".png", ".jpg")
+                            needs_update = True
+
+                if needs_update:
+                    payload = {
+                        "image": image,
+                        "images": new_images,
+                        "metadata": metadata,
+                    }
+                    resp = self._patch(f"products?id=eq.{product_id}", payload)
+                    if resp.ok:
+                        fixed_count += 1
+                        logger.info(f"  Fixed .png URLs for product ID {product_id}")
+                    else:
+                        logger.warning(f"  Failed to fix product ID {product_id}: {resp.text[:100]}")
+
+            if fixed_count > 0:
+                logger.info(f"Auto-fixed .png URLs for {fixed_count} product(s)")
+            else:
+                logger.info("No .png URLs found - all product images use correct extensions")
+
+            return fixed_count
+
+        except Exception as e:
+            logger.warning(f"Error during auto-fix of .png URLs: {e}")
+            return 0
+
     def log_sync(self, sync_type: str, result: SyncResult):
         self._post(
             "third_party_sync_log",
@@ -1760,6 +1834,10 @@ def run(args) -> SyncResult:
         subcollection_slug = getattr(args, "subcollection", "uiclap") or "uiclap"
         collection_slug = getattr(args, "collection", "bhumi-livros") or "bhumi-livros"
         supabase = SupabaseSync(SUPABASE_URL, SUPABASE_KEY, subcollection_slug)
+
+        # Auto-fix any existing .png URLs in the database before syncing
+        logger.info("Checking for existing .png URLs to auto-fix...")
+        supabase.fix_png_urls()
 
         collection_id = supabase.get_collection_id(collection_slug)
         subcollection_id = supabase.get_subcollection_id()
