@@ -1164,6 +1164,7 @@ class SupabaseSync:
             "is_active": product.is_active,
             "is_featured": False,
             "is_archived": False,
+            "product_url": product.third_party_product_url,
             "third_party_product_id": product.third_party_product_id,
             "third_party_source": product.third_party_source,
             "third_party_synced_at": datetime.now(timezone.utc).isoformat(),
