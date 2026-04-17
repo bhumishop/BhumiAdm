@@ -320,14 +320,27 @@ jobs:
           base = f'{url}/rest/v1'
           hdrs = {'apikey': key, 'Authorization': f'Bearer {key}'}
 
-          checks = [
-            ('PrataPrint',  'products?collection_id=eq.98451b1d-6bf9-4113-80b0-949533b1bc4d&is_active=eq.true&select=id'),
-            ('BhumiPrint',  'products?collection_id=eq.8e744ffa-c748-49f4-8e56-0edb40de0432&is_active=eq.true&select=id'),
-            ('BhumiLivros', 'products?collection_id=eq.c8ff0cea-576c-47cb-af86-dd23285b85a5&is_active=eq.true&select=id'),
-          ]
+          # First get collection IDs by slug
+          def get_collection_id(slug):
+              r = requests.get(f'{base}/collections?slug=eq.{slug}&select=id', headers=hdrs, timeout=15)
+              if r.ok and r.json():
+                  return r.json()[0]['id']
+              return None
+
+          collection_map = {
+              'PrataPrint': get_collection_id('prata-print'),
+              'BhumiPrint': get_collection_id('bhumi-print'),
+              'BhumiLivros': get_collection_id('bhumi-livros'),
+          }
+
+          print(f"Collection IDs: {collection_map}")
 
           all_ok = True
-          for name, query in checks:
+          for name, coll_id in collection_map.items():
+              if not coll_id:
+                  print(f'  [WARN] {name}: collection not found (skipping)')
+                  continue
+              query = f'products?collection_id=eq.{coll_id}&is_active=eq.true&select=id'
               r = requests.get(f'{base}/{query}', headers=hdrs, timeout=15)
               count = len(r.json()) if r.ok else -1
               status = 'PASS' if count > 0 else 'FAIL'
@@ -372,7 +385,7 @@ jobs:
       - name: Check for downloaded images
         id: check-images
         run: |
-          if [ -d "downloaded-cdn-images/products" ] && [ "$(ls -A downloaded-cdn-images/products 2>/dev/null)" ]; then
+          if [ -d "downloaded-cdn-images" ] && [ "$(ls -A downloaded-cdn-images 2>/dev/null)" ]; then
             echo "has_images=true" >> $GITHUB_OUTPUT
             echo "Found CDN images to push"
           else
@@ -396,12 +409,12 @@ jobs:
             git checkout -b cdn origin/master
           fi
 
-          # Copy downloaded images to repo
-          mkdir -p cdn_images/products
-          cp -r downloaded-cdn-images/products/* cdn_images/products/ 2>/dev/null || true
+          # Copy downloaded images to repo preserving directory structure
+          mkdir -p cdn_images
+          cp -r downloaded-cdn-images/* cdn_images/ 2>/dev/null || true
 
           # Add and commit
-          git add cdn_images/products/
+          git add cdn_images/
           git diff --staged --quiet || git commit -m "chore: upload CDN product images
 
           🤖 Generated with [Qoder](https://qoder.com)"
