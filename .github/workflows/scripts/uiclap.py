@@ -1681,12 +1681,16 @@ def run(args) -> SyncResult:
             logger.info(
                 f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image"
             )
-        cdn_map = uploader.upload_all(books_to_sync, client, workers=2)
+        # Upload images for ALL books, not just changed ones.
+        # The CDN uploader has content-hash-based skip logic, so unchanged images
+        # are skipped automatically. This ensures images are present even if
+        # only the book metadata changed previously.
+        cdn_map = uploader.upload_all(books, client, workers=2)
         result.images_uploaded = uploader.uploaded
         result.webp_generated = uploader.webp_generated
 
-        # Update book image references to CDN URLs
-        for b in books_to_sync:
+        # Update book image references to CDN URLs for ALL books
+        for b in books:
             if b.cdn_image_urls:
                 b.image = b.cdn_image_urls[0]
                 b.images = b.cdn_image_urls

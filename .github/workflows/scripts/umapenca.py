@@ -1377,13 +1377,17 @@ def run(args) -> SyncResult:
             logger.info(
                 f"Edge function fallback available: {SUPABASE_URL}/functions/v1/upload-cdn-image"
             )
-        cdn_map = uploader.upload_all(products_to_sync, client, workers=1)
+        # Upload images for ALL products, not just changed ones.
+        # The CDN uploader has content-hash-based skip logic, so unchanged images
+        # are skipped automatically. This ensures images are present even if
+        # only the product metadata changed previously.
+        cdn_map = uploader.upload_all(products, client, workers=1)
         result.images_uploaded = uploader.uploaded
         result.images_skipped = uploader.skipped
         result.webp_generated = uploader.webp_generated
 
-        # Update product image references to CDN URLs
-        for p in products_to_sync:
+        # Update product image references to CDN URLs for ALL products
+        for p in products:
             if p.cdn_image_urls:
                 p.image = p.cdn_image_urls[0]
                 p.images = p.cdn_image_urls
