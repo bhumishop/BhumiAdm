@@ -189,7 +189,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cdn-images-${{ matrix.store }}-${{ github.run_id }}
-          path: cdn_images/products/
+          path: cdn_images/
           retention-days: 7
           if-no-files-found: ignore
 
@@ -293,7 +293,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cdn-images-uiclap-${{ github.run_id }}
-          path: cdn_images/products/
+          path: cdn_images/
           retention-days: 7
           if-no-files-found: ignore
 
@@ -415,6 +415,9 @@ jobs:
 
           # Add and commit
           git add cdn_images/
+          git diff --staged --quiet || git commit -m "chore: upload CDN product images
+
+          🤖 Generated with [Qoder](https://qoder.com)"
           git diff --staged --quiet || git commit -m "chore: upload CDN product images
 
           🤖 Generated with [Qoder](https://qoder.com)"

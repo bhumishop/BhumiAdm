@@ -1221,7 +1221,7 @@ class GitHubCdnUploader:
         for idx, img_url in enumerate(book.images):
             content_type = mimetypes.guess_type(img_url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"products/{pid}/{idx:03d}_cover{ext}"
+            object_path = f"{pid}/{idx:03d}_cover{ext}"
 
             # In CI, check local filesystem before downloading
             if os.environ.get('GITHUB_ACTIONS'):

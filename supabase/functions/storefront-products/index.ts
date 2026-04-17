@@ -85,6 +85,8 @@ serve(async (req) => {
           stock_type,
           stock_quantity,
           fulfillment_type,
+          product_url,
+          third_party_product_url,
           image,
           images,
           artist,

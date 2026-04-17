@@ -874,7 +874,7 @@ class GitHubCdnUploader:
         for idx, url in enumerate(product.images):
             content_type = mimetypes.guess_type(url)[0] or "image/jpeg"
             ext = mimetypes.guess_extension(content_type) or ".jpg"
-            object_path = f"products/{pid}/{idx:03d}_image{ext}"
+            object_path = f"{pid}/{idx:03d}_image{ext}"
 
             # Check manifest BEFORE downloading — skip if already uploaded
             if object_path in self._hash_manifest:
