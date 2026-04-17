@@ -1362,7 +1362,8 @@ class SupabaseSync:
         return rows[0] if rows else None
 
     def product_needs_update(self, book: ScrapedBook, existing: dict) -> bool:
-        """Check if a book needs updating by comparing raw data hashes."""
+        """Check if a book needs updating by comparing raw data hashes
+        and CDN URL patterns. Returns True if any property changed."""
         if not existing:
             return True
 
@@ -1379,6 +1380,21 @@ class SupabaseSync:
 
         # If hashes differ, update needed
         if existing_hash and existing_hash != current_hash:
+            return True
+
+        # Check if CDN URLs changed (e.g., jsdelivr -> raw.githubusercontent.com)
+        existing_image = existing.get("image", "") or ""
+        new_image = book.cdn_image_urls[0] if book.cdn_image_urls else book.image_url
+        if existing_image and new_image and existing_image != new_image:
+            logger.info(f"  CDN URL changed for book {book.third_party_product_id}")
+            return True
+
+        # Check if images array changed
+        existing_images = existing.get("images", []) or []
+        new_images = book.cdn_image_urls if book.cdn_image_urls else [book.image_url] if book.image_url else []
+        if len(existing_images) != len(new_images):
+            return True
+        if existing_images and new_images and existing_images[0:1] != new_images[0:1]:
             return True
 
         # If no hash stored, check sync age (update if older than 24h)
@@ -1400,7 +1416,7 @@ class SupabaseSync:
         """Get all products from DB for incremental sync comparison."""
         rows = self._get(
             f"products?third_party_source=eq.uiclap"
-            f"&select=id,third_party_product_id,third_party_synced_at,third_party_raw_data"
+            f"&select=id,third_party_product_id,image,images,third_party_synced_at,third_party_raw_data"
         )
         result = {}
         for row in rows:

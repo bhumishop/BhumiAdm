@@ -1074,7 +1074,8 @@ class SupabaseSync:
         return rows[0] if rows else None
 
     def product_needs_update(self, product: ScrapedProduct, existing: dict) -> bool:
-        """Check if a product needs updating by comparing raw data hashes."""
+        """Check if a product needs updating by comparing raw data hashes
+        and CDN URL patterns. Returns True if any property changed."""
         if not existing:
             return True
         existing_raw = existing.get("third_party_raw_data") or {}
@@ -1086,6 +1087,23 @@ class SupabaseSync:
         ).hexdigest()
         if existing_hash and existing_hash != current_hash:
             return True
+
+        # Check if CDN URLs changed (e.g., jsdelivr -> raw.githubusercontent.com)
+        existing_image = existing.get("image", "") or ""
+        new_image = product.cdn_image_urls[0] if product.cdn_image_urls else product.image
+        if existing_image and new_image and existing_image != new_image:
+            logger.info(f"  CDN URL changed for product {product.third_party_product_id}")
+            return True
+
+        # Check if images array changed
+        existing_images = existing.get("images", []) or []
+        new_images = product.cdn_image_urls if product.cdn_image_urls else product.images
+        if len(existing_images) != len(new_images):
+            return True
+        if existing_images and new_images and existing_images[0:1] != new_images[0:1]:
+            return True
+
+        # Force update if product hasn't been synced in 24 hours
         synced_at = existing.get("third_party_synced_at")
         if synced_at:
             try:
@@ -1103,7 +1121,7 @@ class SupabaseSync:
         """Get all products from DB for incremental sync comparison."""
         rows = self._get(
             f"products?third_party_source=eq.{source}"
-            f"&select=id,third_party_product_id,third_party_synced_at,third_party_raw_data"
+            f"&select=id,third_party_product_id,image,images,third_party_synced_at,third_party_raw_data"
         )
         result = {}
         for row in rows:
