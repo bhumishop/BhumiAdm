@@ -80,9 +80,14 @@ export interface Product {
   seo_description: string | null
   seo_keywords: string[]
   color_swatches: string[]
+  product_url: string | null
+  third_party_product_id: string | null
+  third_party_source: string | null
+  third_party_synced_at: string | null
+  third_party_raw_data: Record<string, unknown> | null
   metadata: Record<string, unknown>
-  created_at: string
-  updated_at: string
+  created_at?: string
+  updated_at?: string
 
   // Joined fields from product_details view
   collection_slug?: string
@@ -93,6 +98,8 @@ export interface Product {
   category_name?: string
   category_icon?: string
   variants?: ProductVariant[]
+  // Legacy/compatibility fields from storefront API
+  third_party_product_url?: string | null
 }
 
 export interface ProductFilters {

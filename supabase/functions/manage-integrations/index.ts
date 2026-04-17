@@ -118,7 +118,7 @@ serve(async (req) => {
 
       // Validate against whitelists
       const validSources = ['shopify', 'woocommerce', 'mercadolibre', 'umapenca', 'abacatepay']
-      const validSyncTypes = ['products', 'orders', 'inventory', 'pricing', 'full']
+      const validSyncTypes = ['products', 'orders', 'inventory', 'pricing', 'full', 'incremental']
       const validTriggers = ['manual', 'scheduled', 'webhook', 'admin']
       if (!validSources.includes(source)) {
         return new Response(
