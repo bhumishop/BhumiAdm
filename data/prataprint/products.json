@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T13:34:49.450439+00:00",
+  "generated_at": "2026-05-07T19:32:34.718744+00:00",
   "store": {
     "url": "https://prataprint.bhumisparshaschool.org",
     "id": 11210,
@@ -345,7 +345,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-florido-359657.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.554945+00:00",
+        "scraped_at": "2026-05-07T19:25:55.872873+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -401,7 +401,7 @@
           ],
           "price_old": 0,
           "virtual_stock": true,
-          "is_new": true,
+          "is_new": false,
           "promo_name": null,
           "only_regular_customer": false,
           "img_thumb_png": "https://umapenca.imgix.net/359657/9dcd918f-a0ef-4da2-8324-cf2f18246259.png",
@@ -731,7 +731,7 @@
         "external_store": "prataprint",
         "product_type": "Camiseta",
         "product_type_url": "camiseta",
-        "is_new": true,
+        "is_new": false,
         "is_clothing": true,
         "virtual_stock": true
       }
@@ -1074,7 +1074,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/underway-cow-357689.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.555524+00:00",
+        "scraped_at": "2026-05-07T19:25:55.873473+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -1803,7 +1803,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moscando-357751.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.556044+00:00",
+        "scraped_at": "2026-05-07T19:25:55.873997+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -2532,7 +2532,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/iiv-357728.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.556580+00:00",
+        "scraped_at": "2026-05-07T19:25:55.874544+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -3261,7 +3261,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-deboa-357724.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.557102+00:00",
+        "scraped_at": "2026-05-07T19:25:55.875082+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -3990,7 +3990,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/dragon-fly-357723.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.557655+00:00",
+        "scraped_at": "2026-05-07T19:25:55.875620+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -4719,7 +4719,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/fault-mask-357693.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.558227+00:00",
+        "scraped_at": "2026-05-07T19:25:55.876239+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -5448,7 +5448,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/solar-vision-357688.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.558746+00:00",
+        "scraped_at": "2026-05-07T19:25:55.876769+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -6177,7 +6177,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/o-cervo-357686.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.559283+00:00",
+        "scraped_at": "2026-05-07T19:25:55.877344+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -6906,7 +6906,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/invoc-357734.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.559794+00:00",
+        "scraped_at": "2026-05-07T19:25:55.877862+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -7635,7 +7635,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-deboa-bw-357727.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.560339+00:00",
+        "scraped_at": "2026-05-07T19:25:55.878410+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -8364,7 +8364,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/dragon-fly-bw-357719.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.560862+00:00",
+        "scraped_at": "2026-05-07T19:25:55.878934+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -9093,7 +9093,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/russian-cat-bw-357712.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.561433+00:00",
+        "scraped_at": "2026-05-07T19:25:55.879523+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -9822,7 +9822,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/eagle-357709.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.561947+00:00",
+        "scraped_at": "2026-05-07T19:25:55.880079+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -10551,7 +10551,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/russian-cat-357707.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.562486+00:00",
+        "scraped_at": "2026-05-07T19:25:55.880596+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -11280,7 +11280,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/flying-arising-bw-357702.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.562998+00:00",
+        "scraped_at": "2026-05-07T19:25:55.881183+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -12009,7 +12009,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/flying-arising-357701.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.563529+00:00",
+        "scraped_at": "2026-05-07T19:25:55.881706+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -12738,7 +12738,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/bode-de-trompete-352000.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.564052+00:00",
+        "scraped_at": "2026-05-07T19:25:55.882266+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -13467,7 +13467,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/merlim-351949.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.564583+00:00",
+        "scraped_at": "2026-05-07T19:25:55.882778+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -14196,7 +14196,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/fagiano-bird-351995.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.565149+00:00",
+        "scraped_at": "2026-05-07T19:25:55.883347+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -14925,7 +14925,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/infinity-qr-dragon-351944.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.565669+00:00",
+        "scraped_at": "2026-05-07T19:25:55.883871+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -15654,7 +15654,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/spiral-mask-351912.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.566192+00:00",
+        "scraped_at": "2026-05-07T19:25:55.884406+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -16383,7 +16383,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/merlim-351948.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.566707+00:00",
+        "scraped_at": "2026-05-07T19:25:55.884920+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -16854,7 +16854,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/drakkon-wh1te-164790.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.566836+00:00",
+        "scraped_at": "2026-05-07T19:25:55.885104+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -17122,7 +17122,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/amanha-e-tarde-mini-edition-157839.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.567048+00:00",
+        "scraped_at": "2026-05-07T19:25:55.885330+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -17560,7 +17560,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/the-sun-wh1te-179099.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.567461+00:00",
+        "scraped_at": "2026-05-07T19:25:55.885729+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -18121,7 +18121,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/so-fala-abobrinha-r4bic0-179027.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.567857+00:00",
+        "scraped_at": "2026-05-07T19:25:55.886154+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -18639,7 +18639,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/amanha-e-tarde-gr33n-157850.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.568213+00:00",
+        "scraped_at": "2026-05-07T19:25:55.886495+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -19116,7 +19116,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/filhos-da-noite-asas-de-morcego-157102.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.568543+00:00",
+        "scraped_at": "2026-05-07T19:25:55.886823+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -19593,7 +19593,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/amanha-e-tarde-157836.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.568898+00:00",
+        "scraped_at": "2026-05-07T19:25:55.887204+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -20070,7 +20070,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/a-mensagem-da-onca-wh1te-179137.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.569248+00:00",
+        "scraped_at": "2026-05-07T19:25:55.887535+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -20547,7 +20547,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/observa-tua-noite-wh1te-edition-179135.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.569575+00:00",
+        "scraped_at": "2026-05-07T19:25:55.887860+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -21024,7 +21024,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moonlight-wh1te-165629.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.569910+00:00",
+        "scraped_at": "2026-05-07T19:25:55.888227+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -21458,7 +21458,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moonlight-165627.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.570189+00:00",
+        "scraped_at": "2026-05-07T19:25:55.888492+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -21851,7 +21851,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/memento-mori-r4bic0-179046.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.570454+00:00",
+        "scraped_at": "2026-05-07T19:25:55.888752+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -22416,7 +22416,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/observa-tua-noite-141833.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-07T13:28:00.571069+00:00",
+        "scraped_at": "2026-05-07T19:25:55.889335+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
