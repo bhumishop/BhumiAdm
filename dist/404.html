@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BhumiShop - Admin</title>
   <script>
-    // Netlify fallback - redirect handled by _redirects
+    // GitHub Pages SPA fallback - redirect all 404s to index.html
+    // while preserving the URL path so Vue Router can handle it
+    var path = window.location.pathname + window.location.search + window.location.hash;
+    sessionStorage && sessionStorage.setItem('spa-redirect', path);
+    window.location.replace('/BhumiAdm/index.html');
   </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=/BhumiAdm/">
+  </noscript>
 </head>
 <body>
   <p>Redirecting...</p>
