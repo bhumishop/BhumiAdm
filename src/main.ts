@@ -18,17 +18,15 @@ app.mount('#app')
 
 // Handle SPA redirect from 404.html (GitHub Pages fallback)
 // 404.html stores full URL like '/BhumiAdm/admin/produtos'
+const BASE_URL = '/BhumiAdm/'
 nextTick(() => {
   const fullPath = sessionStorage.getItem('spa-redirect')
   if (fullPath) {
     sessionStorage.removeItem('spa-redirect')
-    // Extract the path after /BhumiAdm/ for router
-    const BASE_URL = '/BhumiAdm/'
-    const routerPath = fullPath.replace(new RegExp('^' + BASE_URL), '/')
-    if (routerPath && routerPath !== '/') {
-      // Use history API directly to avoid router base URL issues
-      window.history.replaceState(null, '', fullPath)
-      // Let Vue Router handle it by matching current location
+    if (fullPath !== window.location.pathname) {
+      // Re-navigate to current URL so Vue Router picks it up correctly
+      // Use window.location to ensure full page reload with correct path
+      window.location.href = fullPath
     }
   }
 })
