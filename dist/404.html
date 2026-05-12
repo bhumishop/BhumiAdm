@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BhumiShop - Admin</title>
   <script>
-    // GitHub Pages SPA fallback - redirect all 404s to index.html
-    // while preserving the URL path so Vue Router can handle it
-    var path = window.location.pathname + window.location.search + window.location.hash;
-    sessionStorage && sessionStorage.setItem('spa-redirect', path);
+    // GitHub Pages SPA fallback - redirect 404s to index.html
+    // Store full path in sessionStorage for main.ts to handle
+    var fullPath = window.location.pathname + window.location.search + window.location.hash;
+    if (sessionStorage) {
+      sessionStorage.setItem('spa-redirect', fullPath);
+    }
+    // Redirect to index.html (without query params)
     window.location.replace('/BhumiAdm/index.html');
   </script>
   <noscript>
