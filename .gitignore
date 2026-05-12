@@ -2,8 +2,8 @@
 node_modules/
 .pnpm-store/
 
-# Build output
-dist/
+# Build output - unignore for GitHub Pages deployment
+# dist/
 
 # Environment files
 .env
