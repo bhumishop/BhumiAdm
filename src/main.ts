@@ -17,11 +17,16 @@ app.config.errorHandler = (err, _instance, _info) => {
 app.mount('#app')
 
 // Handle SPA redirect from 404.html (GitHub Pages fallback)
-// When GitHub Pages returns 404, 404.html stores the full path including /BhumiAdm/
+// 404.html stores full URL path like '/BhumiAdm/admin/produtos'
+const BASE_URL = '/BhumiAdm/'
 nextTick(() => {
-  const redirectPath = sessionStorage.getItem('spa-redirect')
-  if (redirectPath) {
+  const fullPath = sessionStorage.getItem('spa-redirect')
+  if (fullPath) {
     sessionStorage.removeItem('spa-redirect')
-    router.replace(redirectPath).catch(() => {})
+    const routerPath = fullPath.replace(new RegExp('^' + BASE_URL), '/')
+    if (routerPath && routerPath !== '/') {
+      // Pass path to router directly - router prepends BASE_URL internally
+      router.replace(routerPath).catch(() => {})
+    }
   }
 })
