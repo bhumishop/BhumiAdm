@@ -14,3 +14,12 @@ app.config.errorHandler = (err, _instance, _info) => {
 }
 
 app.mount('#app')
+
+// Handle SPA redirect from 404.html (GitHub Pages fallback)
+const redirectPath = sessionStorage.getItem('spa-redirect')
+if (redirectPath) {
+  sessionStorage.removeItem('spa-redirect')
+  if (redirectPath && redirectPath !== '/') {
+    router.replace(redirectPath).catch(() => {})
+  }
+}
