@@ -5,6 +5,8 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 
+console.log('[BhumiAdm] main.ts loaded, BASE_URL:', import.meta.env.BASE_URL)
+
 const app = createApp(App)
 
 app.use(createPinia())
@@ -16,19 +18,21 @@ app.config.errorHandler = (err, _instance, _info) => {
 
 app.mount('#app')
 
+console.log('[BhumiAdm] App mounted, current path:', window.location.pathname)
+
 // Handle SPA redirect from 404.html (GitHub Pages fallback)
-// 404.html passes original path via __redirect query param
 nextTick(() => {
-  const params = new URLSearchParams(window.location.search)
-  const redirectPath = params.get('__redirect')
+  const redirectPath = sessionStorage.getItem('spa-redirect')
+  console.log('[BhumiAdm] nextTick, sessionStorage:', redirectPath)
   if (redirectPath) {
-    // Clean URL without reloading
-    const cleanUrl = window.location.pathname + window.location.hash
-    window.history.replaceState(null, '', cleanUrl)
-    // Navigate to the original path (strip /BhumiAdm prefix for router)
-    const routerPath = redirectPath.replace(/^\/BhumiAdm\//, '/')
+    sessionStorage.removeItem('spa-redirect')
+    console.log('[BhumiAdm] SPA redirect:', redirectPath)
+    // Remove base URL prefix for router
+    const BASE_URL = '/BhumiAdm/'
+    const routerPath = redirectPath.replace(new RegExp('^' + BASE_URL), '/')
+    console.log('[BhumiAdm] Router path:', routerPath)
     if (routerPath && routerPath !== '/') {
-      router.push(routerPath).catch(() => {})
+      router.push(routerPath).catch(e => console.error('[BhumiAdm] Redirect error:', e))
     }
   }
 })
