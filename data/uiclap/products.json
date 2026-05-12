@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T17:05:46.553233+00:00",
+  "generated_at": "2026-05-12T17:08:19.733498+00:00",
   "source": "uiclap",
   "bio_url": "https://uiclap.bio/levikarmadrum",
   "total_products": 9,
@@ -58,7 +58,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38235",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:36.046889+00:00",
+        "scraped_at": "2026-05-12T17:08:09.441169+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -168,7 +168,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38258",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:36.666610+00:00",
+        "scraped_at": "2026-05-12T17:08:10.137615+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -278,7 +278,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38347",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:37.449377+00:00",
+        "scraped_at": "2026-05-12T17:08:10.938784+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -388,7 +388,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38350",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:38.250123+00:00",
+        "scraped_at": "2026-05-12T17:08:11.733225+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -498,7 +498,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38356",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:39.070110+00:00",
+        "scraped_at": "2026-05-12T17:08:12.533376+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -608,7 +608,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38368",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:39.876409+00:00",
+        "scraped_at": "2026-05-12T17:08:13.332357+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -718,7 +718,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua38374",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:40.666841+00:00",
+        "scraped_at": "2026-05-12T17:08:14.137220+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -828,7 +828,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua153434",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:41.452627+00:00",
+        "scraped_at": "2026-05-12T17:08:14.939303+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -938,7 +938,7 @@
       "third_party_source": "uiclap",
       "third_party_product_url": "https://loja.uiclap.com/titulo/ua153603",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-12T17:05:42.267399+00:00",
+        "scraped_at": "2026-05-12T17:08:15.735558+00:00",
         "source": "uiclap",
         "author_info": {
           "name": "Levi Karma Drum",
@@ -1012,6 +1012,14 @@
         "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38258/000_image.webp"
       ]
     },
+    "38350": {
+      "cdn_urls": [
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38350/000_image.jpg"
+      ],
+      "webp_urls": [
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38350/000_image.webp"
+      ]
+    },
     "38347": {
       "cdn_urls": [
         "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38347/000_image.jpg"
@@ -1020,12 +1028,12 @@
         "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38347/000_image.webp"
       ]
     },
-    "38350": {
+    "38368": {
       "cdn_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38350/000_image.jpg"
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38368/000_image.jpg"
       ],
       "webp_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38350/000_image.webp"
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38368/000_image.webp"
       ]
     },
     "38356": {
@@ -1044,12 +1052,12 @@
         "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38374/000_image.webp"
       ]
     },
-    "38368": {
+    "153434": {
       "cdn_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38368/000_image.jpg"
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/153434/000_image.jpg"
       ],
       "webp_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/38368/000_image.webp"
+        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/153434/000_image.webp"
       ]
     },
     "153603": {
@@ -1058,14 +1066,6 @@
       ],
       "webp_urls": [
         "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/153603/000_image.webp"
-      ]
-    },
-    "153434": {
-      "cdn_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/153434/000_image.jpg"
-      ],
-      "webp_urls": [
-        "https://cdn.jsdelivr.net/gh/bhumishop/BhumiAdm@cdn/cdn_images/products/153434/000_image.webp"
       ]
     }
   }
