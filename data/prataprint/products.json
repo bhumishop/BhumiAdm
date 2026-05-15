@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T02:15:47.237283+00:00",
+  "generated_at": "2026-05-15T08:45:28.151124+00:00",
   "store": {
     "url": "https://prataprint.bhumisparshaschool.org",
     "id": 11210,
@@ -345,7 +345,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-florido-359657.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.422319+00:00",
+        "scraped_at": "2026-05-15T08:38:45.673232+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -737,735 +737,6 @@
       }
     },
     {
-      "name": "Camiseta UNDERWAY COW",
-      "slug": "camiseta-underway-cow",
-      "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
-      "short_description": "Camiseta 'Camiseta UNDERWAY COW' - Prata Print",
-      "category": "camiseta",
-      "brand": "Prata Print",
-      "artist": null,
-      "info": null,
-      "price": 79.98,
-      "compare_at_price": null,
-      "image": "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
-      "images": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.jpg"
-      ],
-      "variants": [
-        {
-          "size": null,
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 244,
-          "sku": "357689-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 244,
-          "sku": "357689-babylook-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 244,
-          "sku": "357689-regular-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg"
-        },
-        {
-          "size": null,
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 245,
-          "sku": "357689-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 245,
-          "sku": "357689-babylook-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/423ee8fc-de90-410d-8143-db85f264fa3e.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 245,
-          "sku": "357689-regular-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/9c2fb8b8-9567-40df-a886-94e387516a52.jpg"
-        },
-        {
-          "size": null,
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 246,
-          "sku": "357689-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 246,
-          "sku": "357689-babylook-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/a40ad696-309b-4612-802f-85e29e7aa54d.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 246,
-          "sku": "357689-regular-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/6ca20db7-cb02-40be-9204-0c17417e9dff.jpg"
-        },
-        {
-          "size": null,
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 247,
-          "sku": "357689-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 247,
-          "sku": "357689-babylook-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/59188e08-36c9-4135-8772-1bc80460c71a.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 247,
-          "sku": "357689-regular-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/a1123ca6-4b31-41e6-9f3a-1f6ace584c9e.jpg"
-        },
-        {
-          "size": null,
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 248,
-          "sku": "357689-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 248,
-          "sku": "357689-babylook-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/49ffbdf9-34ae-4974-a037-95b97c891583.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 248,
-          "sku": "357689-regular-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/de765b75-9bdc-4dc0-ae8c-bd20f37c2a34.jpg"
-        },
-        {
-          "size": null,
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 249,
-          "sku": "357689-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 249,
-          "sku": "357689-babylook-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/91c10c27-7027-4865-8812-20fc9ba3fad8.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 249,
-          "sku": "357689-regular-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/bfc820c0-be38-4d8c-ab0b-1028ba4260c5.jpg"
-        },
-        {
-          "size": null,
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 250,
-          "sku": "357689-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 250,
-          "sku": "357689-babylook-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/a9626fd5-b1a8-412d-a095-5152f8ca47b2.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 250,
-          "sku": "357689-regular-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/357689/c8d4ed93-1b5b-4757-af1e-de51a3055ae5.jpg"
-        }
-      ],
-      "sizes": [
-        "Camiseta Babylook",
-        "Camiseta Regular"
-      ],
-      "colors": [
-        "Preto",
-        "Branco",
-        "Azul",
-        "Amarelo",
-        "Vermelho",
-        "Verde",
-        "Cinza Mescla"
-      ],
-      "materials": [
-        "100% algodao"
-      ],
-      "tags": [
-        "prataprint",
-        "dropshipping",
-        "camiseta"
-      ],
-      "weight": 0.2,
-      "is_active": true,
-      "third_party_product_id": "357689",
-      "third_party_source": "prataprint",
-      "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/underway-cow-357689.html",
-      "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.422836+00:00",
-        "store_id": 11210,
-        "store_name": "Prata Print",
-        "raw": {
-          "tenant_id": 2,
-          "is_customizable": false,
-          "fabric_id": 244,
-          "promo_combo_unit_price": null,
-          "cashback_percentage": 0,
-          "link": "/prata-print/camiseta/underway-cow-357689.html",
-          "discount": 0,
-          "review_count": 0,
-          "img_cover_gender": "M",
-          "in_stock": true,
-          "price_min": 0,
-          "type": {
-            "plural": "Camisetas",
-            "observations": "As medidas podem variar até 2 cm;Este produto pode encolher em até 5% após a primeira lavagem",
-            "name": "Camiseta",
-            "id": 1,
-            "sort": 5,
-            "google_category": 212,
-            "url": "camiseta"
-          },
-          "promo_group": null,
-          "promo_instruction": null,
-          "img_female": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg",
-          "price": 79.98,
-          "img_thumb": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png",
-          "img_male": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg",
-          "id": 357689,
-          "is_clothing": true,
-          "models": [
-            {
-              "in_promo": false,
-              "main_fabric_id": 244,
-              "gender": "F",
-              "additional_price": 0,
-              "name": "Camiseta Babylook",
-              "icon": null,
-              "id": 31,
-              "url": "babylook"
-            },
-            {
-              "in_promo": false,
-              "main_fabric_id": 244,
-              "gender": "M",
-              "additional_price": 0,
-              "name": "Camiseta Regular",
-              "icon": null,
-              "id": 34,
-              "url": "regular"
-            }
-          ],
-          "price_old": 0,
-          "virtual_stock": true,
-          "is_new": false,
-          "promo_name": null,
-          "only_regular_customer": false,
-          "img_thumb_png": "https://umapenca.imgix.net/357689/d248ca04-7f8e-45f9-ac91-a307b3fd0999.png",
-          "product_color": {
-            "cor_id": 8,
-            "hexa": "#000000",
-            "name": "Preto",
-            "id": 71
-          },
-          "store": {
-            "domain": "prataprint.bhumisparshaschool.org",
-            "name": "Prata Print",
-            "id": 11210,
-            "url": "prata-print"
-          },
-          "img_cover": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg",
-          "full_link": "https://prataprint.bhumisparshaschool.org/camiseta/underway-cow-357689.html",
-          "fabrics": [
-            {
-              "icon_url": null,
-              "color_id": 8,
-              "product_color_id": 71,
-              "hexa": "#000000",
-              "name": "Preto UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Preto",
-              "product_color_hexa": "#000000",
-              "id": 244
-            },
-            {
-              "icon_url": null,
-              "color_id": 3,
-              "product_color_id": 75,
-              "hexa": "#FFFFFF",
-              "name": "Branco UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Branco",
-              "product_color_hexa": "#ffffff",
-              "id": 245
-            },
-            {
-              "icon_url": null,
-              "color_id": 2,
-              "product_color_id": 74,
-              "hexa": "#42598E",
-              "name": "Azul UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Azul",
-              "product_color_hexa": "#455491",
-              "id": 246
-            },
-            {
-              "icon_url": null,
-              "color_id": 1,
-              "product_color_id": 76,
-              "hexa": "#F9C626",
-              "name": "Amarelo UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Amarelo",
-              "product_color_hexa": "#EAB939",
-              "id": 247
-            },
-            {
-              "icon_url": null,
-              "color_id": 12,
-              "product_color_id": 77,
-              "hexa": "#D82A2A",
-              "name": "Vermelho UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Vermelho",
-              "product_color_hexa": "#db2a2a",
-              "id": 248
-            },
-            {
-              "icon_url": null,
-              "color_id": 11,
-              "product_color_id": 78,
-              "hexa": "#008269",
-              "name": "Verde UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Verde",
-              "product_color_hexa": "#007a33",
-              "id": 249
-            },
-            {
-              "icon_url": null,
-              "color_id": 13,
-              "product_color_id": 79,
-              "hexa": "#B0B7CA",
-              "name": "Cinza Mescla UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Cinza Mescla",
-              "product_color_hexa": "#868585",
-              "id": 250
-            }
-          ],
-          "review_rating_mean": 0,
-          "is_gift": false,
-          "img_cover_model": 34,
-          "name": "Camiseta UNDERWAY COW",
-          "promo_combo": null,
-          "only_wholesaler": false,
-          "images_by_fabric": [
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg"
-            },
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/423ee8fc-de90-410d-8143-db85f264fa3e.jpg"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/9c2fb8b8-9567-40df-a886-94e387516a52.jpg"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/a40ad696-309b-4612-802f-85e29e7aa54d.jpg"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/6ca20db7-cb02-40be-9204-0c17417e9dff.jpg"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/59188e08-36c9-4135-8772-1bc80460c71a.jpg"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/a1123ca6-4b31-41e6-9f3a-1f6ace584c9e.jpg"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/49ffbdf9-34ae-4974-a037-95b97c891583.jpg"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/de765b75-9bdc-4dc0-ae8c-bd20f37c2a34.jpg"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/91c10c27-7027-4865-8812-20fc9ba3fad8.jpg"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/bfc820c0-be38-4d8c-ab0b-1028ba4260c5.jpg"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/357689/a9626fd5-b1a8-412d-a095-5152f8ca47b2.jpg"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/357689/c8d4ed93-1b5b-4757-af1e-de51a3055ae5.jpg"
-            }
-          ],
-          "price_max": 0
-        }
-      },
-      "local_image_paths": [],
-      "cdn_image_urls": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.jpg"
-      ],
-      "cdn_webp_urls": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.webp"
-      ],
-      "metadata": {
-        "fulfillment_type": "uma_penca",
-        "external_store": "prataprint",
-        "product_type": "Camiseta",
-        "product_type_url": "camiseta",
-        "is_new": false,
-        "is_clothing": true,
-        "virtual_stock": true
-      }
-    },
-    {
       "name": "Camiseta O CERVO",
       "slug": "camiseta-o-cervo",
       "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
@@ -1803,7 +1074,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/o-cervo-357686.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.423285+00:00",
+        "scraped_at": "2026-05-15T08:38:45.673796+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -2532,7 +1803,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-deboa-357724.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.423750+00:00",
+        "scraped_at": "2026-05-15T08:38:45.674291+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -2924,6 +2195,735 @@
       }
     },
     {
+      "name": "Camiseta UNDERWAY COW",
+      "slug": "camiseta-underway-cow",
+      "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
+      "short_description": "Camiseta 'Camiseta UNDERWAY COW' - Prata Print",
+      "category": "camiseta",
+      "brand": "Prata Print",
+      "artist": null,
+      "info": null,
+      "price": 79.98,
+      "compare_at_price": null,
+      "image": "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
+      "images": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.jpg"
+      ],
+      "variants": [
+        {
+          "size": null,
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 244,
+          "sku": "357689-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 244,
+          "sku": "357689-babylook-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 244,
+          "sku": "357689-regular-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg"
+        },
+        {
+          "size": null,
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 245,
+          "sku": "357689-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 245,
+          "sku": "357689-babylook-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/423ee8fc-de90-410d-8143-db85f264fa3e.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 245,
+          "sku": "357689-regular-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/9c2fb8b8-9567-40df-a886-94e387516a52.jpg"
+        },
+        {
+          "size": null,
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 246,
+          "sku": "357689-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 246,
+          "sku": "357689-babylook-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/a40ad696-309b-4612-802f-85e29e7aa54d.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 246,
+          "sku": "357689-regular-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/6ca20db7-cb02-40be-9204-0c17417e9dff.jpg"
+        },
+        {
+          "size": null,
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 247,
+          "sku": "357689-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 247,
+          "sku": "357689-babylook-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/59188e08-36c9-4135-8772-1bc80460c71a.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 247,
+          "sku": "357689-regular-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/a1123ca6-4b31-41e6-9f3a-1f6ace584c9e.jpg"
+        },
+        {
+          "size": null,
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 248,
+          "sku": "357689-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 248,
+          "sku": "357689-babylook-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/49ffbdf9-34ae-4974-a037-95b97c891583.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 248,
+          "sku": "357689-regular-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/de765b75-9bdc-4dc0-ae8c-bd20f37c2a34.jpg"
+        },
+        {
+          "size": null,
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 249,
+          "sku": "357689-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 249,
+          "sku": "357689-babylook-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/91c10c27-7027-4865-8812-20fc9ba3fad8.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 249,
+          "sku": "357689-regular-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/bfc820c0-be38-4d8c-ab0b-1028ba4260c5.jpg"
+        },
+        {
+          "size": null,
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 250,
+          "sku": "357689-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 250,
+          "sku": "357689-babylook-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/a9626fd5-b1a8-412d-a095-5152f8ca47b2.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 250,
+          "sku": "357689-regular-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/357689/c8d4ed93-1b5b-4757-af1e-de51a3055ae5.jpg"
+        }
+      ],
+      "sizes": [
+        "Camiseta Babylook",
+        "Camiseta Regular"
+      ],
+      "colors": [
+        "Preto",
+        "Branco",
+        "Azul",
+        "Amarelo",
+        "Vermelho",
+        "Verde",
+        "Cinza Mescla"
+      ],
+      "materials": [
+        "100% algodao"
+      ],
+      "tags": [
+        "prataprint",
+        "dropshipping",
+        "camiseta"
+      ],
+      "weight": 0.2,
+      "is_active": true,
+      "third_party_product_id": "357689",
+      "third_party_source": "prataprint",
+      "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/underway-cow-357689.html",
+      "third_party_raw_data": {
+        "scraped_at": "2026-05-15T08:38:45.674788+00:00",
+        "store_id": 11210,
+        "store_name": "Prata Print",
+        "raw": {
+          "tenant_id": 2,
+          "is_customizable": false,
+          "fabric_id": 244,
+          "promo_combo_unit_price": null,
+          "cashback_percentage": 0,
+          "link": "/prata-print/camiseta/underway-cow-357689.html",
+          "discount": 0,
+          "review_count": 0,
+          "img_cover_gender": "M",
+          "in_stock": true,
+          "price_min": 0,
+          "type": {
+            "plural": "Camisetas",
+            "observations": "As medidas podem variar até 2 cm;Este produto pode encolher em até 5% após a primeira lavagem",
+            "name": "Camiseta",
+            "id": 1,
+            "sort": 5,
+            "google_category": 212,
+            "url": "camiseta"
+          },
+          "promo_group": null,
+          "promo_instruction": null,
+          "img_female": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg",
+          "price": 79.98,
+          "img_thumb": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png",
+          "img_male": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg",
+          "id": 357689,
+          "is_clothing": true,
+          "models": [
+            {
+              "in_promo": false,
+              "main_fabric_id": 244,
+              "gender": "F",
+              "additional_price": 0,
+              "name": "Camiseta Babylook",
+              "icon": null,
+              "id": 31,
+              "url": "babylook"
+            },
+            {
+              "in_promo": false,
+              "main_fabric_id": 244,
+              "gender": "M",
+              "additional_price": 0,
+              "name": "Camiseta Regular",
+              "icon": null,
+              "id": 34,
+              "url": "regular"
+            }
+          ],
+          "price_old": 0,
+          "virtual_stock": true,
+          "is_new": false,
+          "promo_name": null,
+          "only_regular_customer": false,
+          "img_thumb_png": "https://umapenca.imgix.net/357689/d248ca04-7f8e-45f9-ac91-a307b3fd0999.png",
+          "product_color": {
+            "cor_id": 8,
+            "hexa": "#000000",
+            "name": "Preto",
+            "id": 71
+          },
+          "store": {
+            "domain": "prataprint.bhumisparshaschool.org",
+            "name": "Prata Print",
+            "id": 11210,
+            "url": "prata-print"
+          },
+          "img_cover": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg",
+          "full_link": "https://prataprint.bhumisparshaschool.org/camiseta/underway-cow-357689.html",
+          "fabrics": [
+            {
+              "icon_url": null,
+              "color_id": 8,
+              "product_color_id": 71,
+              "hexa": "#000000",
+              "name": "Preto UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Preto",
+              "product_color_hexa": "#000000",
+              "id": 244
+            },
+            {
+              "icon_url": null,
+              "color_id": 3,
+              "product_color_id": 75,
+              "hexa": "#FFFFFF",
+              "name": "Branco UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Branco",
+              "product_color_hexa": "#ffffff",
+              "id": 245
+            },
+            {
+              "icon_url": null,
+              "color_id": 2,
+              "product_color_id": 74,
+              "hexa": "#42598E",
+              "name": "Azul UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Azul",
+              "product_color_hexa": "#455491",
+              "id": 246
+            },
+            {
+              "icon_url": null,
+              "color_id": 1,
+              "product_color_id": 76,
+              "hexa": "#F9C626",
+              "name": "Amarelo UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Amarelo",
+              "product_color_hexa": "#EAB939",
+              "id": 247
+            },
+            {
+              "icon_url": null,
+              "color_id": 12,
+              "product_color_id": 77,
+              "hexa": "#D82A2A",
+              "name": "Vermelho UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Vermelho",
+              "product_color_hexa": "#db2a2a",
+              "id": 248
+            },
+            {
+              "icon_url": null,
+              "color_id": 11,
+              "product_color_id": 78,
+              "hexa": "#008269",
+              "name": "Verde UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Verde",
+              "product_color_hexa": "#007a33",
+              "id": 249
+            },
+            {
+              "icon_url": null,
+              "color_id": 13,
+              "product_color_id": 79,
+              "hexa": "#B0B7CA",
+              "name": "Cinza Mescla UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Cinza Mescla",
+              "product_color_hexa": "#868585",
+              "id": 250
+            }
+          ],
+          "review_rating_mean": 0,
+          "is_gift": false,
+          "img_cover_model": 34,
+          "name": "Camiseta UNDERWAY COW",
+          "promo_combo": null,
+          "only_wholesaler": false,
+          "images_by_fabric": [
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/64344fd6-e275-4cdc-b145-3bd74633f253.jpg"
+            },
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/8ac192ee-a71d-4d89-86a3-cb2c951bf948.jpg"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/423ee8fc-de90-410d-8143-db85f264fa3e.jpg"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/9c2fb8b8-9567-40df-a886-94e387516a52.jpg"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/a40ad696-309b-4612-802f-85e29e7aa54d.jpg"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/6ca20db7-cb02-40be-9204-0c17417e9dff.jpg"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/59188e08-36c9-4135-8772-1bc80460c71a.jpg"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/a1123ca6-4b31-41e6-9f3a-1f6ace584c9e.jpg"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/49ffbdf9-34ae-4974-a037-95b97c891583.jpg"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/de765b75-9bdc-4dc0-ae8c-bd20f37c2a34.jpg"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/91c10c27-7027-4865-8812-20fc9ba3fad8.jpg"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/bfc820c0-be38-4d8c-ab0b-1028ba4260c5.jpg"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F357689%2Fd248ca04-7f8e-45f9-ac91-a307b3fd0999.png"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/357689/a9626fd5-b1a8-412d-a095-5152f8ca47b2.jpg"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/357689/c8d4ed93-1b5b-4757-af1e-de51a3055ae5.jpg"
+            }
+          ],
+          "price_max": 0
+        }
+      },
+      "local_image_paths": [],
+      "cdn_image_urls": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.jpg"
+      ],
+      "cdn_webp_urls": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/000_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/001_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/002_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/003_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/004_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/005_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/006_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/007_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/008_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/009_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/010_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/011_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/012_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/013_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/014_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/015_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/016_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/017_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/018_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/019_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/020_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/357689/021_image.webp"
+      ],
+      "metadata": {
+        "fulfillment_type": "uma_penca",
+        "external_store": "prataprint",
+        "product_type": "Camiseta",
+        "product_type_url": "camiseta",
+        "is_new": false,
+        "is_clothing": true,
+        "virtual_stock": true
+      }
+    },
+    {
       "name": "Camiseta MOSCANDO",
       "slug": "camiseta-moscando",
       "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
@@ -3261,7 +3261,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moscando-357751.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.424188+00:00",
+        "scraped_at": "2026-05-15T08:38:45.675265+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -3990,7 +3990,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/iiv-357728.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.424649+00:00",
+        "scraped_at": "2026-05-15T08:38:45.675760+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -4719,7 +4719,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/dragon-fly-357723.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.425129+00:00",
+        "scraped_at": "2026-05-15T08:38:45.676280+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -5448,7 +5448,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/fault-mask-357693.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.425604+00:00",
+        "scraped_at": "2026-05-15T08:38:45.676764+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -6177,7 +6177,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/solar-vision-357688.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.426043+00:00",
+        "scraped_at": "2026-05-15T08:38:45.677236+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -6906,7 +6906,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/invoc-357734.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.426499+00:00",
+        "scraped_at": "2026-05-15T08:38:45.677722+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -7635,7 +7635,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/gato-deboa-bw-357727.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.426946+00:00",
+        "scraped_at": "2026-05-15T08:38:45.678204+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -8364,7 +8364,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/dragon-fly-bw-357719.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.427391+00:00",
+        "scraped_at": "2026-05-15T08:38:45.678686+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -9093,7 +9093,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/russian-cat-bw-357712.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.427865+00:00",
+        "scraped_at": "2026-05-15T08:38:45.679186+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -9822,7 +9822,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/eagle-357709.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.428306+00:00",
+        "scraped_at": "2026-05-15T08:38:45.679664+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -10551,7 +10551,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/russian-cat-357707.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.428753+00:00",
+        "scraped_at": "2026-05-15T08:38:45.680145+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -11280,7 +11280,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/flying-arising-bw-357702.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.429193+00:00",
+        "scraped_at": "2026-05-15T08:38:45.680615+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -12009,7 +12009,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/flying-arising-357701.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.429633+00:00",
+        "scraped_at": "2026-05-15T08:38:45.681096+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -12401,735 +12401,6 @@
       }
     },
     {
-      "name": "Camiseta BODE DE TROMPETE",
-      "slug": "camiseta-bode-de-trompete",
-      "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
-      "short_description": "Camiseta 'Camiseta BODE DE TROMPETE' - Prata Print",
-      "category": "camiseta",
-      "brand": "Prata Print",
-      "artist": null,
-      "info": null,
-      "price": 79.98,
-      "compare_at_price": null,
-      "image": "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
-      "images": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.jpg"
-      ],
-      "variants": [
-        {
-          "size": null,
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 244,
-          "sku": "352000-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 244,
-          "sku": "352000-babylook-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Preto",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 244,
-          "sku": "352000-regular-F244",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg"
-        },
-        {
-          "size": null,
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 245,
-          "sku": "352000-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 245,
-          "sku": "352000-babylook-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/8787ac8f-8a5f-4c73-b877-eb7bc5308c63.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Branco",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 245,
-          "sku": "352000-regular-F245",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/ad75d974-23fc-4d0e-a3c9-a138dbc88395.jpg"
-        },
-        {
-          "size": null,
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 246,
-          "sku": "352000-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 246,
-          "sku": "352000-babylook-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/a0c4272a-327c-46bd-84e1-d936089bc1be.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Azul",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 246,
-          "sku": "352000-regular-F246",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/c72c3019-ca81-42c8-8181-ceb8dc3a1c87.jpg"
-        },
-        {
-          "size": null,
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 247,
-          "sku": "352000-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 247,
-          "sku": "352000-babylook-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/0621c769-877e-48a5-b851-6069817abf12.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Amarelo",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 247,
-          "sku": "352000-regular-F247",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/fd352acb-8b83-4798-b310-b7f6f805a6dd.jpg"
-        },
-        {
-          "size": null,
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 248,
-          "sku": "352000-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 248,
-          "sku": "352000-babylook-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/dc45cb1b-9fc3-4a1d-92e8-1414e9bde76f.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Vermelho",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 248,
-          "sku": "352000-regular-F248",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/76e8b21e-20ad-4aa4-8821-8b1aaac3679a.jpg"
-        },
-        {
-          "size": null,
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 249,
-          "sku": "352000-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 249,
-          "sku": "352000-babylook-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/69acb482-19d1-4331-90fa-db6af956f64b.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Verde",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 249,
-          "sku": "352000-regular-F249",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/429af68b-845e-479b-96bd-b87fdd92b5b2.jpg"
-        },
-        {
-          "size": null,
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": null,
-          "fabric_id": 250,
-          "sku": "352000-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg"
-        },
-        {
-          "size": "Camiseta Babylook",
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": 31,
-          "fabric_id": 250,
-          "sku": "352000-babylook-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/f58bf6e5-f52c-460d-bad2-7c035beca3ac.jpg"
-        },
-        {
-          "size": "Camiseta Regular",
-          "color": "Cinza Mescla",
-          "variant_type": "Camiseta",
-          "model_id": 34,
-          "fabric_id": 250,
-          "sku": "352000-regular-F250",
-          "price": 79.98,
-          "compare_at_price": null,
-          "stock_quantity": 0,
-          "is_active": true,
-          "image_url": "https://umapenca.imgix.net/352000/77db4c31-b70b-41b3-b962-98bd52e0041a.jpg"
-        }
-      ],
-      "sizes": [
-        "Camiseta Babylook",
-        "Camiseta Regular"
-      ],
-      "colors": [
-        "Preto",
-        "Branco",
-        "Azul",
-        "Amarelo",
-        "Vermelho",
-        "Verde",
-        "Cinza Mescla"
-      ],
-      "materials": [
-        "100% algodao"
-      ],
-      "tags": [
-        "prataprint",
-        "dropshipping",
-        "camiseta"
-      ],
-      "weight": 0.2,
-      "is_active": true,
-      "third_party_product_id": "352000",
-      "third_party_source": "prataprint",
-      "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/bode-de-trompete-352000.html",
-      "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.430075+00:00",
-        "store_id": 11210,
-        "store_name": "Prata Print",
-        "raw": {
-          "tenant_id": 2,
-          "is_customizable": false,
-          "fabric_id": 244,
-          "promo_combo_unit_price": null,
-          "cashback_percentage": 0,
-          "link": "/prata-print/camiseta/bode-de-trompete-352000.html",
-          "discount": 0,
-          "review_count": 0,
-          "img_cover_gender": "M",
-          "in_stock": true,
-          "price_min": 0,
-          "type": {
-            "plural": "Camisetas",
-            "observations": "As medidas podem variar até 2 cm;Este produto pode encolher em até 5% após a primeira lavagem",
-            "name": "Camiseta",
-            "id": 1,
-            "sort": 5,
-            "google_category": 212,
-            "url": "camiseta"
-          },
-          "promo_group": null,
-          "promo_instruction": null,
-          "img_female": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg",
-          "price": 79.98,
-          "img_thumb": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png",
-          "img_male": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg",
-          "id": 352000,
-          "is_clothing": true,
-          "models": [
-            {
-              "in_promo": false,
-              "main_fabric_id": 244,
-              "gender": "F",
-              "additional_price": 0,
-              "name": "Camiseta Babylook",
-              "icon": null,
-              "id": 31,
-              "url": "babylook"
-            },
-            {
-              "in_promo": false,
-              "main_fabric_id": 244,
-              "gender": "M",
-              "additional_price": 0,
-              "name": "Camiseta Regular",
-              "icon": null,
-              "id": 34,
-              "url": "regular"
-            }
-          ],
-          "price_old": 0,
-          "virtual_stock": true,
-          "is_new": false,
-          "promo_name": null,
-          "only_regular_customer": false,
-          "img_thumb_png": "https://umapenca.imgix.net/352000/0ae139f3-3fc9-49ca-820c-0d36c7673b22.png",
-          "product_color": {
-            "cor_id": 8,
-            "hexa": "#000000",
-            "name": "Preto",
-            "id": 71
-          },
-          "store": {
-            "domain": "prataprint.bhumisparshaschool.org",
-            "name": "Prata Print",
-            "id": 11210,
-            "url": "prata-print"
-          },
-          "img_cover": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg",
-          "full_link": "https://prataprint.bhumisparshaschool.org/camiseta/bode-de-trompete-352000.html",
-          "fabrics": [
-            {
-              "icon_url": null,
-              "color_id": 8,
-              "product_color_id": 71,
-              "hexa": "#000000",
-              "name": "Preto UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Preto",
-              "product_color_hexa": "#000000",
-              "id": 244
-            },
-            {
-              "icon_url": null,
-              "color_id": 3,
-              "product_color_id": 75,
-              "hexa": "#FFFFFF",
-              "name": "Branco UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Branco",
-              "product_color_hexa": "#ffffff",
-              "id": 245
-            },
-            {
-              "icon_url": null,
-              "color_id": 2,
-              "product_color_id": 74,
-              "hexa": "#42598E",
-              "name": "Azul UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Azul",
-              "product_color_hexa": "#455491",
-              "id": 246
-            },
-            {
-              "icon_url": null,
-              "color_id": 1,
-              "product_color_id": 76,
-              "hexa": "#F9C626",
-              "name": "Amarelo UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Amarelo",
-              "product_color_hexa": "#EAB939",
-              "id": 247
-            },
-            {
-              "icon_url": null,
-              "color_id": 12,
-              "product_color_id": 77,
-              "hexa": "#D82A2A",
-              "name": "Vermelho UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Vermelho",
-              "product_color_hexa": "#db2a2a",
-              "id": 248
-            },
-            {
-              "icon_url": null,
-              "color_id": 11,
-              "product_color_id": 78,
-              "hexa": "#008269",
-              "name": "Verde UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Verde",
-              "product_color_hexa": "#007a33",
-              "id": 249
-            },
-            {
-              "icon_url": null,
-              "color_id": 13,
-              "product_color_id": 79,
-              "hexa": "#B0B7CA",
-              "name": "Cinza Mescla UP",
-              "product_models_ids": [
-                31,
-                34
-              ],
-              "product_color_name": "Cinza Mescla",
-              "product_color_hexa": "#868585",
-              "id": 250
-            }
-          ],
-          "review_rating_mean": 0,
-          "is_gift": false,
-          "img_cover_model": 34,
-          "name": "Camiseta BODE DE TROMPETE",
-          "promo_combo": null,
-          "only_wholesaler": false,
-          "images_by_fabric": [
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg"
-            },
-            {
-              "fabric_id": 244,
-              "color_id": 8,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/8787ac8f-8a5f-4c73-b877-eb7bc5308c63.jpg"
-            },
-            {
-              "fabric_id": 245,
-              "color_id": 3,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/ad75d974-23fc-4d0e-a3c9-a138dbc88395.jpg"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/a0c4272a-327c-46bd-84e1-d936089bc1be.jpg"
-            },
-            {
-              "fabric_id": 246,
-              "color_id": 2,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/c72c3019-ca81-42c8-8181-ceb8dc3a1c87.jpg"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/0621c769-877e-48a5-b851-6069817abf12.jpg"
-            },
-            {
-              "fabric_id": 247,
-              "color_id": 1,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/fd352acb-8b83-4798-b310-b7f6f805a6dd.jpg"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/dc45cb1b-9fc3-4a1d-92e8-1414e9bde76f.jpg"
-            },
-            {
-              "fabric_id": 248,
-              "color_id": 12,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/76e8b21e-20ad-4aa4-8821-8b1aaac3679a.jpg"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/69acb482-19d1-4331-90fa-db6af956f64b.jpg"
-            },
-            {
-              "fabric_id": 249,
-              "color_id": 11,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/429af68b-845e-479b-96bd-b87fdd92b5b2.jpg"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": null,
-              "product_model_id": null,
-              "url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": "F",
-              "product_model_id": 31,
-              "url": "https://umapenca.imgix.net/352000/f58bf6e5-f52c-460d-bad2-7c035beca3ac.jpg"
-            },
-            {
-              "fabric_id": 250,
-              "color_id": 13,
-              "gender": "M",
-              "product_model_id": 34,
-              "url": "https://umapenca.imgix.net/352000/77db4c31-b70b-41b3-b962-98bd52e0041a.jpg"
-            }
-          ],
-          "price_max": 0
-        }
-      },
-      "local_image_paths": [],
-      "cdn_image_urls": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.jpg",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.jpg"
-      ],
-      "cdn_webp_urls": [
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.webp",
-        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.webp"
-      ],
-      "metadata": {
-        "fulfillment_type": "uma_penca",
-        "external_store": "prataprint",
-        "product_type": "Camiseta",
-        "product_type_url": "camiseta",
-        "is_new": false,
-        "is_clothing": true,
-        "virtual_stock": true
-      }
-    },
-    {
       "name": "Camiseta Merlim",
       "slug": "camiseta-merlim",
       "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
@@ -13467,7 +12738,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/merlim-351949.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.430544+00:00",
+        "scraped_at": "2026-05-15T08:38:45.681566+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -13859,6 +13130,735 @@
       }
     },
     {
+      "name": "Camiseta BODE DE TROMPETE",
+      "slug": "camiseta-bode-de-trompete",
+      "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
+      "short_description": "Camiseta 'Camiseta BODE DE TROMPETE' - Prata Print",
+      "category": "camiseta",
+      "brand": "Prata Print",
+      "artist": null,
+      "info": null,
+      "price": 79.98,
+      "compare_at_price": null,
+      "image": "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
+      "images": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.jpg"
+      ],
+      "variants": [
+        {
+          "size": null,
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 244,
+          "sku": "352000-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 244,
+          "sku": "352000-babylook-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Preto",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 244,
+          "sku": "352000-regular-F244",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg"
+        },
+        {
+          "size": null,
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 245,
+          "sku": "352000-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 245,
+          "sku": "352000-babylook-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/8787ac8f-8a5f-4c73-b877-eb7bc5308c63.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Branco",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 245,
+          "sku": "352000-regular-F245",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/ad75d974-23fc-4d0e-a3c9-a138dbc88395.jpg"
+        },
+        {
+          "size": null,
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 246,
+          "sku": "352000-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 246,
+          "sku": "352000-babylook-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/a0c4272a-327c-46bd-84e1-d936089bc1be.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Azul",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 246,
+          "sku": "352000-regular-F246",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/c72c3019-ca81-42c8-8181-ceb8dc3a1c87.jpg"
+        },
+        {
+          "size": null,
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 247,
+          "sku": "352000-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 247,
+          "sku": "352000-babylook-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/0621c769-877e-48a5-b851-6069817abf12.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Amarelo",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 247,
+          "sku": "352000-regular-F247",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/fd352acb-8b83-4798-b310-b7f6f805a6dd.jpg"
+        },
+        {
+          "size": null,
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 248,
+          "sku": "352000-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 248,
+          "sku": "352000-babylook-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/dc45cb1b-9fc3-4a1d-92e8-1414e9bde76f.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Vermelho",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 248,
+          "sku": "352000-regular-F248",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/76e8b21e-20ad-4aa4-8821-8b1aaac3679a.jpg"
+        },
+        {
+          "size": null,
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 249,
+          "sku": "352000-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 249,
+          "sku": "352000-babylook-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/69acb482-19d1-4331-90fa-db6af956f64b.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Verde",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 249,
+          "sku": "352000-regular-F249",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/429af68b-845e-479b-96bd-b87fdd92b5b2.jpg"
+        },
+        {
+          "size": null,
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": null,
+          "fabric_id": 250,
+          "sku": "352000-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg"
+        },
+        {
+          "size": "Camiseta Babylook",
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": 31,
+          "fabric_id": 250,
+          "sku": "352000-babylook-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/f58bf6e5-f52c-460d-bad2-7c035beca3ac.jpg"
+        },
+        {
+          "size": "Camiseta Regular",
+          "color": "Cinza Mescla",
+          "variant_type": "Camiseta",
+          "model_id": 34,
+          "fabric_id": 250,
+          "sku": "352000-regular-F250",
+          "price": 79.98,
+          "compare_at_price": null,
+          "stock_quantity": 0,
+          "is_active": true,
+          "image_url": "https://umapenca.imgix.net/352000/77db4c31-b70b-41b3-b962-98bd52e0041a.jpg"
+        }
+      ],
+      "sizes": [
+        "Camiseta Babylook",
+        "Camiseta Regular"
+      ],
+      "colors": [
+        "Preto",
+        "Branco",
+        "Azul",
+        "Amarelo",
+        "Vermelho",
+        "Verde",
+        "Cinza Mescla"
+      ],
+      "materials": [
+        "100% algodao"
+      ],
+      "tags": [
+        "prataprint",
+        "dropshipping",
+        "camiseta"
+      ],
+      "weight": 0.2,
+      "is_active": true,
+      "third_party_product_id": "352000",
+      "third_party_source": "prataprint",
+      "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/bode-de-trompete-352000.html",
+      "third_party_raw_data": {
+        "scraped_at": "2026-05-15T08:38:45.682062+00:00",
+        "store_id": 11210,
+        "store_name": "Prata Print",
+        "raw": {
+          "tenant_id": 2,
+          "is_customizable": false,
+          "fabric_id": 244,
+          "promo_combo_unit_price": null,
+          "cashback_percentage": 0,
+          "link": "/prata-print/camiseta/bode-de-trompete-352000.html",
+          "discount": 0,
+          "review_count": 0,
+          "img_cover_gender": "M",
+          "in_stock": true,
+          "price_min": 0,
+          "type": {
+            "plural": "Camisetas",
+            "observations": "As medidas podem variar até 2 cm;Este produto pode encolher em até 5% após a primeira lavagem",
+            "name": "Camiseta",
+            "id": 1,
+            "sort": 5,
+            "google_category": 212,
+            "url": "camiseta"
+          },
+          "promo_group": null,
+          "promo_instruction": null,
+          "img_female": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg",
+          "price": 79.98,
+          "img_thumb": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png",
+          "img_male": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg",
+          "id": 352000,
+          "is_clothing": true,
+          "models": [
+            {
+              "in_promo": false,
+              "main_fabric_id": 244,
+              "gender": "F",
+              "additional_price": 0,
+              "name": "Camiseta Babylook",
+              "icon": null,
+              "id": 31,
+              "url": "babylook"
+            },
+            {
+              "in_promo": false,
+              "main_fabric_id": 244,
+              "gender": "M",
+              "additional_price": 0,
+              "name": "Camiseta Regular",
+              "icon": null,
+              "id": 34,
+              "url": "regular"
+            }
+          ],
+          "price_old": 0,
+          "virtual_stock": true,
+          "is_new": false,
+          "promo_name": null,
+          "only_regular_customer": false,
+          "img_thumb_png": "https://umapenca.imgix.net/352000/0ae139f3-3fc9-49ca-820c-0d36c7673b22.png",
+          "product_color": {
+            "cor_id": 8,
+            "hexa": "#000000",
+            "name": "Preto",
+            "id": 71
+          },
+          "store": {
+            "domain": "prataprint.bhumisparshaschool.org",
+            "name": "Prata Print",
+            "id": 11210,
+            "url": "prata-print"
+          },
+          "img_cover": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg",
+          "full_link": "https://prataprint.bhumisparshaschool.org/camiseta/bode-de-trompete-352000.html",
+          "fabrics": [
+            {
+              "icon_url": null,
+              "color_id": 8,
+              "product_color_id": 71,
+              "hexa": "#000000",
+              "name": "Preto UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Preto",
+              "product_color_hexa": "#000000",
+              "id": 244
+            },
+            {
+              "icon_url": null,
+              "color_id": 3,
+              "product_color_id": 75,
+              "hexa": "#FFFFFF",
+              "name": "Branco UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Branco",
+              "product_color_hexa": "#ffffff",
+              "id": 245
+            },
+            {
+              "icon_url": null,
+              "color_id": 2,
+              "product_color_id": 74,
+              "hexa": "#42598E",
+              "name": "Azul UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Azul",
+              "product_color_hexa": "#455491",
+              "id": 246
+            },
+            {
+              "icon_url": null,
+              "color_id": 1,
+              "product_color_id": 76,
+              "hexa": "#F9C626",
+              "name": "Amarelo UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Amarelo",
+              "product_color_hexa": "#EAB939",
+              "id": 247
+            },
+            {
+              "icon_url": null,
+              "color_id": 12,
+              "product_color_id": 77,
+              "hexa": "#D82A2A",
+              "name": "Vermelho UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Vermelho",
+              "product_color_hexa": "#db2a2a",
+              "id": 248
+            },
+            {
+              "icon_url": null,
+              "color_id": 11,
+              "product_color_id": 78,
+              "hexa": "#008269",
+              "name": "Verde UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Verde",
+              "product_color_hexa": "#007a33",
+              "id": 249
+            },
+            {
+              "icon_url": null,
+              "color_id": 13,
+              "product_color_id": 79,
+              "hexa": "#B0B7CA",
+              "name": "Cinza Mescla UP",
+              "product_models_ids": [
+                31,
+                34
+              ],
+              "product_color_name": "Cinza Mescla",
+              "product_color_hexa": "#868585",
+              "id": 250
+            }
+          ],
+          "review_rating_mean": 0,
+          "is_gift": false,
+          "img_cover_model": 34,
+          "name": "Camiseta BODE DE TROMPETE",
+          "promo_combo": null,
+          "only_wholesaler": false,
+          "images_by_fabric": [
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/PT6500_fabric_22_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/be622820-2366-47b5-80db-cfe6fc88557d.jpg"
+            },
+            {
+              "fabric_id": 244,
+              "color_id": 8,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/5f215990-2179-4c1b-b9eb-e18f0a5e24d3.jpg"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/BR6001_fabric_2_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/8787ac8f-8a5f-4c73-b877-eb7bc5308c63.jpg"
+            },
+            {
+              "fabric_id": 245,
+              "color_id": 3,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/ad75d974-23fc-4d0e-a3c9-a138dbc88395.jpg"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/AZ8225_fabric_18_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/a0c4272a-327c-46bd-84e1-d936089bc1be.jpg"
+            },
+            {
+              "fabric_id": 246,
+              "color_id": 2,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/c72c3019-ca81-42c8-8181-ceb8dc3a1c87.jpg"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/AM830_fabric_114_5.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/0621c769-877e-48a5-b851-6069817abf12.jpg"
+            },
+            {
+              "fabric_id": 247,
+              "color_id": 1,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/fd352acb-8b83-4798-b310-b7f6f805a6dd.jpg"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/db2a2a.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/dc45cb1b-9fc3-4a1d-92e8-1414e9bde76f.jpg"
+            },
+            {
+              "fabric_id": 248,
+              "color_id": 12,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/76e8b21e-20ad-4aa4-8821-8b1aaac3679a.jpg"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/007a33.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/69acb482-19d1-4331-90fa-db6af956f64b.jpg"
+            },
+            {
+              "fabric_id": 249,
+              "color_id": 11,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/429af68b-845e-479b-96bd-b87fdd92b5b2.jpg"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": null,
+              "product_model_id": null,
+              "url": "https://chico-rei.imgix.net/images/fabric/MesclaEscuro_fabric_35_3.jpg?mark-alpha=90&mark-scale=80&mark-align=middle,center&mark=https%3A%2F%2Fumapenca.imgix.net%2F352000%2F0ae139f3-3fc9-49ca-820c-0d36c7673b22.png"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": "F",
+              "product_model_id": 31,
+              "url": "https://umapenca.imgix.net/352000/f58bf6e5-f52c-460d-bad2-7c035beca3ac.jpg"
+            },
+            {
+              "fabric_id": 250,
+              "color_id": 13,
+              "gender": "M",
+              "product_model_id": 34,
+              "url": "https://umapenca.imgix.net/352000/77db4c31-b70b-41b3-b962-98bd52e0041a.jpg"
+            }
+          ],
+          "price_max": 0
+        }
+      },
+      "local_image_paths": [],
+      "cdn_image_urls": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.jpg",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.jpg"
+      ],
+      "cdn_webp_urls": [
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/000_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/001_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/002_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/003_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/004_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/005_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/006_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/007_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/008_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/009_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/010_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/011_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/012_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/013_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/014_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/015_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/016_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/017_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/018_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/019_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/020_image.webp",
+        "https://raw.githubusercontent.com/bhumishop/BhumiAdm/cdn/cdn_images/352000/021_image.webp"
+      ],
+      "metadata": {
+        "fulfillment_type": "uma_penca",
+        "external_store": "prataprint",
+        "product_type": "Camiseta",
+        "product_type_url": "camiseta",
+        "is_new": false,
+        "is_clothing": true,
+        "virtual_stock": true
+      }
+    },
+    {
       "name": "Camiseta Fagiano Bird",
       "slug": "camiseta-fagiano-bird",
       "description": "Detalhes do produto\nCamiseta feita com 100% de fibra natural de algodao sustentavel.\nEstampada com impressao digital\nProduto vegano atestado pelo selo \"PETA Cruelty Free\"\n\nCuidados com a sua camiseta\nPassar do avesso: Nunca passe o ferro diretamente sobre a estampa. Vire a camiseta ao avesso e use o ferro em temperatura media ou baixa.\nUse um pano protetor: Se precisar passar a camiseta no lado da estampa, coloque um pano de algodao por cima para evitar o contato direto entre o ferro e a estampa.\nEvitar vapor direto: O vapor em excesso pode danificar a estampa, portanto, use com cautela ou opte por uma passadoria a seco.\n\nInformacoes adicionais\nAs medidas podem variar até 2 cm\nEste produto pode encolher em até 5% após a primeira lavagem",
@@ -14196,7 +14196,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/fagiano-bird-351995.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.431011+00:00",
+        "scraped_at": "2026-05-15T08:38:45.682555+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -14925,7 +14925,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/infinity-qr-dragon-351944.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.431462+00:00",
+        "scraped_at": "2026-05-15T08:38:45.683034+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -15654,7 +15654,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/spiral-mask-351912.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.431901+00:00",
+        "scraped_at": "2026-05-15T08:38:45.683506+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -16383,7 +16383,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/merlim-351948.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.432341+00:00",
+        "scraped_at": "2026-05-15T08:38:45.683982+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -16897,7 +16897,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/olho-dagua-wh1te-172431.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.432536+00:00",
+        "scraped_at": "2026-05-15T08:38:45.684159+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -17163,7 +17163,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/drakkon-wh1te-164790.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.432655+00:00",
+        "scraped_at": "2026-05-15T08:38:45.684270+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -17474,7 +17474,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/memento-mori-r4bic0-179046.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.432893+00:00",
+        "scraped_at": "2026-05-15T08:38:45.684515+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -17867,7 +17867,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moonlight-165627.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.433122+00:00",
+        "scraped_at": "2026-05-15T08:38:45.684771+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -18346,7 +18346,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/the-sun-wh1te-179099.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.433466+00:00",
+        "scraped_at": "2026-05-15T08:38:45.685137+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -18907,7 +18907,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/so-fala-abobrinha-r4bic0-179027.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.433801+00:00",
+        "scraped_at": "2026-05-15T08:38:45.685491+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -19425,7 +19425,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/amanha-e-tarde-gr33n-157850.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.434107+00:00",
+        "scraped_at": "2026-05-15T08:38:45.685841+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -19902,7 +19902,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/amanha-e-tarde-157836.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.434389+00:00",
+        "scraped_at": "2026-05-15T08:38:45.686140+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -20379,7 +20379,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/filhos-da-noite-asas-de-morcego-157102.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.434696+00:00",
+        "scraped_at": "2026-05-15T08:38:45.686431+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -20856,7 +20856,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/a-mensagem-da-onca-wh1te-179137.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.434973+00:00",
+        "scraped_at": "2026-05-15T08:38:45.686734+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -21333,7 +21333,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/observa-tua-noite-wh1te-edition-179135.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.435246+00:00",
+        "scraped_at": "2026-05-15T08:38:45.687030+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -21810,7 +21810,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/moonlight-wh1te-165629.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.435550+00:00",
+        "scraped_at": "2026-05-15T08:38:45.687318+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
@@ -22330,7 +22330,7 @@
       "third_party_source": "prataprint",
       "third_party_product_url": "https://prataprint.bhumisparshaschool.org/camiseta/olho-dagua-d4rk-179059.html",
       "third_party_raw_data": {
-        "scraped_at": "2026-05-15T02:08:54.435895+00:00",
+        "scraped_at": "2026-05-15T08:38:45.687683+00:00",
         "store_id": 11210,
         "store_name": "Prata Print",
         "raw": {
